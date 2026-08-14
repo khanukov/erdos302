@@ -23,13 +23,14 @@ lemma unitFraction_of_crossMul
   nlinarith [hq]
 
 lemma unitFraction_scale
-    {a b c m : ℕ} (hm : 0 < m)
+    {a b c m : ℕ}
     (h : (1 : ℚ) / a = (1 : ℚ) / b + (1 : ℚ) / c) :
     (1 : ℚ) / (m * a) =
       (1 : ℚ) / (m * b) + (1 : ℚ) / (m * c) := by
-  have hm0 : (m : ℚ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hm)
+  have h' : (a : ℚ)⁻¹ = (b : ℚ)⁻¹ + (c : ℚ)⁻¹ := by
+    simpa only [one_div] using h
   simp only [Nat.cast_mul, one_div, mul_inv_rev]
-  rw [h]
+  rw [h']
   ring
 
 lemma final_constant :

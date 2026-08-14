@@ -7,6 +7,7 @@ its vertices into every cover.  Memoisation only reuses already proved
 subproblems and therefore does not weaken the verification.
 """
 
+import argparse
 from fractions import Fraction
 from functools import lru_cache
 from hashlib import sha256
@@ -15,6 +16,12 @@ Q = 3360
 DENOMINATORS = tuple(d for d in range(2, Q + 1) if Q % d == 0)
 THRESHOLDS = (6, 12, 24, 30, 40, 42, 56, 84, 96, 105, 120, 140,
               210, 224, 240, 336, 420, 560, 1120, 1680, 3360)
+
+
+def require(condition: bool, message: object) -> None:
+    """Check a proof obligation even when Python is invoked with ``-O``."""
+    if not condition:
+        raise RuntimeError(f"certificate verification failed: {message}")
 
 
 def edge_masks(prefix: int) -> tuple[int, ...]:
@@ -37,6 +44,14 @@ def has_cover_at_most(edges: tuple[int, ...], budget: int) -> bool:
         if left == 0:
             return False
 
+        # Every selected vertex covers at most Delta remaining edges.  Hence
+        # ceil(|E| / Delta) vertices are necessary.  Unlike the edge packing,
+        # this bound is often strong when many edges overlap.
+        degrees = [sum(bool(e & (1 << v)) for e in remaining) for v in range(47)]
+        max_degree = max(degrees)
+        if (len(remaining) + max_degree - 1) // max_degree > left:
+            return False
+
         # A disjoint-edge packing is a certified lower bound on cover size.
         packing = []
         used = 0
@@ -49,7 +64,6 @@ def has_cover_at_most(edges: tuple[int, ...], budget: int) -> bool:
 
         # Branch on every vertex of an uncovered edge.  Choosing an edge with
         # high aggregate degrees tends to expose contradictions earlier.
-        degrees = [sum(bool(e & (1 << v)) for e in remaining) for v in range(47)]
         edge = max(remaining, key=lambda e: sum(degrees[v] for v in range(47)
                                                  if e & (1 << v)))
         for v in range(47):
@@ -63,28 +77,60 @@ def has_cover_at_most(edges: tuple[int, ...], budget: int) -> bool:
     return search(edges, budget)
 
 
+def density_from_seed_definition() -> Fraction:
+    """Evaluate the product of the coprime core and four geometric series."""
+    coprime_local_factors = (
+        Fraction(1, 2), Fraction(2, 3), Fraction(4, 5), Fraction(6, 7)
+    )
+    geometric_ratios = (
+        Fraction(1, 2**6), Fraction(1, 3**2),
+        Fraction(1, 5**2), Fraction(1, 7**2),
+    )
+    answer = Fraction(1)
+    for local_factor, ratio in zip(coprime_local_factors, geometric_ratios):
+        answer *= local_factor / (1 - ratio)
+    return answer
+
+
 def main() -> None:
-    assert len(DENOMINATORS) == 47
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--threshold", type=int, choices=THRESHOLDS,
+        help="verify only one cover threshold (data and arithmetic are always checked)",
+    )
+    args = parser.parse_args()
+
+    require(len(DENOMINATORS) == 47, "expected 47 nontrivial divisors")
     full_edges = edge_masks(47)
-    assert len(full_edges) == 146
+    require(len(full_edges) == 146, "expected 146 edges")
 
     for required, threshold in enumerate(THRESHOLDS, 1):
+        if args.threshold is not None and threshold != args.threshold:
+            continue
         prefix = sum(d <= threshold for d in DENOMINATORS)
         edges = edge_masks(prefix)
-        assert not has_cover_at_most(edges, required - 1), (threshold, required)
+        print(f"verifying threshold {threshold}: cover >= {required}", flush=True)
+        require(
+            not has_cover_at_most(edges, required - 1),
+            f"threshold {threshold} has a cover of size at most {required - 1}",
+        )
 
     reciprocal_sum = sum((Fraction(1, t) for t in THRESHOLDS), Fraction())
-    seed_density = Fraction(5, 18)
+    seed_density = density_from_seed_definition()
     omission_density = reciprocal_sum * seed_density
     upper_bound = 1 - omission_density
-    assert reciprocal_sum == Fraction(155, 336)
-    assert omission_density == Fraction(775, 6048)
-    assert upper_bound == Fraction(5273, 6048)
+    require(reciprocal_sum == Fraction(155, 336), reciprocal_sum)
+    require(seed_density == Fraction(5, 18), seed_density)
+    require(omission_density == Fraction(775, 6048), omission_density)
+    require(upper_bound == Fraction(5273, 6048), upper_bound)
 
     # This is the canonical serialization used by the supplied certificate:
     # unsigned decimal masks, in generation order, separated by commas.
     digest = sha256(",".join(map(str, full_edges)).encode()).hexdigest()
-    assert digest == "ffa273cd12645af7adda2fd50f4929a6876575adc392344ab2e654616336cf53"
+    require(
+        digest == "ffa273cd12645af7adda2fd50f4929a6876575adc392344ab2e654616336cf53",
+        f"unexpected edge-mask digest {digest}",
+    )
     print(f"vertices = {len(DENOMINATORS)}")
     print(f"edges = {len(full_edges)}")
     print(f"cover thresholds = {len(THRESHOLDS)}")
