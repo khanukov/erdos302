@@ -97,6 +97,12 @@ This repository does not vendor their source. That licensing status and the
 unrefereed status are part of the public trust boundary, not hidden
 implementation details.
 
+The repository owner's original software, certificates, and non-manuscript
+documentation are licensed under MIT; original material under `paper/` is
+licensed under CC BY 4.0. [LICENSE_SCOPE.md](../LICENSE_SCOPE.md) defines those
+grants and explicitly excludes the external dependencies, cited works, and
+other third-party material.
+
 As of 15 August 2026, the pinned #327 base has an open exposition-only
 correction in
 [upstream PR #1](https://github.com/donalddellapietra/erdos-327-proof/pull/1)
@@ -140,5 +146,7 @@ including the expanded axiom transcript, in
 [GitHub Actions run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465).
 The wording changes made after the first gate are recorded in
 [LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md). Every subsequent
-release commit must pass the same required jobs, and the named-human-review
-gate keeps the pull request in draft even after green CI.
+integration or release commit must pass the same required jobs. Green CI
+permits repository merge as explicitly unrefereed work; the named-human-review
+gate instead blocks a GitHub Release, arXiv, forum, journal, or formal
+scientific announcement.

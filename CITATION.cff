@@ -4,6 +4,7 @@ message: >-
   manuscript, please cite the manuscript using the metadata below.
 title: "Two-sided computer-assisted progress on Erdős Problem 302"
 type: software
+license: MIT
 authors:
   - family-names: Khanukov
     given-names: Dmitry

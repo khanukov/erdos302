@@ -53,8 +53,15 @@ substitute for a named referee.
 
 Do not describe this work as a solution of Erdős Problem 302. A two-sided
 release requires green upper, mutation, root-Lean, lower-Lean, axiom-audit,
-and paper jobs for the exact commit being released. PR #5 must also remain
-draft until the unchecked named-human-review item is completed. No `LICENSE`
-is supplied by this upgrade; selecting one, or intentionally leaving the
-repository unlicensed, is a decision for the repository owner. `CITATION.cff`
-supplies citation metadata only and grants no copyright license.
+and paper jobs for the exact commit being released. A fully green pull request
+may be merged as unrefereed engineering work before the unchecked
+named-human-review item is completed. That merge is not the scientific release:
+no GitHub Release, arXiv, forum, journal, or formal scientific announcement
+should be made until the named review is complete, and any resulting
+corrections must be applied in follow-up pull requests.
+
+The repository owner selected MIT for original software, verification
+artifacts, certificates, and non-manuscript documentation, and CC BY 4.0 for
+original material under `paper/`. [LICENSE_SCOPE.md](../LICENSE_SCOPE.md)
+records the exact exclusions; in particular, neither license covers externally
+fetched upstream source or cited third-party material.

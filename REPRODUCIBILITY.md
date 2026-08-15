@@ -160,6 +160,19 @@ curl -fsSL https://pastebin.com/raw/p7EfqMYQ | sha256sum
 A later mismatch may mean that the mutable note changed; it does not by itself
 invalidate the independently certified bound in this repository.
 
+## Licensing scope
+
+Original software, verification artifacts, certificates, and repository
+documentation outside `paper/` are available under the MIT License.
+Original manuscript material under `paper/` is available under CC BY 4.0.
+[LICENSE_SCOPE.md](LICENSE_SCOPE.md) is authoritative for the path-level scope
+and exclusions.
+
+Neither license covers the externally fetched #301, #327, or
+`teorth/mathlib4` sources, cited works, or other third-party material. The
+licenses also do not imply independent human review or peer-reviewed
+publication.
+
 ## Manuscript
 
 ```bash

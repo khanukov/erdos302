@@ -120,6 +120,11 @@ new downstream contribution is the odd-quarter padding lemma, cardinality
 ledger, bridge to the literal Erdős 302 predicate, semantic anti-vacuity
 checks, and formal bridge to the finite maximum `f302`.
 
+Those original repository contributions and the accompanying verification
+artifacts are licensed under MIT. Original manuscript material under
+`paper/` is licensed under CC BY 4.0. The grants and exclusions are defined
+in [LICENSE_SCOPE.md](../LICENSE_SCOPE.md).
+
 At the pinned revisions, neither external repository contains a license file.
 Their code is therefore referenced through exact external Lake dependencies
 and is not copied or vendored here. This repository makes no claim that the

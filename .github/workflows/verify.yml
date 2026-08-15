@@ -158,6 +158,12 @@ jobs:
             -file-line-error paper/erdos302_two_sided.tex
       - name: Check publication wording
         run: |
+          test -f LICENSE
+          test -f LICENSE_SCOPE.md
+          test -f paper/LICENSE
+          grep -Fq 'MIT License' LICENSE
+          grep -Fq 'SPDX-License-Identifier: CC-BY-4.0' paper/LICENSE
+          grep -Fq 'license: MIT' CITATION.cff
           ! grep -nE 'Author name|author placeholder|fully Lean verified' \
             paper/erdos302_two_sided.tex
           ! grep -nF -e '5273/6048' -e '\frac{5273}{6048}' \
@@ -179,6 +185,14 @@ jobs:
             'assuming[[:space:]]+Della Pietra|conditional (on|upon).{0,80}Della Pietra' \
             README.md paper/erdos302_two_sided.tex
           ! grep -nF 'proof claim' README.md REPRODUCIBILITY.md
+          grep -Fq 'Repository merge is an engineering integration event' \
+            README.md
+          grep -Fq 'GitHub Release' paper/erdos302_two_sided.tex
+          ! grep -inE \
+            'must (also )?remain draft|pull request remains draft|No repository license is selected|No `LICENSE` is supplied' \
+            README.md docs/INDEPENDENT_REVIEW.md \
+            docs/LOWER_RELEASE_RESTORATION.md docs/TRUST_BOUNDARY.md \
+            paper/erdos302_two_sided.tex
           ! grep -Eq \
             'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)' \
             paper/erdos302_two_sided.log

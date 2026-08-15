@@ -177,8 +177,19 @@ See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 [trust boundary](docs/TRUST_BOUNDARY.md) before reusing or citing the lower
 route. At the pinned revisions, the upstream repositories provide no license
 file; this repository pins them as external dependencies and does not vendor
-their source. No repository license is selected by this work package; that
-choice remains with the repository owner.
+their source.
+
+## Licensing
+
+Original repository software, verification artifacts, certificates, and
+documentation outside `paper/` are licensed under the
+[MIT License](LICENSE). Original manuscript material under `paper/` is
+licensed under [CC BY 4.0](paper/LICENSE). The exact scope and third-party
+exclusions are recorded in [LICENSE_SCOPE.md](LICENSE_SCOPE.md).
+
+These licenses do not cover the externally fetched #301, #327, or
+`teorth/mathlib4` sources, cited works, or other third-party material. They
+also do not imply independent human review or peer-reviewed publication.
 
 The [lower-claim restoration checklist](docs/LOWER_RELEASE_RESTORATION.md)
 records the promotion gate that was applied after the first green exact-pins
@@ -202,8 +213,7 @@ artifact only after every proof-boundary job passes. The historical
 For the complete command ledger and audit status, see
 [REPRODUCIBILITY.md](REPRODUCIBILITY.md) and the
 [independent-review checklist](docs/INDEPENDENT_REVIEW.md). Citation metadata
-is provided in [CITATION.cff](CITATION.cff); it does not grant a copyright
-license.
+is provided in [CITATION.cff](CITATION.cff).
 
 ## Scope and disclosure
 
@@ -211,6 +221,9 @@ The finite upper packing was discovered with AI-assisted search. The theorem
 depends only on the committed exact certificate and verifier, not on the
 floating-point solver used during discovery. AI systems also assisted with
 code generation, proof audits, and Lean formalization. The external #301/#327
-work and the present manuscript are unrefereed. PR #5 must remain draft, and
-no arXiv, forum, journal, or formal release should be made, until a named
-independent human mathematical review is completed.
+work and the present manuscript are unrefereed. Repository merge is an
+engineering integration event: a fully green commit may be merged while
+remaining explicitly unrefereed, with any referee corrections made in
+follow-up pull requests. No arXiv, forum, journal, GitHub Release, or formal
+scientific announcement should be made until a named independent human
+mathematical review is completed.
