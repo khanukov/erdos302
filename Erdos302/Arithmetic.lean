@@ -29,7 +29,7 @@ lemma unitFraction_scale
       (1 : ℚ) / (m * b) + (1 : ℚ) / (m * c) := by
   have h' : (a : ℚ)⁻¹ = (b : ℚ)⁻¹ + (c : ℚ)⁻¹ := by
     simpa only [one_div] using h
-  simp only [Nat.cast_mul, one_div, mul_inv_rev]
+  simp only [one_div, mul_inv_rev]
   rw [h']
   ring
 
