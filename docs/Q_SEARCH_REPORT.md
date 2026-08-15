@@ -36,15 +36,14 @@ from \(Q=3360\).
 
 ## External Pastebin context
 
-The handoff describes an external partial argument at
-`https://pastebin.com/p7EfqMYQ` using the same disjoint-dilate architecture
-and the tile
+An [anonymous public note](https://pastebin.com/p7EfqMYQ) posted on
+20 July 2026 uses the same disjoint-dilate architecture and the tile
 
 \[
 \{2^i3^j:0\leq i<6,\ 0\leq j<4\}\setminus\{1\}
 \]
 
-The handoff reports the bound
+The note reports the bound
 
 \[
 f(N)\leq\left(\frac{373}{420}+o(1)\right)N

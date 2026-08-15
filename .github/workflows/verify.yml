@@ -162,6 +162,8 @@ jobs:
             paper/erdos302_two_sided.tex
           ! grep -nF -e '5273/6048' -e '\frac{5273}{6048}' \
             paper/erdos302_two_sided.tex
+          grep -Fq '\frac{373}{420}' paper/erdos302_two_sided.tex
+          grep -Fq 'Partial302Pastebin2026' paper/erdos302_two_sided.tex
           ! grep -Eq \
             'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)' \
             paper/erdos302_two_sided.log

@@ -46,11 +46,24 @@ formalized end to end in Lean.  Neither result closes Problem 302.
 
 Erd\H{o}s and Graham asked for the asymptotic size of a largest set avoiding
 the displayed two-tail reciprocal relation \cite{ErdosGraham1980,Erdos302}.
-The elementary interval constructions lead to the density $5/8$ lower
-baseline discussed by Cambie, while van Doorn's disjoint-dilate argument gives
-a $9/10$ upper baseline; both are recorded in the public problem discussion
-\cite{Cambie302,VanDoorn302}.  The present work improves both sides; it does
-not prove that $f(N)/N$ converges.
+The elementary interval construction gives the density-$5/8$ lower bound
+observed by Cambie \cite{Cambie302}.  Van Doorn obtained
+\[
+ f(N)\leq(9/10+o(1))N
+\]
+using disjoint multiplicative dilates \cite{VanDoorn302}.  A previous publicly
+available anonymous partial proof posted in July 2026
+\cite{Partial302Pastebin2026} refined the same architecture to
+\[
+ f(N)\leq\left(\frac{373}{420}+o(1)\right)N
+\]
+The present work further strengthens the finite-block method using
+hierarchical exact rational packings and obtains
+\[
+ \limsup_{N\to\infty}\frac{f(N)}N
+ \leq\frac{140803024}{163562355}.
+\]
+It does not prove that $f(N)/N$ converges.
 
 \begin{theorem}\label{thm:main}
 There is an absolute $\delta>0$ and an $N_0$ such that, for every $N\geq N_0$,
@@ -204,11 +217,19 @@ Exact double counting gives
 \end{proof}
 
 In particular, an objective strictly greater than $k-1$ certifies integral
-cover number at least $k$.  The committed JSON contains exact rational
-packings at $271$ prefixes, producing $274$ certified cover levels.  The
-verifier regenerates every configuration and checks every rational load and
-strict objective inequality.  If $t_k$ is the first certified threshold for
-level $k$, the resulting exact prefix strength is
+cover number at least $k$.  For $x\geq1$, write
+\[
+ D_{\leq x}=\{d\in D:d\leq x\}.
+\]
+The committed JSON contains exact rational packings at $271$ prefixes,
+producing a nondecreasing sequence of possibly repeated thresholds
+\[
+ t_1\leq t_2\leq\cdots\leq t_{274}
+\]
+such that the reciprocal-triple hypergraph induced by $D_{\leq t_k}$ has
+vertex-cover number at least $k$.  The verifier regenerates every
+configuration and checks every rational load and strict objective inequality.
+The resulting exact prefix strength is
 \[
  S=\sum_{k=1}^{274}\frac1{t_k}
   =\frac{3251333}{4989600}.
@@ -216,29 +237,81 @@ level $k$, the resulting exact prefix strength is
 
 \section{Disjoint multiplier blocks and the upper constant}
 
-Write $Q=\prod p^{e_p}$.  Choose multipliers whose $p$-adic valuations are
-multiples of $e_p+1$; explicitly the moduli are $8,5,3,3,2$ at
-$2,3,5,7,11$.  If $md=m'd'$ with $d,d'\mid Q$, reducing the valuations
-modulo $e_p+1$ recovers every exponent of $d$ and $d'$.  Hence $d=d'$ and
-then $m=m'$, so the blocks $mD$ are pairwise disjoint.
-
-For rigor, first restrict each valuation multiple to a fixed finite range
-$0\leq j<R$.  Elementary inclusion--exclusion and finite geometric sums give
-a multiplier density $\rho_R$; after $N\to\infty$ one may let $R\to\infty$,
-obtaining
+Write $Q=\prod_{p^e\parallel Q}p^e$.  For a positive integer $R$, define
 \[
+ \mathcal M_R=
+ \left\{
+ m\in\N:
+ v_p(m)\in\{0,e+1,2(e+1),\ldots,(R-1)(e+1)\}
+ \text{ for every }p^e\parallel Q
+ \right\}.
+\]
+There is no restriction on $v_\ell(m)$ for primes $\ell\nmid Q$.  Explicitly,
+the valuation moduli at $2,3,5,7,11$ are $8,5,3,3,2$.
+
+If $m,m'\in\mathcal M_R$ and $md=m'd'$ with $d,d'\in D$, then, for each
+$p^e\parallel Q$,
+\[
+ v_p(d)\equiv v_p(md)=v_p(m'd')\equiv v_p(d')\pmod{e+1}.
+\]
+Both $v_p(d)$ and $v_p(d')$ lie in $\{0,\ldots,e\}$, so they are equal.
+Thus $d=d'$ and then $m=m'$.  Hence the blocks $mD$, for
+$m\in\mathcal M_R$, are pairwise disjoint.
+
+For fixed $R$, finite inclusion--exclusion gives
+\[
+ M_R(x):=\#\{m\in\mathcal M_R:m\leq x\}
+       =\rho_Rx+O_{Q,R}(1),
+\]
+where
+\[
+ \rho_R=
+ \prod_{p^e\parallel Q}
+ \left(1-\frac1p\right)
+ \sum_{j=0}^{R-1}p^{-j(e+1)}.
+\]
+Indeed, the density of the condition $v_p(m)=j(e+1)$ is
+$(1-1/p)p^{-j(e+1)}$.
+
+Let $A\subseteq\{1,\ldots,N\}$ be triple-free.  In every block, the omitted
+vertices form a cover of the applicable divisor prefix.  More precisely, for
+$m\in\mathcal M_R$ put
+\[
+ C_m=\{d\in D_{\leq N/m}:md\notin A\}.
+\]
+Scaling preserves reciprocal triples, so $C_m$ is a vertex cover of the
+hypergraph induced by $D_{\leq N/m}$.  Consequently, with
+$\max\varnothing=0$,
+\[
+ |C_m|\geq\max\{k:mt_k\leq N\}
+       =\sum_{k=1}^{274}\mathbf 1_{mt_k\leq N}.
+\]
+Since the blocks are disjoint and every $t_k\geq2$, this gives the finite
+inequality
+\[
+ \begin{aligned}
+ N-|A|
+ &\geq
+ \sum_{\substack{m\in\mathcal M_R\\m\leq N/2}}|C_m| \\
+ &\geq
+ \sum_{k=1}^{274}
+ \#\left\{m\in\mathcal M_R:m\leq\frac{N}{t_k}\right\}.
+ \end{aligned}
+\]
+Applying this to an extremal $A$ and first letting $N\to\infty$ with $R$
+fixed yields
+\[
+ \liminf_{N\to\infty}\frac{N-f(N)}N
+ \geq\rho_R\sum_{k=1}^{274}\frac1{t_k}.
+\]
+Finally,
+\[
+ \rho_R\mathrel{\uparrow}
  \rho=\prod_{p^e\parallel Q}
        \frac{1-1/p}{1-p^{-(e+1)}}
      =\frac{23520}{110143}.
 \]
-This finite-cutoff order is essential; no interchange with an untruncated
-infinite sum is used.
-
-Let $A\subseteq\{1,\ldots,N\}$ be triple-free.  In every block, the omitted
-vertices form a cover of the applicable divisor prefix.  Level $k$ therefore
-forces one additional omission whenever $m\leq N/t_k$.  Disjointness permits
-summing these losses.  First $N\to\infty$ at fixed $R$, and then
-$R\to\infty$, gives
+Letting $R\to\infty$ therefore gives
 \[
  \liminf_{N\to\infty}\frac{N-f(N)}N
  \geq \rho S

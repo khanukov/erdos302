@@ -32,6 +32,17 @@ below, and CI reproduces its committed axiom transcript.
 
 This is partial progress, **not a solution of Problem 302**.
 
+## Prior upper bounds
+
+The [official problem page](https://www.erdosproblems.com/302) records van
+Doorn's \(9/10\) bound. An [anonymous public partial
+proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
+\(373/420\). The certified bound in this repository improves both:
+
+\[
+\frac{140803024}{163562355}<\frac{373}{420}<\frac9{10}.
+\]
+
 ## Verification status
 
 | Layer | Status |
