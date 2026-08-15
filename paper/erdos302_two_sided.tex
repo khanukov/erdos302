@@ -3,7 +3,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage[hidelinks]{hyperref}
 \hypersetup{
-  pdftitle={An exact upper bound and a derived lower-bound route for Erdos Problem 302},
+  pdftitle={Two-sided computer-assisted progress on Erdos Problem 302},
   pdfauthor={Dmitry Khanukov}
 }
 
@@ -13,8 +13,7 @@
 \newcommand{\N}{\mathbb N}
 \newcommand{\Q}{\mathbb Q}
 
-\title{An exact upper bound and a derived lower-bound route for
-Erd\H{o}s Problem 302}
+\title{Two-sided computer-assisted progress on Erd\H{o}s Problem 302}
 \author{Dmitry Khanukov}
 \date{August 2026}
 
@@ -23,20 +22,24 @@ Erd\H{o}s Problem 302}
 
 \begin{abstract}
 Let $f(N)$ denote the largest size of a subset of $\{1,\ldots,N\}$
-containing no distinct $a,b,c$ with $1/a=1/b+1/c$.  A hierarchical exact
-rational certificate on the nontrivial divisors of $139708800$ gives
+containing no distinct $a,b,c$ with $1/a=1/b+1/c$.  We prove two partial
+results.  First, adapting the structured positive-density construction
+developed by Della Pietra for Erd\H{o}s Problem 301, we show that there is an
+absolute $\delta>0$ such that
+\[
+  f(N)\geq(5/8+\delta)N
+\]
+for all sufficiently large $N$.  Second, a hierarchical exact rational
+certificate on the nontrivial divisors of $139708800$ gives
 \[
   \limsup_{N\to\infty}\frac{f(N)}N
   \leq\frac{140803024}{163562355}
   \approx 0.860852266403232.
 \]
 The upper finite certificate is checked by a dependency-free exact
-verification path.  We also describe a derived lower-bound route, adapting a
-structured positive-density construction developed by Della Pietra for
-Erd\H{o}s Problem 301.  Its Lean integration through pinned external Problem
-301/327 dependencies is in progress, so this draft does not claim the lower
-conclusion.  The upper asymptotic proof is not formalized end to end in Lean.
-This is partial progress and does not solve Problem 302.
+verification path.  The lower derivation is checked in Lean through pinned
+external Problem 301/327 dependencies.  The upper asymptotic proof is not
+formalized end to end in Lean.  Neither result closes Problem 302.
 \end{abstract}
 
 \section{Statement and prior context}
@@ -46,25 +49,25 @@ the displayed two-tail reciprocal relation \cite{ErdosGraham1980,Erdos302}.
 The elementary interval constructions lead to the density $5/8$ lower
 baseline discussed by Cambie, while van Doorn's disjoint-dilate argument gives
 a $9/10$ upper baseline; both are recorded in the public problem discussion
-\cite{Cambie302,VanDoorn302}.  The present draft improves the upper side and
-records a release-gated route on the lower side; it does not prove that
-$f(N)/N$ converges.
+\cite{Cambie302,VanDoorn302}.  The present work improves both sides; it does
+not prove that $f(N)/N$ converges.
 
-\begin{theorem}\label{thm:upper}
+\begin{theorem}\label{thm:main}
+There is an absolute $\delta>0$ and an $N_0$ such that, for every $N\geq N_0$,
+\[
+ f(N)\geq(5/8+\delta)N.
+\]
+Moreover,
 \[
  \limsup_{N\to\infty}\frac{f(N)}N
  \leq\frac{140803024}{163562355}.
 \]
 \end{theorem}
 
-\section{A derived lower-bound route (integration in progress)}
+\section{The lower bound}
 
-This section records the candidate route without promoting its conclusion to
-a theorem of the present draft.  The route is conditional on the following
-structured input from Della Pietra's pinned Problem 301 development
-\cite{DellaPietra301}; the repository's exact-pins Lean gate must compile this
-interface and reproduce its axiom report before the lower conclusion is
-released.  Put
+The argument uses the following structured input from Della Pietra's pinned
+Problem 301 development \cite{DellaPietra301}.  Put
 \[
  P_L=\prod_{p<L}p,
  \qquad
@@ -73,7 +76,7 @@ released.  Put
 \]
 The product includes the prime $2$.
 
-\begin{proposition}[structured input for the candidate route]\label{prop:structured}
+\begin{proposition}[structured Problem 301 witness]\label{prop:structured}
 For some fixed $L$, some fixed auxiliary parameters, and all sufficiently
 large $N$, there is a set $C_N\subseteq\{1,\ldots,N\}$ such that:
 \begin{enumerate}
@@ -149,15 +152,12 @@ Consequently
  |A_N|\geq
  \left(\frac58+\frac{\rho_L}{24}\right)N-1.
 \]
-Conditional on Proposition~\ref{prop:structured}, since $\rho_L>0$,
-increasing $N_0$ absorbs the additive loss and would give the candidate lower
-conclusion with
+Since $\rho_L>0$, increasing $N_0$ absorbs the additive loss and gives
+Theorem~\ref{thm:main}'s lower statement with
 \[
  \delta=\frac{\rho_L}{48}>0.
 \]
-No numerical value of $L$ or $\delta$ is asserted.  This conclusion is not
-part of Theorem~\ref{thm:upper} in the present draft: exact-pins Lean
-integration remains its release gate.
+No numerical value of $L$ or $\delta$ is asserted.
 
 \section{The hierarchical finite certificate}
 
@@ -250,7 +250,7 @@ Thus
  \leq1-\rho S
  =\frac{140803024}{163562355},
 \]
-which completes Theorem~\ref{thm:upper}.
+which completes Theorem~\ref{thm:main}.
 
 \section{Verification scope and disclosure}
 
@@ -261,15 +261,15 @@ path.  That path is run under normal and optimized Python, regenerates the
 complete finite instance, pins its digest and target sequence, and includes
 deliberate corruption tests.
 
-The candidate lower route imports analytic input from pinned Della Pietra
-Problem 301/327 Lean developments.  The repository contains source for the
-structured wrapper, literal Problem 302 bridge, padding lemma, and cardinality
-calculation, but exact-pins integration is still in progress.  Consequently
-the lower conclusion is not a theorem claim of this draft.  The workflow
-withholds the release PDF until the separate lower Lean build reproduces the
-committed transitive axiom report; a root-project build alone does not
-establish the lower statement.  At the pinned revisions, the external
-repositories have no license file, so their source is not vendored here.
+The lower result imports analytic input from pinned Della Pietra Problem
+301/327 Lean developments.  At commit
+\texttt{21a503880a3feef06203c58a30fbbd8322033ef8}, the separate lower project
+built from the exact pins and reproduced its committed transitive axiom report
+in GitHub Actions run
+\href{https://github.com/khanukov/erdos302/actions/runs/31895648228}{31895648228}.
+A root-project build alone does not establish the lower statement.  At the
+pinned revisions, the external repositories have no license file, so their
+source is not vendored here.
 
 AI systems assisted with search, code generation, proof audits, and
 formalization.  This assistance does not replace author or referee review.

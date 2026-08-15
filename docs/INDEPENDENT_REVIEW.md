@@ -32,8 +32,9 @@ substitute for a named referee.
 - [x] The raw ledger is
       \((5/8+\rho_L/24)N-1\), followed by
       \(\delta=\rho_L/48\).
-- [ ] The exact-pins `lower-lean` CI job has built the release commit and
-      reproduced its committed axiom transcript.
+- [x] The exact-pins `lower-lean` CI job built commit
+      `21a503880a3feef06203c58a30fbbd8322033ef8` and reproduced its committed
+      axiom transcript in GitHub Actions run 31895648228.
 - [ ] A named human mathematician has reviewed the final manuscript.
 
 ## Release gate

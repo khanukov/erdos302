@@ -167,6 +167,6 @@ jobs:
             paper/erdos302_two_sided.log
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: erdos302-upper-and-lower-route-manuscript
+          name: erdos302-two-sided-manuscript
           path: paper/erdos302_two_sided.pdf
           if-no-files-found: error

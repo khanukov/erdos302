@@ -1,7 +1,7 @@
 # Reproducing the Erdős 302 verification layers
 
-The established upper proof and the candidate lower route intentionally use
-separate toolchains and trust boundaries. Run every command from a clean
+The established upper and lower proof routes intentionally use separate
+toolchains and trust boundaries. Run every command from a clean
 checkout. CI uses Ubuntu 24.04 and pins each third-party GitHub Action by full
 commit SHA.
 
@@ -84,12 +84,11 @@ It checks the reusable rational/scaling lemmas and both the historical and
 new final constant identities. It is not an end-to-end formalization of the
 upper asymptotic proof.
 
-## Candidate lower Lean route (release gate)
+## Lower Lean theorem
 
 The lower bridge has its own Lean 4.33 project because the #301 proof uses a
-custom Mathlib fork and the #327 analytic library. Until the commands in this
-section pass at the exact pins in CI, the lower conclusion is not a current
-repository claim.
+custom Mathlib fork and the #327 analytic library. The commands below reproduce
+the exact-pins build and axiom comparison.
 
 ```bash
 (
@@ -110,17 +109,14 @@ must also succeed:
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
 ```
 
-The committed file is an expected transcript bootstrapped after a successful
-diagnostic compile with a local import-only dependency workaround; that local
-run is not evidence for the exact pins. CI is authoritative and must reproduce
-the file byte for byte without that workaround. The expected transitive axiom
-set is limited to `propext`,
-`Classical.choice`, and `Quot.sound`. The pinned upstream packages are
-unrefereed proof claims; successful kernel compilation does not turn them into
-peer-reviewed results.
-
-The lower headline is release-gated on this build and the byte-for-byte axiom
-transcript comparison. A root-project build alone does not establish it.
+GitHub Actions reproduced the transcript byte for byte without a local
+dependency workaround at commit
+`21a503880a3feef06203c58a30fbbd8322033ef8` in
+[run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
+The transitive axiom set is limited to `propext`, `Classical.choice`, and
+`Quot.sound`. The pinned upstream packages are unrefereed proof claims;
+successful kernel compilation does not turn them into peer-reviewed results.
+A root-project build alone does not establish the lower theorem.
 
 ## Manuscript
 

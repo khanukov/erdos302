@@ -1,5 +1,11 @@
 # Lower-claim restoration after the exact-pins gate
 
+Status: applied after commit
+`21a503880a3feef06203c58a30fbbd8322033ef8` passed every required job in
+[GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
+The wording-restoration commit must pass the same jobs before the pull request
+leaves draft status.
+
 Do **not** apply this checklist while the `lower-lean` GitHub Actions job is
 absent, pending, skipped, or failing. The lower claim may be promoted only
 after the release commit both builds the isolated Lean project from its exact

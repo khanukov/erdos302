@@ -1,10 +1,11 @@
 # Lower-bound provenance
 
-The candidate lower-bound source in `lower-lean/` is intended as a downstream
-derivation from a specific structured witness in Donald Della Pietra's Erdős
-Problem 301 Lean development. It does not import an informal numerical
-estimate. Exact-pins integration is in progress, so the lower conclusion is
-not a current repository claim.
+The lower-bound theorem in `lower-lean/` is a downstream derivation from a
+specific structured witness in Donald Della Pietra's Erdős Problem 301 Lean
+development. It does not import an informal numerical estimate. The local
+bridge was compiled from the exact pins and its axiom report was reproduced in
+[GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228)
+at commit `21a503880a3feef06203c58a30fbbd8322033ef8`.
 
 ## Exact dependency pins
 
@@ -79,10 +80,10 @@ from \(C_N\). Consequently
 \left(\frac58+\frac{\rho_L}{24}\right)N-1.
 \]
 
-After increasing \(N_0\), the intended final theorem takes
+After increasing \(N_0\), the committed theorem takes
 \(\delta=\rho_L/48>0\). No numerical value of \(L\), \(\rho_L\), or
-\(\delta\) is asserted. This conclusion remains release-gated by the exact
-dependency build and axiom-report comparison.
+\(\delta\) is asserted. The exact dependency build and axiom-report comparison
+passed in the reproduction run recorded above.
 
 ## Attribution and licensing
 

@@ -2,11 +2,10 @@
 
 The two bounds use intentionally separate proof routes.
 
-The lower conclusion is not a claim of the current draft. It becomes part of
-a two-sided release only for a commit whose required `Verify` jobs are green.
-In particular, the root Lean project does not check the lower route; promotion
-of that route is gated on the separate `lower-lean` build and an exact
-comparison with the committed transitive axiom report.
+The lower conclusion is a claim of the current two-sided draft. The root Lean
+project does not check that route: it is supported by a separate exact-pins
+`lower-lean` build and a byte-for-byte comparison with the committed
+transitive axiom report.
 
 ## Upper bound
 
@@ -42,17 +41,16 @@ The upper asymptotic argument is not formalized end to end in Lean. The root
 Lean project checks only reusable arithmetic/scaling lemmas and the final
 rational identity.
 
-## Candidate lower route (not yet a repository claim)
+## Lower bound
 
-Target conclusion after the release gate:
+Claim:
 
 \[
 \exists\delta>0\ \exists N_0\ \forall N\ge N_0:\quad
 f_{302}(N)\ge(5/8+\delta)N.
 \]
 
-For a release-qualified commit, the local bridge must be kernel-checked
-against these immutable external pins:
+The local bridge was kernel-checked against these immutable external pins:
 
 ```text
 erdos-301-proof  789c6f045dbc81da3811031247d186a7128dafce
@@ -61,14 +59,12 @@ teorth/mathlib4  da1f94df976c7cd38117281c57d6ee3046c8d104
 Lean             v4.33.0-rc1
 ```
 
-The analytic density theorem is upstream and unrefereed. The repository
-contains source intended to prove the structured wrapper, #301-to-#302
-bridge, parity padding lemma, odd-quarter cardinality bound, and final
-absorption of the additive loss. Exact-pins integration is in progress, so
-these sources do not yet justify promoting the target conclusion to a current
-repository theorem. A release-qualified commit includes
-`lower-lean/AXIOMS.txt`; CI regenerates the transitive `#print axioms` output
-from the exact pins and requires a byte-for-byte match.
+The analytic density theorem is upstream and unrefereed. The repository's
+local theorem proves the structured wrapper, #301-to-#302 bridge, parity
+padding lemma, odd-quarter cardinality bound, and final absorption of the
+additive loss. `lower-lean/AXIOMS.txt` records the transitive `#print axioms`
+output; CI regenerated it from the exact pins and required a byte-for-byte
+match.
 
 The allowed foundational axioms are:
 
@@ -96,10 +92,10 @@ implementation details.
 
 ## Reproduction record
 
-The release process should append the final GitHub Actions run URL and commit
-SHA here after all required jobs pass. Until then, this document is a trust
-specification rather than evidence that a particular unpublished commit has
-passed CI; the pull request checks are the authoritative live record.
-
-The exact wording changes to make only after that gate passes are recorded in
-[LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md).
+The first release-gate commit was
+`21a503880a3feef06203c58a30fbbd8322033ef8`. Every required job, including the
+exact-pins lower build, axiom-report comparison, and manuscript build, passed
+in [GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
+The wording changes made after that gate are recorded in
+[LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md); the restoration
+commit must itself pass the same required jobs before the draft is promoted.

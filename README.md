@@ -1,4 +1,4 @@
-# Exact upper progress and a gated lower-bound route for Erdős Problem 302
+# Two-sided progress on Erdős Problem 302
 
 Let \(f_{302}(N)\) be the largest size of a subset of
 \(\{1,\ldots,N\}\) containing no **three distinct** integers \(a,b,c\)
@@ -8,8 +8,14 @@ with
 \frac1a=\frac1b+\frac1c.
 \]
 
-This draft repository upgrade currently supports the computer-assisted upper
-claim
+This repository contains verification materials for the partial bounds
+
+\[
+\exists\delta>0\ \exists N_0\ \forall N\ge N_0:\qquad
+f_{302}(N)\ge\left(\frac58+\delta\right)N,
+\]
+
+and
 
 \[
 \limsup_{N\to\infty}\frac{f_{302}(N)}N
@@ -18,20 +24,13 @@ claim
 \approx 0.860852266403232.
 \]
 
-It also contains an elementary odd-quarter padding route toward a qualitative
-improvement on the lower bound (5/8), derived from Donald Della Pietra's
-pinned, unrefereed Lean development for Erdős Problem 301. The local bridge is
-implemented in a separate Lean 4.33 project, but its exact-pins integration is
-still in progress. The lower statement is **not a current repository claim**
-until that project builds in CI and reproduces the committed axiom transcript.
+The upper result is a computer-assisted proof with a dependency-free exact
+rational verifier. The lower result is an elementary odd-quarter padding
+derivation from Donald Della Pietra's pinned, unrefereed Lean development for
+Erdős Problem 301. The local bridge is kernel-checked at the revisions listed
+below, and CI reproduces its committed axiom transcript.
 
 This is partial progress, **not a solution of Problem 302**.
-
-Any future two-sided headline is release-gated by
-`.github/workflows/verify.yml`: the manuscript artifact is built only after
-the exact upper checks, mutation tests, root Lean build, and separate lower
-Lean build and axiom transcript all pass. Do not cite the lower claim from a
-commit whose `lower-lean` job is absent or failing.
 
 ## Verification status
 
@@ -40,11 +39,11 @@ commit whose `lower-lean` job is absent or failing.
 | \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
 | Upper asymptotic disjoint-block argument | human proof in the manuscript |
 | Upper end-to-end Lean formalization | not complete |
-| Lower analytic input | pinned external Lean proof claim; unrefereed; integration pending |
-| Lower structured wrapper and padding bridge | source implemented; exact-pins build and axiom diff pending |
+| Lower analytic input | pinned external Lean proof claim; unrefereed |
+| Lower structured wrapper and padding bridge | local Lean theorem; exact-pins build and axiom report reproduced |
 | Full solution of Erdős 302 | not claimed |
 
-Conditional on that release gate, the lower route would establish
+The lower theorem establishes
 
 \[
 \exists\delta>0\ \exists N_0\ \forall N\ge N_0:\qquad
@@ -100,11 +99,10 @@ The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
 algorithmically separate cross-check of the 21 base demands used by the new
 hierarchical certificate.
 
-## Verify the candidate lower-bound route
+## Verify the lower bound
 
 The lower source is deliberately isolated from the root Lean 4.27 project.
-The commands below are the release gate; until they pass on the exact pins,
-the lower integration remains in progress:
+These commands reproduce its exact-pins build and axiom report:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
@@ -125,9 +123,9 @@ The dependency graph is pinned to:
 - `leanprover/lean4:v4.33.0-rc1`.
 
 The local source contains no `sorry`, `admit`, project-local `axiom`,
-`opaque`, `unsafe`, or `native_decide`. A release-qualified commit must also
-reproduce an axiom report limited to the ordinary Mathlib foundations
-`propext`, `Classical.choice`, and `Quot.sound`.
+`opaque`, `unsafe`, or `native_decide`. CI reproduces an axiom report limited
+to the ordinary Mathlib foundations `propext`, `Classical.choice`, and
+`Quot.sound`.
 
 See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 [trust boundary](docs/TRUST_BOUNDARY.md) before reusing or citing the lower
@@ -136,10 +134,9 @@ file; this repository pins them as external dependencies and does not vendor
 their source. No repository license is selected by this work package; that
 choice remains with the repository owner.
 
-Release maintainers should apply the exact
-[lower-claim restoration checklist](docs/LOWER_RELEASE_RESTORATION.md) only
-after the exact-pins lower build and axiom comparison pass for the release
-commit.
+The [lower-claim restoration checklist](docs/LOWER_RELEASE_RESTORATION.md)
+records the promotion gate that was applied after the first green exact-pins
+run.
 
 ## Run all checks
 
@@ -151,8 +148,8 @@ The SciPy/HiGHS regression cross-check is outside the proof boundary. Run it
 as an additional layer with `RUN_MILP_CROSSCHECK=1 scripts/verify_all.sh`
 after installing `requirements-crosscheck.txt`.
 
-The gated manuscript source is `paper/erdos302_two_sided.tex`; CI withholds
-its release artifact until the lower job passes. The historical
+The manuscript source is `paper/erdos302_two_sided.tex`; CI produces its PDF
+artifact only after every proof-boundary job passes. The historical
 `paper/erdos302_upper_bound.tex` is retained only to document the earlier
 \(Q=3360\) stage; it is no longer the headline result.
 
