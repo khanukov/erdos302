@@ -10,7 +10,18 @@ axiom.  `scripts/verify_certificate.py` independently regenerates all 47
 denominators and 146 edges from `bc = a(b+c)`, proves the 21 stated cover
 lower bounds by exhaustive branching, and checks every rational constant.
 
-Run:
+## Local installation and verification
+
+On Linux or macOS, the bootstrap script installs `elan`, lets it install the
+exact Lean/Lake release from `lean-toolchain`, resolves the locked Mathlib
+dependencies, and creates an isolated Python virtual environment:
+
+```bash
+scripts/bootstrap.sh
+PATH="$HOME/.elan/bin:$PATH" scripts/verify_all.sh
+```
+
+The individual verification layers can also be run independently:
 
 ```bash
 python3 scripts/verify_certificate.py
@@ -18,8 +29,14 @@ python3 scripts/verify_certificate.py --threshold 3360
 python3 -m pip install -r requirements-crosscheck.txt
 python3 scripts/milp_crosscheck.py
 lake update
-lake env lean Erdos302/Arithmetic.lean
+lake build
 ```
+
+`lake-manifest.json` is committed, so local builds and GitHub Actions use the
+same transitive Lean dependencies.  CI also reruns `lake update` and fails if
+it would change that lockfile.  The three CI jobs cover kernel compilation,
+the dependency-free exhaustive certificate verifier (including a `python -O`
+run), and the algorithmically independent SciPy/HiGHS MILP cross-check.
 
 ## Verification status
 
