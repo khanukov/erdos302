@@ -1,0 +1,282 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=30mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={An exact upper bound and a derived lower-bound route for Erdos Problem 302},
+  pdfauthor={Dmitry Khanukov}
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Q}{\mathbb Q}
+
+\title{An exact upper bound and a derived lower-bound route for
+Erd\H{o}s Problem 302}
+\author{Dmitry Khanukov}
+\date{August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $f(N)$ denote the largest size of a subset of $\{1,\ldots,N\}$
+containing no distinct $a,b,c$ with $1/a=1/b+1/c$.  A hierarchical exact
+rational certificate on the nontrivial divisors of $139708800$ gives
+\[
+  \limsup_{N\to\infty}\frac{f(N)}N
+  \leq\frac{140803024}{163562355}
+  \approx 0.860852266403232.
+\]
+The upper finite certificate is checked by a dependency-free exact
+verification path.  We also describe a derived lower-bound route, adapting a
+structured positive-density construction developed by Della Pietra for
+Erd\H{o}s Problem 301.  Its Lean integration through pinned external Problem
+301/327 dependencies is in progress, so this draft does not claim the lower
+conclusion.  The upper asymptotic proof is not formalized end to end in Lean.
+This is partial progress and does not solve Problem 302.
+\end{abstract}
+
+\section{Statement and prior context}
+
+Erd\H{o}s and Graham asked for the asymptotic size of a largest set avoiding
+the displayed two-tail reciprocal relation \cite{ErdosGraham1980,Erdos302}.
+The elementary interval constructions lead to the density $5/8$ lower
+baseline discussed by Cambie, while van Doorn's disjoint-dilate argument gives
+a $9/10$ upper baseline; both are recorded in the public problem discussion
+\cite{Cambie302,VanDoorn302}.  The present draft improves the upper side and
+records a release-gated route on the lower side; it does not prove that
+$f(N)/N$ converges.
+
+\begin{theorem}\label{thm:upper}
+\[
+ \limsup_{N\to\infty}\frac{f(N)}N
+ \leq\frac{140803024}{163562355}.
+\]
+\end{theorem}
+
+\section{A derived lower-bound route (integration in progress)}
+
+This section records the candidate route without promoting its conclusion to
+a theorem of the present draft.  The route is conditional on the following
+structured input from Della Pietra's pinned Problem 301 development
+\cite{DellaPietra301}; the repository's exact-pins Lean gate must compile this
+interface and reproduce its axiom report before the lower conclusion is
+released.  Put
+\[
+ P_L=\prod_{p<L}p,
+ \qquad
+ \rho_L=\frac{\varphi(P_L)}{P_L}
+       =\prod_{p<L}\left(1-\frac1p\right).
+\]
+The product includes the prime $2$.
+
+\begin{proposition}[structured input for the candidate route]\label{prop:structured}
+For some fixed $L$, some fixed auxiliary parameters, and all sufficiently
+large $N$, there is a set $C_N\subseteq\{1,\ldots,N\}$ such that:
+\begin{enumerate}
+\item $C_N$ contains no all-distinct reciprocal relation of any tail length
+      at least two;
+\item every $n\in C_N$ satisfies either
+\[
+ N<3n,\qquad 2n<N,\qquad n\ \text{odd},
+\]
+or $N\leq2n$;
+\item
+\[
+ |C_N|\geq\left(\frac12+\frac{\rho_L}{24}\right)N.
+\]
+\end{enumerate}
+\end{proposition}
+
+The exact Lean interfaces and immutable dependency revisions used for this
+proposition are recorded in the repository.  The underlying analytic work
+uses the centered-tail library developed for Problem 327
+\cite{DellaPietra327}, whose human manuscript in turn invokes standard
+analytic estimates \cite{Tenenbaum2015,BretecheTenenbaum2026}.  These external
+developments are unrefereed.
+
+Define the odd quarter
+\[
+ O_N=\{n\in\{1,\ldots,N\}: n\text{ is odd and }4n\leq N\},
+ \qquad A_N=C_N\cup O_N.
+\]
+
+\begin{lemma}[odd-quarter padding]\label{lem:padding}
+The set $A_N$ contains no distinct $a,b,c$ with
+$1/a=1/b+1/c$.
+\end{lemma}
+\begin{proof}
+Assume such a triple exists and relabel the two tails so that $b<c$.
+Every reciprocal relation has $a<b<c$.  Moreover $b<c$ gives
+$1/a=1/b+1/c>2/c$, so $2a<c\leq N$.
+
+Suppose first that $a\in C_N$.  The top-half alternative is impossible, so
+$N<3a$.  Since $b,c>a>N/3>N/4$, neither tail lies in $O_N$.  Thus all three
+denominators lie in $C_N$, contradicting its Problem 301 admissibility.
+
+Now suppose that $a\in O_N$.  The head is odd.  From
+\[
+ bc=a(b+c)
+\]
+both tails are even: two odd tails make the two sides have opposite parity,
+as does one odd and one even tail.  Therefore $b,c\notin O_N$ and both tails
+belong to $C_N$.  Their low-band alternative is odd, so both lie in the top
+half:
+\[
+ N\leq2b,\qquad N\leq2c.
+\]
+Since $b\ne c$, the two tails cannot both equal $N/2$.  Thus at least one of
+the reciprocal inequalities $1/b\leq2/N$ and $1/c\leq2/N$ is strict, and
+hence
+\[
+ \frac1b+\frac1c<\frac4N.
+\]
+On the other hand $4a\leq N$ gives $1/a\geq4/N$, a contradiction.
+\end{proof}
+
+The map $j\mapsto2j+1$ embeds $\{0,\ldots,\lfloor N/8\rfloor-1\}$ into
+$O_N$, so
+\[
+ |O_N|\geq\lfloor N/8\rfloor\geq N/8-1.
+\]
+The two sets are disjoint: every element of $O_N$ is at most $N/4$, whereas
+each alternative in Proposition~\ref{prop:structured} lies above $N/3$.
+Consequently
+\[
+ |A_N|\geq
+ \left(\frac58+\frac{\rho_L}{24}\right)N-1.
+\]
+Conditional on Proposition~\ref{prop:structured}, since $\rho_L>0$,
+increasing $N_0$ absorbs the additive loss and would give the candidate lower
+conclusion with
+\[
+ \delta=\frac{\rho_L}{48}>0.
+\]
+No numerical value of $L$ or $\delta$ is asserted.  This conclusion is not
+part of Theorem~\ref{thm:upper} in the present draft: exact-pins Lean
+integration remains its release gate.
+
+\section{The hierarchical finite certificate}
+
+Let
+\[
+ Q=2^7 3^4 5^2 7^2 11=139708800,
+ \qquad D=\operatorname{Div}(Q)\setminus\{1\}.
+\]
+The reciprocal-triple hypergraph $H$ has vertex set $D$ and one edge for each
+unordered all-distinct triple satisfying $bc=a(b+c)$.  The verifier
+regenerates $719$ vertices and $12675$ edges from these definitions.
+
+We use a family $\mathcal G$ of configurations.  Every edge is a
+configuration of demand one.  The remaining configurations are all $96$
+admissible exponent shifts of each of the $21$ exactly verified prefixes of
+the divisor tile
+\[
+ Q_0=3360=2^5\cdot3\cdot5\cdot7.
+\]
+Thus there are $96\cdot21=2016$ hierarchical gadgets and $14691$
+configurations in total.  A gadget's demand is its exact base-prefix cover
+number.
+
+\begin{lemma}[configuration packing]\label{lem:packing}
+Let $H=(V,E)$ be a finite hypergraph.  Suppose each $G\in\mathcal G$ has an
+integer demand $r(G)\geq0$ such that every vertex cover $C$ satisfies
+$|C\cap G|\geq r(G)$.  If nonnegative rational weights $y_G$ satisfy
+\[
+ \sum_{G\ni v}y_G\leq1\qquad(v\in V),
+\]
+then every vertex cover satisfies
+\[
+ |C|\geq\sum_{G\in\mathcal G}r(G)y_G.
+\]
+\end{lemma}
+\begin{proof}
+Exact double counting gives
+\[
+ \sum_G r(G)y_G
+ \leq\sum_G|C\cap G|y_G
+ =\sum_{v\in C}\sum_{G\ni v}y_G
+ \leq|C|.
+\]
+\end{proof}
+
+In particular, an objective strictly greater than $k-1$ certifies integral
+cover number at least $k$.  The committed JSON contains exact rational
+packings at $271$ prefixes, producing $274$ certified cover levels.  The
+verifier regenerates every configuration and checks every rational load and
+strict objective inequality.  If $t_k$ is the first certified threshold for
+level $k$, the resulting exact prefix strength is
+\[
+ S=\sum_{k=1}^{274}\frac1{t_k}
+  =\frac{3251333}{4989600}.
+\]
+
+\section{Disjoint multiplier blocks and the upper constant}
+
+Write $Q=\prod p^{e_p}$.  Choose multipliers whose $p$-adic valuations are
+multiples of $e_p+1$; explicitly the moduli are $8,5,3,3,2$ at
+$2,3,5,7,11$.  If $md=m'd'$ with $d,d'\mid Q$, reducing the valuations
+modulo $e_p+1$ recovers every exponent of $d$ and $d'$.  Hence $d=d'$ and
+then $m=m'$, so the blocks $mD$ are pairwise disjoint.
+
+For rigor, first restrict each valuation multiple to a fixed finite range
+$0\leq j<R$.  Elementary inclusion--exclusion and finite geometric sums give
+a multiplier density $\rho_R$; after $N\to\infty$ one may let $R\to\infty$,
+obtaining
+\[
+ \rho=\prod_{p^e\parallel Q}
+       \frac{1-1/p}{1-p^{-(e+1)}}
+     =\frac{23520}{110143}.
+\]
+This finite-cutoff order is essential; no interchange with an untruncated
+infinite sum is used.
+
+Let $A\subseteq\{1,\ldots,N\}$ be triple-free.  In every block, the omitted
+vertices form a cover of the applicable divisor prefix.  Level $k$ therefore
+forces one additional omission whenever $m\leq N/t_k$.  Disjointness permits
+summing these losses.  First $N\to\infty$ at fixed $R$, and then
+$R\to\infty$, gives
+\[
+ \liminf_{N\to\infty}\frac{N-f(N)}N
+ \geq \rho S
+ =\frac{22759331}{163562355}.
+\]
+Thus
+\[
+ \limsup_{N\to\infty}\frac{f(N)}N
+ \leq1-\rho S
+ =\frac{140803024}{163562355},
+\]
+which completes Theorem~\ref{thm:upper}.
+
+\section{Verification scope and disclosure}
+
+The upper packing was discovered with AI-assisted search and a
+floating-point LP solver.  The published claim depends only on the committed
+exact rational certificate and the program's standard-library verification
+path.  That path is run under normal and optimized Python, regenerates the
+complete finite instance, pins its digest and target sequence, and includes
+deliberate corruption tests.
+
+The candidate lower route imports analytic input from pinned Della Pietra
+Problem 301/327 Lean developments.  The repository contains source for the
+structured wrapper, literal Problem 302 bridge, padding lemma, and cardinality
+calculation, but exact-pins integration is still in progress.  Consequently
+the lower conclusion is not a theorem claim of this draft.  The workflow
+withholds the release PDF until the separate lower Lean build reproduces the
+committed transitive axiom report; a root-project build alone does not
+establish the lower statement.  At the pinned revisions, the external
+repositories have no license file, so their source is not vendored here.
+
+AI systems assisted with search, code generation, proof audits, and
+formalization.  This assistance does not replace author or referee review.
+Both the external work and this manuscript are unrefereed; a named independent
+human review remains desirable before journal submission.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

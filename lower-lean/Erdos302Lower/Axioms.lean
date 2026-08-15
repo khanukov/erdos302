@@ -1,0 +1,7 @@
+import Erdos302Lower
+
+open Erdos302Lower
+
+#print axioms exists_structured_roughThird_witness
+#print axioms padding_preserves_noUnitFractionTriple
+#print axioms erdos302_lower_five_eighths_plus

@@ -1,4 +1,5 @@
 /.lake/
+/lower-lean/.lake/
 __pycache__/
 *.py[cod]
 /.venv/
@@ -6,6 +7,11 @@ __pycache__/
 # The manuscript source is versioned, while LaTeX build products are local
 # artifacts.  This keeps regenerated PDFs and auxiliary files out of commits.
 /paper/*.aux
+/paper/*.bbl
+/paper/*.blg
+/paper/*.fdb_latexmk
+/paper/*.fls
 /paper/*.log
 /paper/*.out
 /paper/*.pdf
+/paper/*.synctex.gz

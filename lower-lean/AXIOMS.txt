@@ -1,0 +1,3 @@
+'Erdos302Lower.exists_structured_roughThird_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.padding_preserves_noUnitFractionTriple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos302Lower.erdos302_lower_five_eighths_plus' depends on axioms: [propext, Classical.choice, Quot.sound]

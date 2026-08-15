@@ -1,51 +1,147 @@
-# Reproducing the Erdős 302 computation
+# Reproducing the Erdős 302 verification layers
 
-The repository pins Lean and Mathlib to 4.27.0 and pins the optional Python
-packages used by the independent cross-check.  From a fresh Linux or macOS
-checkout, run:
+The established upper proof and the candidate lower route intentionally use
+separate toolchains and trust boundaries. Run every command from a clean
+checkout. CI uses Ubuntu 24.04 and pins each third-party GitHub Action by full
+commit SHA.
 
-```bash
-scripts/bootstrap.sh
-PATH="$HOME/.elan/bin:$PATH" scripts/verify_all.sh
-```
+## Upper finite certificate
 
-The first command installs Elan, the selected Lean/Lake toolchain, the locked
-Mathlib dependency graph, and a local `.venv` containing NumPy and SciPy.  The
-second command performs all verification layers:
-
-1. kernel compilation of the Lean arithmetic library;
-2. Python syntax compilation;
-3. dependency-free exhaustive verification under `python -O`;
-4. the independent SciPy/HiGHS MILP cross-check.
-
-To verify lockfile reproducibility separately, run:
+No third-party Python package is required.
 
 ```bash
-cp lake-manifest.json /tmp/lake-manifest.before.json
-lake update
-cmp /tmp/lake-manifest.before.json lake-manifest.json
+(
+  cd certificates/q139708800
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum -c SHA256SUMS
+  else
+    shasum -a 256 -c SHA256SUMS
+  fi
+)
+
+python3 -m py_compile \
+  certificates/q3360/exact_certificate.py \
+  certificates/q139708800/hierarchical_certificate.py \
+  scripts/test_upper_mutations.py
+
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S \
+  certificates/q139708800/hierarchical_certificate.py verify \
+  certificates/q139708800/certificate.json \
+  --base-verifier certificates/q3360/exact_certificate.py
+
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O \
+  certificates/q139708800/hierarchical_certificate.py verify \
+  certificates/q139708800/certificate.json \
+  --base-verifier certificates/q3360/exact_certificate.py
+
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O scripts/test_upper_mutations.py
 ```
 
-## What the outputs establish
-
-The exact verifier regenerates the 47 vertices and 146 reciprocal-triple
-edges.  For every one of the 21 prefixes, exhaustive branch-and-bound proves
-the lower bound on the vertex-cover number and a stored hitting set proves the
-matching upper bound.  It also checks all rational constants.  The edge-list
-SHA-256 is only an integrity check on canonical serialization; it is not a
-mathematical certificate.
-
-The MILP uses floating-point optimization and is an independent regression
-check, not part of the rigorous proof.  The full asymptotic argument is given
-in `paper/erdos302_upper_bound.tex`.  Only its elementary arithmetic layer is
-currently formalized in Lean.
-
-## Expected versions
+Both verifier modes must report:
 
 ```text
-Lean       4.27.0
-Mathlib    4.27.0 (revision recorded in lake-manifest.json)
-Python     3.13 in CI
-NumPy      2.3.2
-SciPy      1.16.1
+Q = 139708800
+vertices = 719
+configurations = 14691
+certified cover levels = 274
+stored packing certificates = 271
+weighted prefix sum = 3251333/4989600
+multiplier density = 23520/110143
+forced omission density = 22759331/163562355
+verified upper bound = 140803024/163562355
+decimal upper bound = 0.860852266403232
+configuration sha256 = b6d0d19a51029400cc63e8cca5a4b7e1da99f7d4e6b62a479d5ed92cb8a1eafa
 ```
+
+The optimized run is deliberate: proof obligations use an unconditional
+`require` function, not Python `assert`. Verification does not call SciPy,
+NumPy, a MILP solver, the network, randomness, or floating-point arithmetic.
+The 15-place decimal display is rounded using integer arithmetic.
+
+The historical `scripts/verify_certificate.py` independently regenerates the
+47-vertex, 146-edge \(Q=3360\) instance, proves the 21 exact prefix cover
+values by a different exhaustive search, and checks explicit upper witnesses.
+The SciPy/HiGHS script is a regression cross-check only.
+
+To run that optional cross-check, install the pinned requirements and use:
+
+```bash
+python3 -m pip install -r requirements-crosscheck.txt
+python3 scripts/milp_crosscheck.py
+```
+
+## Root Lean arithmetic
+
+The root project remains pinned to Lean/Mathlib 4.27.0:
+
+```bash
+lake update
+git diff --exit-code -- lake-manifest.json
+lake build
+```
+
+It checks the reusable rational/scaling lemmas and both the historical and
+new final constant identities. It is not an end-to-end formalization of the
+upper asymptotic proof.
+
+## Candidate lower Lean route (release gate)
+
+The lower bridge has its own Lean 4.33 project because the #301 proof uses a
+custom Mathlib fork and the #327 analytic library. Until the commands in this
+section pass at the exact pins in CI, the lower conclusion is not a current
+repository claim.
+
+```bash
+(
+  cd lower-lean
+  lake update
+  git diff --exit-code -- lake-manifest.json
+  lake build
+  lake env lean Erdos302Lower/Axioms.lean | tee /tmp/erdos302-axioms.txt
+  diff -u AXIOMS.txt /tmp/erdos302-axioms.txt
+)
+```
+
+The committed manifest pins the complete dependency graph. The source audit
+must also succeed:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
+```
+
+The committed file is an expected transcript bootstrapped after a successful
+diagnostic compile with a local import-only dependency workaround; that local
+run is not evidence for the exact pins. CI is authoritative and must reproduce
+the file byte for byte without that workaround. The expected transitive axiom
+set is limited to `propext`,
+`Classical.choice`, and `Quot.sound`. The pinned upstream packages are
+unrefereed proof claims; successful kernel compilation does not turn them into
+peer-reviewed results.
+
+The lower headline is release-gated on this build and the byte-for-byte axiom
+transcript comparison. A root-project build alone does not establish it.
+
+## Manuscript
+
+```bash
+latexmk -cd -pdf -interaction=nonstopmode -halt-on-error -file-line-error \
+  paper/erdos302_two_sided.tex
+
+! grep -Eq \
+  'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)' \
+  paper/erdos302_two_sided.log
+```
+
+The PDF is a build artifact and is not committed.
+
+## One command
+
+After Lean, Lake, Python, and `latexmk` are available:
+
+```bash
+scripts/verify_all.sh
+```
+
+The command fails if any mandatory layer is unavailable or skipped. It never
+prints a global two-sided success while omitting the lower theorem. Set
+`RUN_MILP_CROSSCHECK=1` to include the optional SciPy/HiGHS regression check.

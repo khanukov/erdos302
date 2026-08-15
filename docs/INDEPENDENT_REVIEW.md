@@ -1,0 +1,45 @@
+# Independent review checklist
+
+Two separate AI-assisted audit passes were run against the handoff and the
+current repository. They separately regenerated the divisor hypergraphs,
+reran the exact verifiers in normal and optimized Python modes, checked the
+arithmetic, and inspected the pinned lower-bound interfaces. This is useful
+adversarial review, but it is not independent human review and is not a
+substitute for a named referee.
+
+## Upper checks completed
+
+- [x] 719 divisor vertices and 12,675 reciprocal edges regenerated.
+- [x] All 2,016 embedded \(Q=3360\) gadgets regenerated.
+- [x] Base edge counts independently reproduced through
+      \((b-a)(c-a)=a^2\).
+- [x] Exact rational vertex capacities and objectives checked.
+- [x] 271 target certificates linked to the pinned target sequence.
+- [x] \(S=3251333/4989600\) and \(\rho=23520/110143\) recomputed.
+- [x] Disjoint multiplier residues and the finite-cutoff order of limits
+      checked on paper.
+- [x] Four negative mutations rejected.
+- [x] No unsupported exploratory value is stated as a theorem.
+
+## Lower checks completed
+
+- [x] Every cited upstream theorem exists at the pinned #301 revision.
+- [x] \(\rho_L\) normalization includes the prime 2.
+- [x] Strict inequalities in `LowBand`, `TopBand`, and the padding set are
+      preserved.
+- [x] The parity argument forces both tails even for an odd head.
+- [x] Tail distinctness supplies the strict reciprocal inequality.
+- [x] The raw ledger is
+      \((5/8+\rho_L/24)N-1\), followed by
+      \(\delta=\rho_L/48\).
+- [ ] The exact-pins `lower-lean` CI job has built the release commit and
+      reproduced its committed axiom transcript.
+- [ ] A named human mathematician has reviewed the final manuscript.
+
+## Release gate
+
+Do not describe this work as a solution of Erdős Problem 302. A two-sided
+release requires green upper, mutation, root-Lean, lower-Lean, axiom-audit,
+and paper jobs for the exact commit being released. No `LICENSE` is supplied
+by this upgrade; selecting one, or intentionally leaving the repository
+unlicensed, is a decision for the repository owner.
