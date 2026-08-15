@@ -111,12 +111,15 @@ PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
 
 GitHub Actions reproduced the transcript byte for byte without a local
 dependency workaround at commit
-`21a503880a3feef06203c58a30fbbd8322033ef8` in
-[run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
+`4c365e9ded04f04ecd9a6d89a38f97c529194475` in
+[run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465).
 The transitive axiom set is limited to `propext`, `Classical.choice`, and
-`Quot.sound`. The pinned upstream packages are unrefereed proof claims;
-successful kernel compilation does not turn them into peer-reviewed results.
-A root-project build alone does not establish the lower theorem.
+`Quot.sound`. The pinned upstream packages are unrefereed formal developments
+whose imported proof terms are checked by the Lean kernel. This makes the
+qualitative, non-explicit-\(\delta\) lower theorem unconditional in the standard
+formal sense; it does not make the work peer-reviewed. The local build also
+checks explicit non-vacuity examples and the bridge to the finite maximum
+`f302`. A root-project build alone does not establish the lower theorem.
 
 ## Manuscript
 

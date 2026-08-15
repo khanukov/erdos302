@@ -33,14 +33,19 @@ substitute for a named referee.
       \((5/8+\rho_L/24)N-1\), followed by
       \(\delta=\rho_L/48\).
 - [x] The exact-pins `lower-lean` CI job built commit
-      `21a503880a3feef06203c58a30fbbd8322033ef8` and reproduced its committed
-      axiom transcript in GitHub Actions run 31895648228.
+      `4c365e9ded04f04ecd9a6d89a38f97c529194475` and reproduced its committed
+      axiom transcript in GitHub Actions run 31909273465.
+- [x] The literal predicate rejects \(\{2,3,6\}\) and every full interval
+      \([1,N]\) with \(N\ge6\).
+- [x] The formal finite maximum `f302` dominates every admissible witness, and
+      the eventual lower theorem is derived in this conventional notation.
 - [ ] A named human mathematician has reviewed the final manuscript.
 
 ## Release gate
 
 Do not describe this work as a solution of Erdős Problem 302. A two-sided
 release requires green upper, mutation, root-Lean, lower-Lean, axiom-audit,
-and paper jobs for the exact commit being released. No `LICENSE` is supplied
-by this upgrade; selecting one, or intentionally leaving the repository
-unlicensed, is a decision for the repository owner.
+and paper jobs for the exact commit being released. PR #5 must also remain
+draft until the unchecked named-human-review item is completed. No `LICENSE`
+is supplied by this upgrade; selecting one, or intentionally leaving the
+repository unlicensed, is a decision for the repository owner.

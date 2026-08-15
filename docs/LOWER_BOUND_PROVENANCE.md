@@ -1,11 +1,14 @@
 # Lower-bound provenance
 
-The lower-bound theorem in `lower-lean/` is a downstream derivation from a
-specific structured witness in Donald Della Pietra's Erdős Problem 301 Lean
-development. It does not import an informal numerical estimate. The local
-bridge was compiled from the exact pins and its axiom report was reproduced in
-[GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228)
-at commit `21a503880a3feef06203c58a30fbbd8322033ef8`.
+The unconditional lower-bound theorem in `lower-lean/` is a downstream
+derivation from a specific structured witness in Donald Della Pietra's Erdős
+Problem 301 Lean development. It does not import an informal numerical
+estimate or assume the upstream result as a hypothesis: the exact pinned proof
+terms and their complete dependency closure are checked by the Lean kernel.
+The theorem is qualitative and unrefereed. The local bridge was compiled from
+the exact pins and its axiom report was reproduced in
+[GitHub Actions run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465)
+at commit `4c365e9ded04f04ecd9a6d89a38f97c529194475`.
 
 ## Exact dependency pins
 
@@ -26,8 +29,9 @@ repository: teorth/mathlib4
 commit:     da1f94df976c7cd38117281c57d6ee3046c8d104
 ```
 
-The #327 repository is used as a transitive analytic library. The local proof
-does not assume the statement of Erdős Problem 327.
+The #327 repository is used as a transitive analytic library. Neither the #301
+result nor the statement of Erdős Problem 327 is introduced as a hypothesis;
+the required declarations are imported as proof terms from immutable pins.
 
 ## Upstream interfaces used
 
@@ -89,7 +93,8 @@ passed in the reproduction run recorded above.
 
 The analytic construction and its Lean formalization are Della Pietra's. The
 new downstream contribution is the odd-quarter padding lemma, cardinality
-ledger, and bridge to the literal Erdős 302 predicate.
+ledger, bridge to the literal Erdős 302 predicate, semantic anti-vacuity
+checks, and formal bridge to the finite maximum `f302`.
 
 At the pinned revisions, neither external repository contains a license file.
 Their code is therefore referenced through exact external Lake dependencies

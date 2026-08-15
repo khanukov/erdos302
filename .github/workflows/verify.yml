@@ -164,6 +164,12 @@ jobs:
             paper/erdos302_two_sided.tex
           grep -Fq '\frac{373}{420}' paper/erdos302_two_sided.tex
           grep -Fq 'Partial302Pastebin2026' paper/erdos302_two_sided.tex
+          grep -Fq 'The lower statement is unconditional' \
+            paper/erdos302_two_sided.tex
+          ! grep -inE \
+            'assuming[[:space:]]+Della Pietra|conditional (on|upon).{0,80}Della Pietra' \
+            README.md paper/erdos302_two_sided.tex
+          ! grep -nF 'proof claim' README.md REPRODUCIBILITY.md
           ! grep -Eq \
             'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)' \
             paper/erdos302_two_sided.log

@@ -4,7 +4,9 @@ Status: applied after commit
 `21a503880a3feef06203c58a30fbbd8322033ef8` passed every required job in
 [GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
 The wording-restoration commit must pass the same jobs before the pull request
-leaves draft status.
+is technically release-qualified. Green exact-pins CI is necessary but not
+sufficient for leaving draft status: a named independent human mathematical
+review is also required.
 
 Do **not** apply this checklist while the `lower-lean` GitHub Actions job is
 absent, pending, skipped, or failing. The lower claim may be promoted only
@@ -158,6 +160,7 @@ Then make these exact body changes:
 ## Final release check
 
 Rerun every required GitHub Actions job on the exact wording-restoration
-commit. Only after all required jobs are green should the pull request leave
-draft status or a release PDF be published. Do not add a repository license
-unless the owner separately selects one.
+commit. Keep the pull request in draft even after the jobs are green; it may
+leave draft status, and a release PDF may be published, only after a named
+independent human mathematical review is also complete. Do not add a
+repository license unless the owner separately selects one.

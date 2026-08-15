@@ -2,10 +2,12 @@
 
 The two bounds use intentionally separate proof routes.
 
-The lower conclusion is a claim of the current two-sided draft. The root Lean
-project does not check that route: it is supported by a separate exact-pins
-`lower-lean` build and a byte-for-byte comparison with the committed
-transitive axiom report.
+The lower conclusion is an unconditional theorem of the current two-sided
+draft in the standard formal sense. The root Lean project does not check that
+route: a separate exact-pins `lower-lean` build kernel-checks its complete
+dependency closure and reproduces the committed transitive axiom report byte
+for byte. The result is qualitative and unrefereed, but it is not conditional
+on an upstream mathematical hypothesis.
 
 ## Upper bound
 
@@ -59,20 +61,26 @@ teorth/mathlib4  da1f94df976c7cd38117281c57d6ee3046c8d104
 Lean             v4.33.0-rc1
 ```
 
-The analytic density theorem is upstream and unrefereed. The repository's
-local theorem proves the structured wrapper, #301-to-#302 bridge, parity
-padding lemma, odd-quarter cardinality bound, and final absorption of the
-additive loss. `lower-lean/AXIOMS.txt` records the transitive `#print axioms`
-output; CI regenerated it from the exact pins and required a byte-for-byte
-match.
+The analytic density theorem is upstream and unrefereed. It is imported as a
+checked proof term rather than assumed as a hypothesis. The repository's local
+theorems prove the structured wrapper, #301-to-#302 bridge, parity padding
+lemma, odd-quarter cardinality bound, final absorption of the additive loss,
+semantic anti-vacuity examples, and the bridge from a large witness to the
+finite maximum `f302`. `lower-lean/AXIOMS.txt` records the transitive
+`#print axioms` output; CI regenerates it from the exact pins and requires a
+byte-for-byte match.
 
-The allowed foundational axioms are:
+The reported foundational axioms are:
 
 ```text
 propext
 Classical.choice
 Quot.sound
 ```
+
+These are the ordinary Lean/Mathlib foundations used by the imported proof
+terms, not project-local mathematical assumptions. No project-local open proof
+obligation is admitted.
 
 Project-local `sorry`, `admit`, `axiom`, `opaque`, `unsafe`, and
 `native_decide` are rejected by CI.
@@ -89,6 +97,7 @@ implementation details.
 - A numerical value of the lower improvement \(\delta\).
 - End-to-end Lean verification of the upper asymptotic theorem.
 - Any stronger upper value for which no exact artifact is committed.
+- Independent named human review or peer-reviewed publication.
 
 ## Reproduction record
 
@@ -96,6 +105,11 @@ The first release-gate commit was
 `21a503880a3feef06203c58a30fbbd8322033ef8`. Every required job, including the
 exact-pins lower build, axiom-report comparison, and manuscript build, passed
 in [GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
-The wording changes made after that gate are recorded in
-[LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md); the restoration
-commit must itself pass the same required jobs before the draft is promoted.
+The later semantic-audit and maximum-bridge commit
+`4c365e9ded04f04ecd9a6d89a38f97c529194475` also passed every required job,
+including the expanded axiom transcript, in
+[GitHub Actions run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465).
+The wording changes made after the first gate are recorded in
+[LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md). Every subsequent
+release commit must pass the same required jobs, and the named-human-review
+gate keeps the pull request in draft even after green CI.

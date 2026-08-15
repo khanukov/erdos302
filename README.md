@@ -27,8 +27,13 @@ and
 The upper result is a computer-assisted proof with a dependency-free exact
 rational verifier. The lower result is an elementary odd-quarter padding
 derivation from Donald Della Pietra's pinned, unrefereed Lean development for
-Erdős Problem 301. The local bridge is kernel-checked at the revisions listed
-below, and CI reproduces its committed axiom transcript.
+Erdős Problem 301. The lower bound is unconditional in the standard formal
+sense: the upstream results are imported as checked proof terms, not assumed
+as hypotheses, and the complete dependency closure is kernel-checked at the
+exact revisions below. Its transitive axiom report contains only `propext`,
+`Classical.choice`, and `Quot.sound`. The constant \(\delta\) is qualitative
+and non-explicit, and the external developments and this manuscript are
+unrefereed.
 
 This is partial progress, **not a solution of Problem 302**.
 
@@ -50,8 +55,8 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 | \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
 | Upper asymptotic disjoint-block argument | human proof in the manuscript |
 | Upper end-to-end Lean formalization | not complete |
-| Lower analytic input | pinned external Lean proof claim; unrefereed |
-| Lower structured wrapper and padding bridge | local Lean theorem; exact-pins build and axiom report reproduced |
+| Lower analytic input | pinned external Lean theorem; complete dependency closure kernel-checked; unrefereed |
+| Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
 
 The lower theorem establishes
@@ -60,6 +65,13 @@ The lower theorem establishes
 \exists\delta>0\ \exists N_0\ \forall N\ge N_0:\qquad
 f_{302}(N)\ge\left(\frac58+\delta\right)N.
 \]
+
+The lower Lean project defines `f302 N` as the finite maximum of the
+cardinalities of triple-free subsets of `Finset.Icc 1 N`, proves that every
+such subset has cardinality at most `f302 N`, and derives the displayed
+extremal-function statement from the constructed witness. It also verifies
+directly that \(\{2,3,6\}\) and every full interval ending at \(N\ge6\) are not
+triple-free, making the statement encoding visibly non-vacuous.
 
 The route takes the qualitative constant
 \(\delta=\operatorname{roughDensity}(L)/48>0\) for the fixed cutoff supplied
@@ -174,5 +186,6 @@ The finite upper packing was discovered with AI-assisted search. The theorem
 depends only on the committed exact certificate and verifier, not on the
 floating-point solver used during discovery. AI systems also assisted with
 code generation, proof audits, and Lean formalization. The external #301/#327
-work and the present manuscript are unrefereed. A human mathematical review is
-still required before journal submission or a formal release claim.
+work and the present manuscript are unrefereed. PR #5 must remain draft, and
+no arXiv, forum, journal, or formal release should be made, until a named
+independent human mathematical review is completed.

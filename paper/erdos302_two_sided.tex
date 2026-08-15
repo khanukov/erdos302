@@ -38,8 +38,12 @@ certificate on the nontrivial divisors of $139708800$ gives
 \]
 The upper finite certificate is checked by a dependency-free exact
 verification path.  The lower derivation is checked in Lean through pinned
-external Problem 301/327 dependencies.  The upper asymptotic proof is not
-formalized end to end in Lean.  Neither result closes Problem 302.
+external Problem 301/327 dependencies.  The lower statement is unconditional
+in the standard formal sense: its complete exact-pinned dependency closure is
+kernel-checked and uses no nonstandard axioms.  Its constant is qualitative
+and non-explicit, and the external developments and this manuscript are
+unrefereed.  The upper asymptotic proof is not formalized end to end in Lean.
+Neither result closes Problem 302.
 \end{abstract}
 
 \section{Statement and prior context}
@@ -55,7 +59,7 @@ using disjoint multiplicative dilates \cite{VanDoorn302}.  A previous publicly
 available anonymous partial proof posted in July 2026
 \cite{Partial302Pastebin2026} refined the same architecture to
 \[
- f(N)\leq\left(\frac{373}{420}+o(1)\right)N
+ f(N)\leq\left(\frac{373}{420}+o(1)\right)N.
 \]
 The present work further strengthens the finite-block method using
 hierarchical exact rational packings and obtains
@@ -114,6 +118,12 @@ uses the centered-tail library developed for Problem 327
 analytic estimates \cite{Tenenbaum2015,BretecheTenenbaum2026}.  These external
 developments are unrefereed.
 
+The structured proposition is not assumed as a hypothesis: its exact pinned
+proof term and the complete transitive dependency closure, including the
+analytic input, are checked by the Lean kernel.  The resulting lower theorem
+is therefore unconditional in the standard formal sense, while remaining an
+unrefereed result with a qualitative, non-explicit constant.
+
 Define the odd quarter
 \[
  O_N=\{n\in\{1,\ldots,N\}: n\text{ is odd and }4n\leq N\},
@@ -171,6 +181,13 @@ Theorem~\ref{thm:main}'s lower statement with
  \delta=\frac{\rho_L}{48}>0.
 \]
 No numerical value of $L$ or $\delta$ is asserted.
+
+The local Lean project also defines $f_{302}(N)$ as the finite maximum of the
+cardinalities of triple-free subsets of $\{1,\ldots,N\}$, proves that every
+such witness is bounded by this maximum, and derives the lower statement of
+Theorem~\ref{thm:main} in that conventional notation.  Separate examples
+verify that $\{2,3,6\}$ and every full interval with $N\geq6$ violate the
+literal predicate.
 
 \section{The hierarchical finite certificate}
 
@@ -336,18 +353,25 @@ deliberate corruption tests.
 
 The lower result imports analytic input from pinned Della Pietra Problem
 301/327 Lean developments.  At commit
-\texttt{21a503880a3feef06203c58a30fbbd8322033ef8}, the separate lower project
+\texttt{4c365e9ded04f04ecd9a6d89a38f97c529194475}, the separate lower project
 built from the exact pins and reproduced its committed transitive axiom report
 in GitHub Actions run
-\href{https://github.com/khanukov/erdos302/actions/runs/31895648228}{31895648228}.
-A root-project build alone does not establish the lower statement.  At the
-pinned revisions, the external repositories have no license file, so their
-source is not vendored here.
+\href{https://github.com/khanukov/erdos302/actions/runs/31909273465}{31909273465}.
+The upstream results are imported as checked proof terms, not as hypotheses.
+The transitive axiom transcript contains only \texttt{propext},
+\texttt{Classical.choice}, and \texttt{Quot.sound}; no project-local open proof
+obligation is admitted.  Thus the lower statement is unconditional in the
+standard formal sense, although its constant is non-explicit and the work is
+unrefereed.  A root-project build alone does not establish the lower statement.
+At the pinned revisions, the external repositories have no license file, so
+their source is not vendored here.
 
 AI systems assisted with search, code generation, proof audits, and
 formalization.  This assistance does not replace author or referee review.
-Both the external work and this manuscript are unrefereed; a named independent
-human review remains desirable before journal submission.
+Both the external work and this manuscript are unrefereed.  A named
+independent human mathematical review is required before an arXiv, forum,
+journal, or formal repository release, and the pull request remains draft
+until that review is complete.
 
 \bibliographystyle{plain}
 \bibliography{references}
