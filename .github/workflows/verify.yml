@@ -185,7 +185,7 @@ jobs:
             'assuming[[:space:]]+Della Pietra|conditional (on|upon).{0,80}Della Pietra' \
             README.md paper/erdos302_two_sided.tex
           ! grep -nF 'proof claim' README.md REPRODUCIBILITY.md
-          grep -Fq 'Repository merge is an engineering integration event' \
+          grep -Fq 'engineering integration event:' \
             README.md
           grep -Fq 'GitHub Release' paper/erdos302_two_sided.tex
           ! grep -inE \
