@@ -5,3 +5,7 @@ open Erdos302Lower
 #print axioms exists_structured_roughThird_witness
 #print axioms padding_preserves_noUnitFractionTriple
 #print axioms erdos302_lower_five_eighths_plus
+#print axioms not_noUnitFractionTriple_236
+#print axioms full_interval_not_triple_free
+#print axioms card_le_f302
+#print axioms erdos302_f302_lower_five_eighths_plus
