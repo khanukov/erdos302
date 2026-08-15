@@ -9,6 +9,9 @@ contains the arithmetic/scaling layer and no `sorry`, `admit`, or new
 axiom.  `scripts/verify_certificate.py` independently regenerates all 47
 denominators and 146 edges from `bc = a(b+c)`, proves the 21 stated cover
 lower bounds by exhaustive branching, and checks every rational constant.
+The self-contained manuscript in `paper/erdos302_upper_bound.tex` supplies the
+human-readable hypergraph, disjoint-block, density, summation, and limiting
+arguments.  Its author placeholder must be replaced before publication.
 
 ## Local installation and verification
 
@@ -50,3 +53,5 @@ checker must not be described as fully Lean-verified.
 The CI workflow builds the Lean project and deliberately runs the exact
 verifier under `python -O`; all mathematical checks therefore use the
 unconditional `require` function rather than optimizable Python assertions.
+The verifier also checks explicit optimal-size hitting sets, so the stated
+cover-number equalities do not rely on the floating-point MILP cross-check.

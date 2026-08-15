@@ -17,6 +17,33 @@ DENOMINATORS = tuple(d for d in range(2, Q + 1) if Q % d == 0)
 THRESHOLDS = (6, 12, 24, 30, 40, 42, 56, 84, 96, 105, 120, 140,
               210, 224, 240, 336, 420, 560, 1120, 1680, 3360)
 
+# Explicit covers turn every reported cover number into an exact, entirely
+# integer certificate.  The exhaustive search below proves tau >= r, while
+# these witnesses prove tau <= r without relying on the floating-point MILP.
+COVER_WITNESSES = {
+    6: (6,),
+    12: (6, 12),
+    24: (4, 6, 12),
+    30: (5, 6, 12, 30),
+    40: (5, 6, 10, 12, 24),
+    42: (4, 6, 8, 12, 14, 15),
+    56: (6, 10, 12, 14, 20, 24, 56),
+    84: (6, 8, 12, 14, 20, 24, 30, 84),
+    96: (6, 8, 10, 12, 20, 21, 24, 48, 84),
+    105: (6, 8, 12, 14, 20, 24, 30, 42, 84, 96),
+    120: (3, 6, 8, 14, 20, 24, 28, 30, 48, 60, 105),
+    140: (4, 6, 10, 14, 20, 24, 28, 30, 42, 48, 56, 60),
+    210: (6, 12, 14, 20, 24, 30, 35, 40, 48, 56, 60, 70, 84),
+    224: (4, 6, 14, 24, 28, 30, 40, 48, 56, 60, 70, 80, 210, 224),
+    240: (4, 6, 8, 14, 16, 24, 28, 30, 40, 42, 60, 84, 96, 120, 210),
+    336: (4, 6, 14, 16, 24, 28, 30, 40, 56, 60, 96, 105, 112, 120, 210, 336),
+    420: (6, 12, 14, 20, 24, 28, 30, 40, 42, 56, 84, 96, 105, 112, 120, 240, 420),
+    560: (4, 6, 14, 24, 28, 30, 40, 48, 56, 60, 80, 105, 112, 120, 210, 224, 240, 420),
+    1120: (6, 12, 14, 20, 24, 30, 40, 56, 70, 84, 96, 120, 140, 210, 224, 240, 280, 336, 1120),
+    1680: (6, 12, 14, 20, 24, 30, 40, 56, 70, 84, 96, 120, 140, 210, 224, 240, 280, 336, 1120, 1680),
+    3360: (6, 12, 14, 20, 30, 40, 48, 56, 70, 80, 84, 96, 140, 168, 210, 224, 240, 480, 672, 840, 1680),
+}
+
 
 def require(condition: bool, message: object) -> None:
     """Check a proof obligation even when Python is invoked with ``-O``."""
@@ -109,11 +136,19 @@ def main() -> None:
             continue
         prefix = sum(d <= threshold for d in DENOMINATORS)
         edges = edge_masks(prefix)
+        witness = COVER_WITNESSES[threshold]
+        witness_mask = sum(1 << DENOMINATORS.index(d) for d in witness)
+        require(len(witness) == required, f"wrong witness size at {threshold}")
+        require(len(set(witness)) == required, f"duplicate witness vertex at {threshold}")
+        require(all(d <= threshold for d in witness), f"witness outside prefix at {threshold}")
+        require(all(edge & witness_mask for edge in edges),
+                f"witness does not cover every edge at {threshold}")
         print(f"verifying threshold {threshold}: cover >= {required}", flush=True)
         require(
             not has_cover_at_most(edges, required - 1),
             f"threshold {threshold} has a cover of size at most {required - 1}",
         )
+        print(f"verified threshold {threshold}: cover = {required}", flush=True)
 
     reciprocal_sum = sum((Fraction(1, t) for t in THRESHOLDS), Fraction())
     seed_density = density_from_seed_definition()
