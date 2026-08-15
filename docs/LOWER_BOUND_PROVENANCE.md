@@ -33,6 +33,30 @@ The #327 repository is used as a transitive analytic library. Neither the #301
 result nor the statement of Erdős Problem 327 is introduced as a hypothesis;
 the required declarations are imported as proof terms from immutable pins.
 
+The phrase "unconditional in the standard formal sense" describes the
+*axiom closure*, not the software stack.  The lower build deliberately uses a
+nonstandard, exactly pinned stack: the prerelease Lean toolchain
+`v4.33.0-rc1` and the `teorth/mathlib4` fork containing the unmerged
+`Mathlib.NumberTheory.Mertens` module.  CI reconstructs that stack from
+`lake-manifest.json`, builds the complete dependency closure, and checks that
+the resulting axiom report
+contains only `propext`, `Classical.choice`, and `Quot.sound`.  It would be
+incorrect to describe these dependencies as stock Mathlib or as a standard
+Lean release.
+
+## Open upstream exposition correction
+
+As of 15 August 2026,
+[erdos-327-proof PR #1](https://github.com/donalddellapietra/erdos-327-proof/pull/1)
+is open at head commit
+`6725359adfc2b0e3799777805da493df0613c1a2`, based on the pinned #327 commit
+above.  The pull request corrects manuscript and finite-certificate exposition
+only; it changes no Lean file.  In particular, the exact localized identity
+was already proved in Lean as `mixed_odd_factorCount_eq`.  The correction
+removes an unnecessary weakening and changes no theorem, exponent, parameter
+choice, or certified margin.  The lower build remains pinned to the base
+commit rather than silently following the open pull request.
+
 ## Upstream interfaces used
 
 ```text

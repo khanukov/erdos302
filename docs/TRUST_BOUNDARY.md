@@ -9,6 +9,13 @@ dependency closure and reproduces the committed transitive axiom report byte
 for byte. The result is qualitative and unrefereed, but it is not conditional
 on an upstream mathematical hypothesis.
 
+Here "standard formal sense" refers only to the reported foundational axiom
+set.  It does **not** mean that the dependency stack is standard upstream
+Lean/Mathlib: the build deliberately pins prerelease Lean `v4.33.0-rc1`, the
+`teorth/mathlib4` fork containing the unmerged
+`Mathlib.NumberTheory.Mertens` module. Those exact sources are rebuilt by CI,
+and their complete imported proof-term closure is included in the axiom audit.
+
 ## Upper bound
 
 Claim:
@@ -89,6 +96,28 @@ At the pinned revisions, the two upstream repositories have no license file.
 This repository does not vendor their source. That licensing status and the
 unrefereed status are part of the public trust boundary, not hidden
 implementation details.
+
+As of 15 August 2026, the pinned #327 base has an open exposition-only
+correction in
+[upstream PR #1](https://github.com/donalddellapietra/erdos-327-proof/pull/1)
+at head commit `6725359adfc2b0e3799777805da493df0613c1a2`.  The pull request
+changes manuscript and finite-certificate presentation, but no Lean file.  It
+restores the exact identity already proved by `mixed_odd_factorCount_eq` and
+changes no theorem, exponent, parameter choice, or certified margin.  The
+existence of that open pull request is therefore a provenance and exposition
+disclosure, not an additional hypothesis or an unverified patch in this
+repository's lower proof route.
+
+## Mutable prior-art source
+
+The anonymous public note cited for the intermediate \(373/420\) upper bound
+is hosted on Pastebin rather than in an archival repository.  The live page
+reported `Monday 20th of July 2026 12:17:33 PM CDT`.  Its raw response,
+observed on
+15 August 2026, was 6,265 bytes with SHA-256
+`0afe0ed21a015a86bd33e143b12640e52c35588ac0b754d64f1c15252bf1ae87`.
+These metadata identify the reviewed version without copying or redistributing
+the note; they do not guarantee that the mutable URL will remain available.
 
 ## Claims not established
 

@@ -39,13 +39,36 @@ This is partial progress, **not a solution of Problem 302**.
 
 ## Prior upper bounds
 
-The [official problem page](https://www.erdosproblems.com/302) records van
-Doorn's \(9/10\) bound. An [anonymous public partial
-proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
-\(373/420\). The certified bound in this repository improves both:
+The [official Problem 302 page](https://www.erdosproblems.com/302) records van
+Doorn's direct \(9/10\) bound.  There is also an earlier transferable bound on
+the [official Problem 301 page](https://www.erdosproblems.com/301): van Doorn's
+five-point configuration
 
 \[
-\frac{140803024}{163562355}<\frac{373}{420}<\frac9{10}.
+\{2t,3t,4t,6t,12t\}
+\]
+
+gives \(25/28\) for Problem 302 as well.  This transfer uses only the three
+two-tail identities inside that configuration,
+
+\[
+\frac1{2t}=\frac1{3t}+\frac1{6t},\qquad
+\frac1{3t}=\frac1{4t}+\frac1{12t},\qquad
+\frac1{4t}=\frac1{6t}+\frac1{12t}.
+\]
+
+Every one-point deletion of the five-point block leaves at least one of these
+triples, so a full block forces two omissions; the truncated block
+\(\{2t,3t,4t,6t\}\) forces one via the first identity.  Together with the
+same disjoint-dilate count, these are exactly the ingredients needed for the
+\(25/28\) bound.  This does **not** transfer the full all-tail statement of
+Problem 301 to Problem 302.  An [anonymous public partial
+proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
+\(373/420\).  The certified bound in this repository improves all three public
+baselines:
+
+\[
+\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
 \]
 
 ## Verification status
@@ -178,7 +201,9 @@ artifact only after every proof-boundary job passes. The historical
 
 For the complete command ledger and audit status, see
 [REPRODUCIBILITY.md](REPRODUCIBILITY.md) and the
-[independent-review checklist](docs/INDEPENDENT_REVIEW.md).
+[independent-review checklist](docs/INDEPENDENT_REVIEW.md). Citation metadata
+is provided in [CITATION.cff](CITATION.cff); it does not grant a copyright
+license.
 
 ## Scope and disclosure
 

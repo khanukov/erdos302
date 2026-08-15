@@ -163,7 +163,16 @@ jobs:
           ! grep -nF -e '5273/6048' -e '\frac{5273}{6048}' \
             paper/erdos302_two_sided.tex
           grep -Fq '\frac{373}{420}' paper/erdos302_two_sided.tex
+          grep -Fq '\frac{25}{28}' paper/erdos302_two_sided.tex
           grep -Fq 'Partial302Pastebin2026' paper/erdos302_two_sided.tex
+          grep -Fq '\cite{Erdos301}' paper/erdos302_two_sided.tex
+          grep -Fq '@misc{Erdos301,' paper/references.bib
+          for source in README.md docs/Q_SEARCH_REPORT.md \
+              paper/erdos302_two_sided.tex; do
+            grep -Fq \
+              '\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}' \
+              "$source"
+          done
           grep -Fq 'The lower statement is unconditional' \
             paper/erdos302_two_sided.tex
           ! grep -inE \

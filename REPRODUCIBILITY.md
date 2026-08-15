@@ -117,9 +117,48 @@ The transitive axiom set is limited to `propext`, `Classical.choice`, and
 `Quot.sound`. The pinned upstream packages are unrefereed formal developments
 whose imported proof terms are checked by the Lean kernel. This makes the
 qualitative, non-explicit-\(\delta\) lower theorem unconditional in the standard
-formal sense; it does not make the work peer-reviewed. The local build also
-checks explicit non-vacuity examples and the bridge to the finite maximum
-`f302`. A root-project build alone does not establish the lower theorem.
+formal sense; that phrase refers to the axiom closure, not to a claim that the
+software stack is standard upstream Lean/Mathlib.  The reproduced stack is
+deliberately nonstandard and exact: prerelease Lean `v4.33.0-rc1` and the
+`teorth/mathlib4` fork containing the unmerged
+`Mathlib.NumberTheory.Mertens` module. It does not make the work peer-reviewed.
+The local build also checks explicit
+non-vacuity examples and the bridge to the finite maximum `f302`. A
+root-project build alone does not establish the lower theorem.
+
+As of 15 August 2026, the pinned #327 base commit has an open
+[upstream correction](https://github.com/donalddellapietra/erdos-327-proof/pull/1)
+at `6725359adfc2b0e3799777805da493df0613c1a2`.  Its changes are confined to
+manuscript and finite-certificate exposition; no Lean file changes.  The exact
+localized identity is already present in the pinned Lean source as
+`mixed_odd_factorCount_eq`, and the correction changes no theorem, exponent,
+parameter choice, or certified margin.  Reproduction intentionally continues
+to use the immutable manifest pin rather than the open pull-request head.
+
+## Prior-art note fingerprint
+
+The public note at <https://pastebin.com/p7EfqMYQ> is a mutable, non-archival
+source.  To make the cited observation identifiable without copying its
+contents into this repository, the reviewed response is recorded as follows:
+
+```text
+page timestamp: Monday 20th of July 2026 12:17:33 PM CDT
+raw URL:        https://pastebin.com/raw/p7EfqMYQ
+observed:       15 August 2026
+raw size:       6265 bytes
+raw SHA-256:    0afe0ed21a015a86bd33e143b12640e52c35588ac0b754d64f1c15252bf1ae87
+```
+
+When network access is available, the current raw response can be compared
+without saving a repository copy:
+
+```bash
+curl -fsSL https://pastebin.com/raw/p7EfqMYQ | wc -c
+curl -fsSL https://pastebin.com/raw/p7EfqMYQ | sha256sum
+```
+
+A later mismatch may mean that the mutable note changed; it does not by itself
+invalidate the independently certified bound in this repository.
 
 ## Manuscript
 

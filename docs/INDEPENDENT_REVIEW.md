@@ -39,6 +39,14 @@ substitute for a named referee.
       \([1,N]\) with \(N\ge6\).
 - [x] The formal finite maximum `f302` dominates every admissible witness, and
       the eventual lower theorem is derived in this conventional notation.
+- [x] The deliberately nonstandard exact-pins stack (Lean `v4.33.0-rc1`, the
+      `teorth/mathlib4` fork, and its unmerged `Mathlib.NumberTheory.Mertens`
+      module) is disclosed separately from the standard foundational axiom
+      set.
+- [x] Open erdos-327-proof PR #1 at
+      `6725359adfc2b0e3799777805da493df0613c1a2` is disclosed as an
+      exposition-only correction: no Lean file and no theorem, exponent,
+      parameter choice, or certified margin changes.
 - [ ] A named human mathematician has reviewed the final manuscript.
 
 ## Release gate
@@ -48,4 +56,5 @@ release requires green upper, mutation, root-Lean, lower-Lean, axiom-audit,
 and paper jobs for the exact commit being released. PR #5 must also remain
 draft until the unchecked named-human-review item is completed. No `LICENSE`
 is supplied by this upgrade; selecting one, or intentionally leaving the
-repository unlicensed, is a decision for the repository owner.
+repository unlicensed, is a decision for the repository owner. `CITATION.cff`
+supplies citation metadata only and grants no copyright license.

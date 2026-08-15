@@ -8,9 +8,9 @@ import Mathlib.Tactic.Ring
 
 This deliberately small module isolates the rational-number facts needed to
 turn the integer edge relation into a unit-fraction relation, scale an edge,
-and check the historical and hierarchical constants. Keeping these lemmas
-independent of the certificate makes them easy to reuse from a future
-Finset-to-BitVec bridge.
+check the historical and hierarchical constants, and compare the public upper
+bounds. Keeping these lemmas independent of the certificate makes them easy to
+reuse from a future Finset-to-BitVec bridge.
 -/
 
 namespace Erdos302
@@ -49,6 +49,14 @@ lemma final_constant :
 lemma hierarchical_final_constant :
     1 - (23520 : ℚ) / 110143 * (3251333 / 4989600) =
       140803024 / 163562355 := by
+  norm_num
+
+/-- The certified upper bound improves each publicly available predecessor
+listed in the current manuscript. -/
+lemma public_prior_upper_bound_chain :
+    (140803024 : ℚ) / 163562355 < 373 / 420 ∧
+      (373 : ℚ) / 420 < 25 / 28 ∧
+      (25 : ℚ) / 28 < 9 / 10 := by
   norm_num
 
 end Erdos302

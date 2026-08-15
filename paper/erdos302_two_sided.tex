@@ -51,13 +51,38 @@ Neither result closes Problem 302.
 Erd\H{o}s and Graham asked for the asymptotic size of a largest set avoiding
 the displayed two-tail reciprocal relation \cite{ErdosGraham1980,Erdos302}.
 The elementary interval construction gives the density-$5/8$ lower bound
-observed by Cambie \cite{Cambie302}.  Van Doorn obtained
+recorded in the Problem 302 remarks and attributed there to Cambie
+\cite{Cambie302}.  Van Doorn obtained
 \[
  f(N)\leq(9/10+o(1))N
 \]
-using disjoint multiplicative dilates \cite{VanDoorn302}.  A previous publicly
-available anonymous partial proof posted in July 2026
-\cite{Partial302Pastebin2026} refined the same architecture to
+using disjoint multiplicative dilates \cite{VanDoorn302}.  A separate
+five-point argument of van Doorn recorded on the official Problem 301 page
+\cite{Erdos301} gives the transferable bound
+\[
+ f(N)\leq\left(\frac{25}{28}+o(1)\right)N
+\]
+for Problem 302.  More precisely, the configuration
+\[
+ \{2t,3t,4t,6t,12t\}
+\]
+is already constrained by the three two-tail identities
+\[
+ \frac1{2t}=\frac1{3t}+\frac1{6t},\qquad
+ \frac1{3t}=\frac1{4t}+\frac1{12t},\qquad
+ \frac1{4t}=\frac1{6t}+\frac1{12t}.
+\]
+Every one-point deletion of the five-point block leaves at least one of these
+relations, so a full block forces two omissions; the truncated block
+$\{2t,3t,4t,6t\}$ forces one via the first relation.  Hence the associated
+disjoint-dilate count applies verbatim to Problem 302.  This observation
+transfers only that finite two-tail configuration argument; it does not treat
+the full all-tail statement of Problem 301 as an upper-bound theorem for
+Problem 302.
+
+A previous publicly available anonymous partial proof posted in July 2026
+\cite{Partial302Pastebin2026} further refined the disjoint-dilate architecture
+to
 \[
  f(N)\leq\left(\frac{373}{420}+o(1)\right)N.
 \]
@@ -66,6 +91,10 @@ hierarchical exact rational packings and obtains
 \[
  \limsup_{N\to\infty}\frac{f(N)}N
  \leq\frac{140803024}{163562355}.
+\]
+Numerically and exactly, the relevant upper bounds are ordered as
+\[
+ \frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
 \]
 It does not prove that $f(N)/N$ converges.
 
@@ -362,7 +391,19 @@ The transitive axiom transcript contains only \texttt{propext},
 \texttt{Classical.choice}, and \texttt{Quot.sound}; no project-local open proof
 obligation is admitted.  Thus the lower statement is unconditional in the
 standard formal sense, although its constant is non-explicit and the work is
-unrefereed.  A root-project build alone does not establish the lower statement.
+unrefereed.  Here ``standard formal sense'' describes the axiom closure, not
+the software pedigree: the exact build deliberately uses prerelease Lean
+\texttt{v4.33.0-rc1} and the pinned \texttt{teorth/mathlib4} fork containing
+the then-unmerged \texttt{Mathlib.NumberTheory.Mertens} module.
+
+As of 15 August 2026, the pinned Problem 327 base has an open
+\href{https://github.com/donalddellapietra/erdos-327-proof/pull/1}{upstream
+exposition correction}.  It changes no Lean file: the exact identity was
+already proved as \texttt{mixed\_odd\_factorCount\_eq}, and the correction
+changes no theorem, exponent, parameter choice, or certified margin.  The
+lower build therefore remains on the immutable base pin rather than silently
+following an open pull request.  A root-project build alone does not establish
+the lower statement.
 At the pinned revisions, the external repositories have no license file, so
 their source is not vendored here.
 

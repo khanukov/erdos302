@@ -34,6 +34,36 @@ This improves the repository's earlier, independently checked base result
 
 from \(Q=3360\).
 
+## Earlier transferable upper bound
+
+The [official Problem 301 page](https://www.erdosproblems.com/301) records van
+Doorn's disjoint-dilate argument based on
+
+\[
+S_t=\{2t,3t,4t,6t,12t\}.
+\]
+
+Although Problem 301 forbids reciprocal relations with any number of tails,
+this particular five-point argument uses only the Problem 302 relations
+
+\[
+\frac1{2t}=\frac1{3t}+\frac1{6t},\qquad
+\frac1{3t}=\frac1{4t}+\frac1{12t},\qquad
+\frac1{4t}=\frac1{6t}+\frac1{12t}.
+\]
+
+Consequently a full five-point block must omit at least two elements, while
+the truncated block \(\{2t,3t,4t,6t\}\) must omit at least one.  The multiplier
+family and disjoint-block count recorded for Problem 301 therefore give
+
+\[
+f(N)\leq\left(\frac{25}{28}+o(1)\right)N
+\]
+
+for Problem 302 too.  This is a transfer of the finite two-tail configuration
+and its counting argument, not an inference from the full all-tail Problem 301
+upper-bound statement.
+
 ## External Pastebin context
 
 An [anonymous public note](https://pastebin.com/p7EfqMYQ) posted on
@@ -61,6 +91,12 @@ The stated arithmetic is internally consistent:
 This external item is historical context only and is not a proof dependency.
 The committed certificate below uses many overlapping certified
 configurations inside a much larger divisor box.
+
+The complete public comparison relevant to this package is
+
+\[
+\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
+\]
 
 ## Main finite tile
 
