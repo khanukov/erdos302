@@ -96,6 +96,7 @@ repository claim.
   cd lower-lean
   lake update
   git diff --exit-code -- lake-manifest.json
+  lake exe cache get
   lake build
   lake env lean Erdos302Lower/Axioms.lean | tee /tmp/erdos302-axioms.txt
   diff -u AXIOMS.txt /tmp/erdos302-axioms.txt

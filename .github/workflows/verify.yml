@@ -112,13 +112,22 @@ jobs:
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
           lake-package-directory: lower-lean
-          build: true
+          build: false
           use-github-cache: false
+          use-mathlib-cache: false
       - name: Reproduce dependency lockfile
         run: |
           cd lower-lean
           MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
           git diff --exit-code -- lake-manifest.json
+      - name: Fetch the pinned Mathlib binary cache
+        run: |
+          cd lower-lean
+          lake exe cache get
+      - name: Build the exact lower project
+        run: |
+          cd lower-lean
+          lake build
       - name: Reject proof escapes
         env:
           PYTHONDONTWRITEBYTECODE: "1"

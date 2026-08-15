@@ -25,6 +25,7 @@ fi
   cd lower-lean
   lake update
   git diff --exit-code -- lake-manifest.json
+  lake exe cache get
   lake build
 
   readonly AXIOMS_ACTUAL="$(mktemp)"
