@@ -82,7 +82,7 @@ baselines:
 |---|---|
 | \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
 | Upper asymptotic disjoint-block argument | human proof in the manuscript |
-| Upper end-to-end Lean formalization | not complete |
+| Upper Lean formalization | in progress: literal `f302`, 719 divisor vertices, 12,675 edges, 96 × 21 gadget embeddings, prefix arithmetic, packing, and finite block cores checked; gadget demands, certificate loads, and limits remain |
 | Lower analytic input | pinned external Lean theorem; complete dependency closure kernel-checked; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
@@ -149,6 +149,32 @@ falsely smaller final bound.
 The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
 algorithmically separate cross-check of the 21 base demands used by the new
 hierarchical certificate.
+
+### Lean upper-bound work in progress
+
+The root project now fixes the literal reciprocal-triple predicate and `f302`
+maximum, checks 719 nontrivial divisor vertices and all 12,675 stored edge
+equations with ordinary kernel `decide`, recomputes the 274 threshold levels and
+their exact reciprocal sum `3251333/4989600`, checks the 96 admissible base-tile
+scales and the resulting `96 * 21 = 2016` gadget count, imports all 14,691
+concrete supports as range-safe `Fin 719` data, checks their canonical order,
+nonemptiness, positive demands, and cached maxima, and proves the generic
+exact-rational fractional-packing and finite disjoint-block lemmas. It also
+proves from prime-factorization uniqueness that distinct valuation-admissible
+multipliers give disjoint divisor dilates. The generated edge checks
+are deliberately split into small modules to keep kernel elaboration memory
+bounded. Its explicit axiom audit is run with:
+
+```bash
+lake env lean Erdos302/Axioms.lean
+```
+
+This is intentionally labelled **in progress**: completeness of the generated
+edge enumeration, the 21 base-prefix gadget demands, the semantic correspondence
+of configuration IDs with edge/gadget proofs, the rational certificate loads, the finite counting formula for multiplier density,
+limit transitions, and final theorem have not yet
+been represented end-to-end in Lean. The Python checker therefore remains part
+of the current upper proof boundary, rather than being hidden behind a Lean hypothesis.
 
 ## Verify the lower bound
 
