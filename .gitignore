@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 /.venv/
+/dist/
 
 # The manuscript source is versioned, while LaTeX build products are local
 # artifacts.  This keeps regenerated PDFs and auxiliary files out of commits.

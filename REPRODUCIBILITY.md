@@ -186,6 +186,28 @@ latexmk -cd -pdf -interaction=nonstopmode -halt-on-error -file-line-error \
 
 The PDF is a build artifact and is not committed.
 
+## Preliminary preprint bundle
+
+After every proof-boundary check is available, a clean checkout can assemble
+the exact release candidate with:
+
+```bash
+python3 scripts/build_preprint_release.py --output dist/preprint
+(
+  cd dist/preprint
+  sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
+)
+```
+
+The script refuses tracked worktree changes, records the exact commit and CI
+run, repeats every finite exact verifier and mutation test, rebuilds the PDF,
+and emits deterministic ZIP and arXiv-source archives. It does not rerun the
+two Lean builds itself; the GitHub Actions `preprint-bundle` job is dependency-
+gated on the successful root- and lower-Lean jobs and includes the reproduced
+lower axiom transcript. See
+[docs/PREPRINT_RELEASE.md](docs/PREPRINT_RELEASE.md) for the publication
+sequence and human-only author-approval step.
+
 ## One command
 
 After Lean, Lake, Python, and `latexmk` are available:

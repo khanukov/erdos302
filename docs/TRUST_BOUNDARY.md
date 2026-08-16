@@ -144,9 +144,15 @@ The later semantic-audit and maximum-bridge commit
 `4c365e9ded04f04ecd9a6d89a38f97c529194475` also passed every required job,
 including the expanded axiom transcript, in
 [GitHub Actions run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465).
+The merged two-sided package at commit
+`8145239741e2d0a5c6173f98b48fb74f154a07ec` passed all seven then-configured
+jobs on `main` in
+[GitHub Actions run 31916282207](https://github.com/khanukov/erdos302/actions/runs/31916282207).
 The wording changes made after the first gate are recorded in
 [LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md). Every subsequent
 integration or release commit must pass the same required jobs. Green CI
-permits repository merge as explicitly unrefereed work; the named-human-review
-gate instead blocks a GitHub Release, arXiv, forum, journal, or formal
-scientific announcement.
+permits repository merge and a versioned preliminary GitHub/Zenodo/arXiv
+release when the unrefereed status and all trust-boundary disclosures remain
+explicit. Named independent human review, or complete end-to-end formalization
+of every released claim, is still required before an Erdős Problems forum post
+or any description of the result as independently verified.
