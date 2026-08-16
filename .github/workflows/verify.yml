@@ -5,6 +5,7 @@ on:
   pull_request:
   push:
     branches: [main]
+    tags: ["v*"]
 
 concurrency:
   group: verify-${{ github.workflow }}-${{ github.ref }}
@@ -187,9 +188,23 @@ jobs:
           ! grep -nF 'proof claim' README.md REPRODUCIBILITY.md
           grep -Fq 'engineering integration event:' \
             README.md
-          grep -Fq 'GitHub Release' paper/erdos302_two_sided.tex
+          grep -Fq 'GitHub/Zenodo release' paper/erdos302_two_sided.tex
+          grep -Fq 'Preliminary and unrefereed' README.md
+          grep -Fq 'Preliminary and unrefereed' \
+            paper/erdos302_two_sided.tex
+          grep -Fq '## Preliminary release policy' README.md
+          grep -Fq '## Scientific validation policy' README.md
+          grep -Fq '0.1.0-preprint' CITATION.cff
+          test "$(cat release/PREPRINT_TAG)" = \
+            'v0.1.0-priority-preprint'
+          python3 -m py_compile scripts/build_preprint_release.py
           ! grep -inE \
             'must (also )?remain draft|pull request remains draft|No repository license is selected|No `LICENSE` is supplied' \
+            README.md docs/INDEPENDENT_REVIEW.md \
+            docs/LOWER_RELEASE_RESTORATION.md docs/TRUST_BOUNDARY.md \
+            paper/erdos302_two_sided.tex
+          ! grep -inE \
+            'no (GitHub Release|arXiv).{0,100}until.{0,100}(human|review)|required before (a )?(GitHub Release|arXiv)' \
             README.md docs/INDEPENDENT_REVIEW.md \
             docs/LOWER_RELEASE_RESTORATION.md docs/TRUST_BOUNDARY.md \
             paper/erdos302_two_sided.tex
@@ -200,4 +215,61 @@ jobs:
         with:
           name: erdos302-two-sided-manuscript
           path: paper/erdos302_two_sided.pdf
+          if-no-files-found: error
+
+  preprint-bundle:
+    # This artifact exists only after every proof, regression, and paper job.
+    needs:
+      - root-lean
+      - q3360-exact
+      - hierarchical-upper
+      - upper-mutation-tests
+      - milp-crosscheck
+      - lower-lean
+      - paper
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Install manuscript and PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk poppler-utils unzip texlive-latex-base \
+            texlive-latex-recommended texlive-fonts-recommended
+      - name: Build exact priority-preprint candidate
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -I -S scripts/build_preprint_release.py --output dist/preprint
+      - name: Test packaged standalone and arXiv sources
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          package_dir="$(mktemp -d)"
+          unzip -q dist/preprint/erdos302-v0.1.0-preprint-release.zip \
+            -d "${package_dir}"
+          cd "${package_dir}/erdos302-0.1.0-preprint"
+          python3 -I -S -O exact_certificate.py >/dev/null
+          python3 -I -S -O hierarchical_certificate.py verify \
+            certificate.json --base-verifier exact_certificate.py >/dev/null
+          arxiv_dir="$(mktemp -d)"
+          tar -xzf \
+            "${GITHUB_WORKSPACE}/dist/preprint/erdos302-v0.1.0-preprint-arxiv.tar.gz" \
+            -C "${arxiv_dir}"
+          latexmk -cd -pdf -interaction=nonstopmode -halt-on-error \
+            -file-line-error "${arxiv_dir}/erdos302_two_sided.tex"
+          ! grep -Eq \
+            'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)|Overfull \\hbox' \
+            "${arxiv_dir}/erdos302_two_sided.log"
+      - name: Verify release asset hashes
+        run: |
+          cd dist/preprint
+          sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: erdos302-v0.1.0-preprint-candidate
+          path: dist/preprint/
           if-no-files-found: error

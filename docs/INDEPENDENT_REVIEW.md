@@ -47,18 +47,29 @@ substitute for a named referee.
       `6725359adfc2b0e3799777805da493df0613c1a2` is disclosed as an
       exposition-only correction: no Lean file and no theorem, exponent,
       parameter choice, or certified margin changes.
+- [x] The merged two-sided package at
+      `8145239741e2d0a5c6173f98b48fb74f154a07ec` passed all seven configured
+      jobs on `main` in GitHub Actions run 31916282207.
 - [ ] A named human mathematician has reviewed the final manuscript.
 
-## Release gate
+## Preliminary release gate
 
 Do not describe this work as a solution of Erdős Problem 302. A two-sided
 release requires green upper, mutation, root-Lean, lower-Lean, axiom-audit,
-and paper jobs for the exact commit being released. A fully green pull request
-may be merged as unrefereed engineering work before the unchecked
-named-human-review item is completed. That merge is not the scientific release:
-no GitHub Release, arXiv, forum, journal, or formal scientific announcement
-should be made until the named review is complete, and any resulting
-corrections must be applied in follow-up pull requests.
+paper, and release-bundle jobs for the exact commit being released. A tagged
+GitHub/Zenodo release and an arXiv preprint may be published before the
+unchecked named-human-review item is completed only when they are explicitly
+labelled preliminary and unrefereed and make no claim of independent
+verification, peer review, or a solution of Problem 302. Any corrections must
+be applied in versioned follow-up releases and arXiv replacements.
+
+## Scientific validation gate
+
+Named independent human mathematical review, or complete end-to-end
+formalization of every released claim, is required before posting the result
+to the Erdős Problems forum or describing it as independently verified. The
+unchecked review item above is therefore not a blocker for a priority preprint,
+but it remains a blocker for those stronger forms of scientific validation.
 
 The repository owner selected MIT for original software, verification
 artifacts, certificates, and non-manuscript documentation, and CC BY 4.0 for

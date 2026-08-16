@@ -5,9 +5,12 @@ Status: applied after commit
 [GitHub Actions run 31895648228](https://github.com/khanukov/erdos302/actions/runs/31895648228).
 The wording-restoration commit must pass the same jobs before the pull request
 is technically integration-qualified. Green exact-pins CI is sufficient for
-repository merge when every disclosure remains in place. A named independent
-human mathematical review is separately required before a GitHub Release,
-arXiv, forum, journal, or formal scientific announcement.
+repository merge when every disclosure remains in place. This historical
+restoration checklist predates the two-level policy in
+[PREPRINT_RELEASE.md](PREPRINT_RELEASE.md): a clearly labelled preliminary
+GitHub/Zenodo/arXiv preprint may now establish priority before human review,
+while an Erdős Problems forum post or the phrase “independently verified”
+still requires named review or complete end-to-end formalization.
 
 Do **not** apply this checklist while the `lower-lean` GitHub Actions job is
 absent, pending, skipped, or failing. The lower claim may be promoted only
@@ -162,9 +165,10 @@ Then make these exact body changes:
 
 Rerun every required GitHub Actions job on the exact wording-restoration
 commit. A fully green pull request may leave draft status and be merged as
-explicitly unrefereed engineering work. A release PDF or formal scientific
-announcement may be published only after a named independent human
-mathematical review is complete. The repository owner subsequently selected
-MIT for original software and verification material and CC BY 4.0 for original
-manuscript material; [LICENSE_SCOPE.md](../LICENSE_SCOPE.md) records the exact
-scope and third-party exclusions.
+explicitly unrefereed engineering work. A preliminary release PDF may be
+published under the current two-level release policy before named review, but
+must remain explicitly preliminary and unrefereed. The repository owner
+subsequently selected MIT for original software and verification material and
+CC BY 4.0 for original manuscript material;
+[LICENSE_SCOPE.md](../LICENSE_SCOPE.md) records the exact scope and third-party
+exclusions.

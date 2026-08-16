@@ -1,5 +1,10 @@
 # Two-sided progress on Erdős Problem 302
 
+**Preliminary and unrefereed — version 0.1.0-preprint.** This repository and
+its manuscript report complete proofs of two partial bounds. They do not
+claim to solve Erdős Problem 302, to be peer reviewed, or to have received
+independent human verification.
+
 Let \(f_{302}(N)\) be the largest size of a subset of
 \(\{1,\ldots,N\}\) containing no **three distinct** integers \(a,b,c\)
 with
@@ -215,6 +220,31 @@ For the complete command ledger and audit status, see
 [independent-review checklist](docs/INDEPENDENT_REVIEW.md). Citation metadata
 is provided in [CITATION.cff](CITATION.cff).
 
+## Preliminary release policy
+
+A tagged GitHub/Zenodo release and an arXiv preprint may be published before
+independent human review to establish a public timestamp, provided that:
+
+1. every proof-boundary CI job passes on the exact released commit;
+2. the manuscript and release are explicitly labelled preliminary and
+   unrefereed;
+3. AI assistance, external dependencies, licensing, and trust boundaries
+   remain disclosed; and
+4. neither the release nor its announcement claims independent verification,
+   peer review, or a solution of Erdős Problem 302.
+
+The reproducible bundle and operator checklist are documented in
+[PREPRINT_RELEASE.md](docs/PREPRINT_RELEASE.md). The checked-in release notes,
+arXiv metadata, reviewer email, and public announcement are under `release/`.
+
+## Scientific validation policy
+
+A named independent human mathematical review, or a complete end-to-end
+formalization of every released claim, is required before posting the result
+to the Erdős Problems forum or describing it as independently verified.
+Referee corrections may be made in a versioned follow-up release and arXiv
+replacement; earlier public versions remain part of the scientific record.
+
 ## Scope and disclosure
 
 The finite upper packing was discovered with AI-assisted search. The theorem
@@ -224,6 +254,8 @@ code generation, proof audits, and Lean formalization. The external #301/#327
 work and the present manuscript are unrefereed. Repository merge is an
 engineering integration event: a fully green commit may be merged while
 remaining explicitly unrefereed, with any referee corrections made in
-follow-up pull requests. No arXiv, forum, journal, GitHub Release, or formal
-scientific announcement should be made until a named independent human
-mathematical review is completed.
+follow-up pull requests. A preliminary GitHub/Zenodo/arXiv release and a
+carefully qualified public announcement are permitted under the policy above.
+Posting to the Erdős Problems forum and using the phrase “independently
+verified” remain gated on named human review or complete end-to-end
+formalization.
