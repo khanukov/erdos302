@@ -14,45 +14,190 @@ permissions:
   contents: read
 
 jobs:
-  lean:
-    runs-on: ubuntu-latest
+  root-lean:
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: leanprover/lean-action@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
         with:
           build: true
-          # Mathlib provides its own binary cache; caching the complete .lake
-          # directory here would consume several gigabytes for this project.
           use-github-cache: false
-      # Updating from the pinned lakefile must reproduce the committed lockfile.
-      - run: lake update
+      - run: MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
       - run: git diff --exit-code -- lake-manifest.json
 
-  exact-certificate:
-    runs-on: ubuntu-latest
+  q3360-exact:
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.13"
-      - run: python3 -m py_compile scripts/verify_certificate.py scripts/milp_crosscheck.py
-      # -O is intentional: proof obligations must not depend on `assert`.
-      - run: python3 -O scripts/verify_certificate.py
+      - name: Verify canonical base module under optimized Python
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -I -S -O certificates/q3360/exact_certificate.py
+      - name: Run independent exhaustive implementation
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -I -S -O scripts/verify_certificate.py
+      - run: test -z "$(git status --porcelain)"
 
-  milp-crosscheck:
-    runs-on: ubuntu-latest
+  hierarchical-upper:
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Check committed upper payload hashes
+        run: |
+          cd certificates/q139708800
+          sha256sum -c SHA256SUMS
+      - run: |
+          python3 -m py_compile \
+            certificates/q3360/exact_certificate.py \
+            certificates/q139708800/hierarchical_certificate.py
+      - name: Verify in isolated normal mode
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -I -S certificates/q139708800/hierarchical_certificate.py verify \
+            certificates/q139708800/certificate.json \
+            --base-verifier certificates/q3360/exact_certificate.py
+      - name: Verify in isolated optimized mode
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -I -S -O certificates/q139708800/hierarchical_certificate.py verify \
+            certificates/q139708800/certificate.json \
+            --base-verifier certificates/q3360/exact_certificate.py
+      - run: test -z "$(git status --porcelain)"
+
+  upper-mutation-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Require rejection of four corrupted proof layers
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -I -S -O scripts/test_upper_mutations.py
+      - run: test -z "$(git status --porcelain)"
+
+  milp-crosscheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.13"
           cache: pip
-          # setup-python otherwise searches only for conventional dependency
-          # files such as requirements.txt, while this job intentionally keeps
-          # its optional SciPy dependencies in a dedicated requirements file.
           cache-dependency-path: requirements-crosscheck.txt
       - run: python3 -m pip install -r requirements-crosscheck.txt
       - run: python3 scripts/milp_crosscheck.py
+      - run: test -z "$(git status --porcelain)"
+
+  lower-lean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          lake-package-directory: lower-lean
+          build: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Reproduce dependency lockfile
+        run: |
+          cd lower-lean
+          MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
+          git diff --exit-code -- lake-manifest.json
+      - name: Fetch the pinned Mathlib binary cache
+        run: |
+          cd lower-lean
+          lake exe cache get
+      - name: Build the exact lower project
+        run: |
+          cd lower-lean
+          lake build
+      - name: Reject proof escapes
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -I -S scripts/audit_lower_sources.py
+      - name: Reproduce axiom report
+        run: |
+          cd lower-lean
+          lake env lean Erdos302Lower/Axioms.lean | tee /tmp/erdos302-axioms.txt
+          diff -u AXIOMS.txt /tmp/erdos302-axioms.txt
+      - run: test -z "$(git status --porcelain)"
+
+  paper:
+    # The manuscript PDF is produced only after every proof-boundary job passes.
+    needs: [root-lean, q3360-exact, hierarchical-upper, upper-mutation-tests, lower-lean]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install TeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk texlive-latex-base texlive-latex-recommended \
+            texlive-fonts-recommended
+      - name: Build manuscript
+        run: |
+          latexmk -cd -pdf -interaction=nonstopmode -halt-on-error \
+            -file-line-error paper/erdos302_two_sided.tex
+      - name: Check publication wording
+        run: |
+          test -f LICENSE
+          test -f LICENSE_SCOPE.md
+          test -f paper/LICENSE
+          grep -Fq 'MIT License' LICENSE
+          grep -Fq 'SPDX-License-Identifier: CC-BY-4.0' paper/LICENSE
+          grep -Fq 'license: MIT' CITATION.cff
+          ! grep -nE 'Author name|author placeholder|fully Lean verified' \
+            paper/erdos302_two_sided.tex
+          ! grep -nF -e '5273/6048' -e '\frac{5273}{6048}' \
+            paper/erdos302_two_sided.tex
+          grep -Fq '\frac{373}{420}' paper/erdos302_two_sided.tex
+          grep -Fq '\frac{25}{28}' paper/erdos302_two_sided.tex
+          grep -Fq 'Partial302Pastebin2026' paper/erdos302_two_sided.tex
+          grep -Fq '\cite{Erdos301}' paper/erdos302_two_sided.tex
+          grep -Fq '@misc{Erdos301,' paper/references.bib
+          for source in README.md docs/Q_SEARCH_REPORT.md \
+              paper/erdos302_two_sided.tex; do
+            grep -Fq \
+              '\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}' \
+              "$source"
+          done
+          grep -Fq 'The lower statement is unconditional' \
+            paper/erdos302_two_sided.tex
+          ! grep -inE \
+            'assuming[[:space:]]+Della Pietra|conditional (on|upon).{0,80}Della Pietra' \
+            README.md paper/erdos302_two_sided.tex
+          ! grep -nF 'proof claim' README.md REPRODUCIBILITY.md
+          grep -Fq 'engineering integration event:' \
+            README.md
+          grep -Fq 'GitHub Release' paper/erdos302_two_sided.tex
+          ! grep -inE \
+            'must (also )?remain draft|pull request remains draft|No repository license is selected|No `LICENSE` is supplied' \
+            README.md docs/INDEPENDENT_REVIEW.md \
+            docs/LOWER_RELEASE_RESTORATION.md docs/TRUST_BOUNDARY.md \
+            paper/erdos302_two_sided.tex
+          ! grep -Eq \
+            'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)' \
+            paper/erdos302_two_sided.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: erdos302-two-sided-manuscript
+          path: paper/erdos302_two_sided.pdf
+          if-no-files-found: error

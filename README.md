@@ -1,57 +1,229 @@
-# Erdős problem 302 — Lean 4 work package
+# Two-sided progress on Erdős Problem 302
 
-This repository starts the end-to-end formalization of the proposed bound
+Let \(f_{302}(N)\) be the largest size of a subset of
+\(\{1,\ldots,N\}\) containing no **three distinct** integers \(a,b,c\)
+with
 
-`f(N) ≤ (5273 / 6048 + o(1)) N`.
+\[
+\frac1a=\frac1b+\frac1c.
+\]
 
-The project is pinned to Lean/Mathlib 4.27.0.  `Erdos302/Arithmetic.lean`
-contains the arithmetic/scaling layer and no `sorry`, `admit`, or new
-axiom.  `scripts/verify_certificate.py` independently regenerates all 47
-denominators and 146 edges from `bc = a(b+c)`, proves the 21 stated cover
-lower bounds by exhaustive branching, and checks every rational constant.
-The self-contained manuscript in `paper/erdos302_upper_bound.tex` supplies the
-human-readable hypergraph, disjoint-block, density, summation, and limiting
-arguments.  Its author placeholder must be replaced before publication.
+This repository contains verification materials for the partial bounds
 
-## Local installation and verification
+\[
+\exists\delta>0\ \exists N_0\ \forall N\ge N_0:\qquad
+f_{302}(N)\ge\left(\frac58+\delta\right)N,
+\]
 
-On Linux or macOS, the bootstrap script installs `elan`, lets it install the
-exact Lean/Lake release from `lean-toolchain`, resolves the locked Mathlib
-dependencies, and creates an isolated Python virtual environment:
+and
 
-```bash
-scripts/bootstrap.sh
-PATH="$HOME/.elan/bin:$PATH" scripts/verify_all.sh
-```
+\[
+\limsup_{N\to\infty}\frac{f_{302}(N)}N
+\le
+\frac{140803024}{163562355}
+\approx 0.860852266403232.
+\]
 
-The individual verification layers can also be run independently:
+The upper result is a computer-assisted proof with a dependency-free exact
+rational verifier. The lower result is an elementary odd-quarter padding
+derivation from Donald Della Pietra's pinned, unrefereed Lean development for
+Erdős Problem 301. The lower bound is unconditional in the standard formal
+sense: the upstream results are imported as checked proof terms, not assumed
+as hypotheses, and the complete dependency closure is kernel-checked at the
+exact revisions below. Its transitive axiom report contains only `propext`,
+`Classical.choice`, and `Quot.sound`. The constant \(\delta\) is qualitative
+and non-explicit, and the external developments and this manuscript are
+unrefereed.
 
-```bash
-python3 scripts/verify_certificate.py
-python3 scripts/verify_certificate.py --threshold 3360
-python3 -m pip install -r requirements-crosscheck.txt
-python3 scripts/milp_crosscheck.py
-lake update
-lake build
-```
+This is partial progress, **not a solution of Problem 302**.
 
-`lake-manifest.json` is committed, so local builds and GitHub Actions use the
-same transitive Lean dependencies.  CI also reruns `lake update` and fails if
-it would change that lockfile.  The three CI jobs cover kernel compilation,
-the dependency-free exhaustive certificate verifier (including a `python -O`
-run), and the algorithmically independent SciPy/HiGHS MILP cross-check.
+## Prior upper bounds
+
+The [official Problem 302 page](https://www.erdosproblems.com/302) records van
+Doorn's direct \(9/10\) bound.  There is also an earlier transferable bound on
+the [official Problem 301 page](https://www.erdosproblems.com/301): van Doorn's
+five-point configuration
+
+\[
+\{2t,3t,4t,6t,12t\}
+\]
+
+gives \(25/28\) for Problem 302 as well.  This transfer uses only the three
+two-tail identities inside that configuration,
+
+\[
+\frac1{2t}=\frac1{3t}+\frac1{6t},\qquad
+\frac1{3t}=\frac1{4t}+\frac1{12t},\qquad
+\frac1{4t}=\frac1{6t}+\frac1{12t}.
+\]
+
+Every one-point deletion of the five-point block leaves at least one of these
+triples, so a full block forces two omissions; the truncated block
+\(\{2t,3t,4t,6t\}\) forces one via the first identity.  Together with the
+same disjoint-dilate count, these are exactly the ingredients needed for the
+\(25/28\) bound.  This does **not** transfer the full all-tail statement of
+Problem 301 to Problem 302.  An [anonymous public partial
+proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
+\(373/420\).  The certified bound in this repository improves all three public
+baselines:
+
+\[
+\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
+\]
 
 ## Verification status
 
-This commit **does not claim an end-to-end Lean proof**.  The finite search is
-currently an external exact verifier, not yet a kernel-checked LRAT artifact.
-The remaining Lean work is the Finset/BitVec bridge, disjoint-block lemma,
-periodic seed count, block summation, and final eventual-ε argument.  This
-status distinction is intentional: a mathematical proof plus an external
-checker must not be described as fully Lean-verified.
+| Layer | Status |
+|---|---|
+| \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
+| Upper asymptotic disjoint-block argument | human proof in the manuscript |
+| Upper end-to-end Lean formalization | not complete |
+| Lower analytic input | pinned external Lean theorem; complete dependency closure kernel-checked; unrefereed |
+| Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
+| Full solution of Erdős 302 | not claimed |
 
-The CI workflow builds the Lean project and deliberately runs the exact
-verifier under `python -O`; all mathematical checks therefore use the
-unconditional `require` function rather than optimizable Python assertions.
-The verifier also checks explicit optimal-size hitting sets, so the stated
-cover-number equalities do not rely on the floating-point MILP cross-check.
+The lower theorem establishes
+
+\[
+\exists\delta>0\ \exists N_0\ \forall N\ge N_0:\qquad
+f_{302}(N)\ge\left(\frac58+\delta\right)N.
+\]
+
+The lower Lean project defines `f302 N` as the finite maximum of the
+cardinalities of triple-free subsets of `Finset.Icc 1 N`, proves that every
+such subset has cardinality at most `f302 N`, and derives the displayed
+extremal-function statement from the constructed witness. It also verifies
+directly that \(\{2,3,6\}\) and every full interval ending at \(N\ge6\) are not
+triple-free, making the statement encoding visibly non-vacuous.
+
+The route takes the qualitative constant
+\(\delta=\operatorname{roughDensity}(L)/48>0\) for the fixed cutoff supplied
+existentially by the upstream proof. No numerical value of \(L\) or \(\delta\)
+is claimed. The exact pre-absorption ledger is
+
+\[
+|A_N|\ge
+\left(\frac58+\frac{\operatorname{roughDensity}(L)}{24}\right)N-1.
+\]
+
+## Verify the upper bound
+
+The published `verify` path uses only the Python standard library, exact
+integers, and `fractions.Fraction`. It regenerates 719 divisor vertices, 12,675
+reciprocal-triple edges, 2,016 embedded base gadgets, and all 14,691
+configurations before checking the rational packing.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O \
+  certificates/q139708800/hierarchical_certificate.py verify \
+  certificates/q139708800/certificate.json \
+  --base-verifier certificates/q3360/exact_certificate.py
+```
+
+Expected final lines:
+
+```text
+weighted prefix sum = 3251333/4989600
+multiplier density = 23520/110143
+forced omission density = 22759331/163562355
+verified upper bound = 140803024/163562355
+decimal upper bound = 0.860852266403232
+configuration sha256 = b6d0d19a51029400cc63e8cca5a4b7e1da99f7d4e6b62a479d5ed92cb8a1eafa
+```
+
+Run the negative tests as well:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O scripts/test_upper_mutations.py
+```
+
+They require rejection of a corrupted rational weight, a certificate attached
+to the wrong target, a missing generated hierarchical configuration, and a
+falsely smaller final bound.
+
+The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
+algorithmically separate cross-check of the 21 base demands used by the new
+hierarchical certificate.
+
+## Verify the lower bound
+
+The lower source is deliberately isolated from the root Lean 4.27 project.
+These commands reproduce its exact-pins build and axiom report:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
+cd lower-lean
+lake update
+git diff --exit-code -- lake-manifest.json
+lake exe cache get
+lake build
+lake env lean Erdos302Lower/Axioms.lean | tee /tmp/erdos302-axioms.txt
+diff -u AXIOMS.txt /tmp/erdos302-axioms.txt
+```
+
+The dependency graph is pinned to:
+
+- `donalddellapietra/erdos-301-proof@789c6f045dbc81da3811031247d186a7128dafce`;
+- `donalddellapietra/erdos-327-proof@a7201442f71af90a8e7b930f993c8eec69f685cf`;
+- `teorth/mathlib4@da1f94df976c7cd38117281c57d6ee3046c8d104`;
+- `leanprover/lean4:v4.33.0-rc1`.
+
+The local source contains no `sorry`, `admit`, project-local `axiom`,
+`opaque`, `unsafe`, or `native_decide`. CI reproduces an axiom report limited
+to the ordinary Mathlib foundations `propext`, `Classical.choice`, and
+`Quot.sound`.
+
+See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
+[trust boundary](docs/TRUST_BOUNDARY.md) before reusing or citing the lower
+route. At the pinned revisions, the upstream repositories provide no license
+file; this repository pins them as external dependencies and does not vendor
+their source.
+
+## Licensing
+
+Original repository software, verification artifacts, certificates, and
+documentation outside `paper/` are licensed under the
+[MIT License](LICENSE). Original manuscript material under `paper/` is
+licensed under [CC BY 4.0](paper/LICENSE). The exact scope and third-party
+exclusions are recorded in [LICENSE_SCOPE.md](LICENSE_SCOPE.md).
+
+These licenses do not cover the externally fetched #301, #327, or
+`teorth/mathlib4` sources, cited works, or other third-party material. They
+also do not imply independent human review or peer-reviewed publication.
+
+The [lower-claim restoration checklist](docs/LOWER_RELEASE_RESTORATION.md)
+records the promotion gate that was applied after the first green exact-pins
+run.
+
+## Run all checks
+
+```bash
+scripts/verify_all.sh
+```
+
+The SciPy/HiGHS regression cross-check is outside the proof boundary. Run it
+as an additional layer with `RUN_MILP_CROSSCHECK=1 scripts/verify_all.sh`
+after installing `requirements-crosscheck.txt`.
+
+The manuscript source is `paper/erdos302_two_sided.tex`; CI produces its PDF
+artifact only after every proof-boundary job passes. The historical
+`paper/erdos302_upper_bound.tex` is retained only to document the earlier
+\(Q=3360\) stage; it is no longer the headline result.
+
+For the complete command ledger and audit status, see
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md) and the
+[independent-review checklist](docs/INDEPENDENT_REVIEW.md). Citation metadata
+is provided in [CITATION.cff](CITATION.cff).
+
+## Scope and disclosure
+
+The finite upper packing was discovered with AI-assisted search. The theorem
+depends only on the committed exact certificate and verifier, not on the
+floating-point solver used during discovery. AI systems also assisted with
+code generation, proof audits, and Lean formalization. The external #301/#327
+work and the present manuscript are unrefereed. Repository merge is an
+engineering integration event: a fully green commit may be merged while
+remaining explicitly unrefereed, with any referee corrections made in
+follow-up pull requests. No arXiv, forum, journal, GitHub Release, or formal
+scientific announcement should be made until a named independent human
+mathematical review is completed.

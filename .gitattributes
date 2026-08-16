@@ -1,0 +1,3 @@
+# The 2.7 MB proof payload is generated data; review it through SHA256SUMS and
+# the exact verifier rather than a textual diff.
+certificates/q139708800/certificate.json linguist-generated=true -diff

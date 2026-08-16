@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: >-
+  If you use this repository, its verification artifacts, or the accompanying
+  manuscript, please cite the manuscript using the metadata below.
+title: "Two-sided computer-assisted progress on Erdős Problem 302"
+type: software
+license: MIT
+authors:
+  - family-names: Khanukov
+    given-names: Dmitry
+repository-code: "https://github.com/khanukov/erdos302"
+url: "https://github.com/khanukov/erdos302"
+abstract: >-
+  Verification materials and manuscript for unconditional but partial
+  two-sided progress on Erdős Problem 302: a qualitative Lean-checked lower
+  improvement over density 5/8 and a computer-assisted exact upper bound.
+keywords:
+  - Erdős problems
+  - extremal number theory
+  - unit fractions
+  - Lean 4
+  - computer-assisted proof
+preferred-citation:
+  type: unpublished
+  title: "Two-sided computer-assisted progress on Erdős Problem 302"
+  authors:
+    - family-names: Khanukov
+      given-names: Dmitry
+  year: 2026
+  status: in-preparation
