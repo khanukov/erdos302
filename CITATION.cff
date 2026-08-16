@@ -5,7 +5,7 @@ message: >-
 title: "Two-sided computer-assisted progress on Erdős Problem 302"
 type: software
 version: "0.1.0-preprint"
-date-released: 2026-08-15
+date-released: 2026-08-16
 license: MIT
 authors:
   - family-names: Khanukov
