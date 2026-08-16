@@ -64,16 +64,25 @@ The command refuses a tracked dirty worktree and emits:
 
 ## 4. Create the GitHub prerelease
 
-Create the tag `v0.1.0-priority-preprint` on the exact green `main` commit.
-Wait for the tag-triggered workflow to pass, download its candidate artifact,
-and verify:
+The `Publish priority preprint` workflow runs only after a successful
+push-triggered `Verify` workflow on `main`. It creates the tag
+`v0.1.0-priority-preprint` on that exact verified commit, downloads the
+candidate artifact from the successful source run, confirms that the artifact
+records the same commit and run URL, and verifies:
+
+GitHub intentionally suppresses new workflow runs for tags created with the
+repository's ephemeral `GITHUB_TOKEN`. The authoritative clean-run evidence is
+therefore the successful `main` Verify run: the release tag is required to
+resolve to exactly the same commit SHA, and the downloaded artifact must name
+that SHA and source run before publication.
 
 ```bash
 sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
 ```
 
-Create a GitHub Release for that tag, mark it as a **pre-release**, and use the
-generated `RELEASE_NOTES.md` verbatim. Attach at minimum:
+It then creates a GitHub Release for that tag, marks it as a **pre-release**,
+and uses the generated `RELEASE_NOTES.md` verbatim. The release contains at
+minimum:
 
 - `erdos302-v0.1.0-preprint.pdf`;
 - `erdos302-v0.1.0-preprint-release.zip`;
