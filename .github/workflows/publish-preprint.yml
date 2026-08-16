@@ -1,0 +1,103 @@
+name: Publish priority preprint
+
+on:
+  workflow_run:
+    workflows: [Verify]
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out the exact verified main commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Create tag, wait for tag verification, and publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          readonly tag="$(cat release/PREPRINT_TAG)"
+          readonly version="$(cat release/PREPRINT_VERSION)"
+          readonly artifact="erdos302-v${version}-candidate"
+
+          if gh release view "${tag}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "release ${tag} already exists; nothing to do"
+            exit 0
+          fi
+
+          remote_tag_sha="$(
+            git ls-remote --tags origin "refs/tags/${tag}^{}" |
+              awk 'NR == 1 {print $1}'
+          )"
+          if [[ -z "${remote_tag_sha}" ]]; then
+            remote_tag_sha="$(
+              git ls-remote --tags origin "refs/tags/${tag}" |
+                awk 'NR == 1 {print $1}'
+            )"
+          fi
+
+          if [[ -n "${remote_tag_sha}" && "${remote_tag_sha}" != "${VERIFIED_SHA}" ]]; then
+            echo "tag ${tag} already points to ${remote_tag_sha}, expected ${VERIFIED_SHA}" >&2
+            exit 1
+          fi
+
+          if [[ -z "${remote_tag_sha}" ]]; then
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git tag -a "${tag}" "${VERIFIED_SHA}" \
+              -m "Erdos 302 preliminary unrefereed preprint ${version}"
+            git push origin "refs/tags/${tag}"
+          fi
+
+          tag_run_id=""
+          for attempt in $(seq 1 60); do
+            tag_run_id="$(
+              gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/verify.yml/runs" \
+                --method GET \
+                -f event=push -f branch="${tag}" -f per_page=20 \
+                --jq ".workflow_runs[] | select(.head_sha == \"${VERIFIED_SHA}\" and .head_branch == \"${tag}\") | .id" |
+                head -n 1
+            )"
+            if [[ -n "${tag_run_id}" ]]; then
+              break
+            fi
+            sleep 10
+          done
+
+          if [[ -z "${tag_run_id}" ]]; then
+            echo "tag verification run did not appear" >&2
+            exit 1
+          fi
+
+          gh run watch "${tag_run_id}" --repo "${GITHUB_REPOSITORY}" --exit-status
+
+          readonly assets_dir="${RUNNER_TEMP}/preprint-assets"
+          mkdir -p "${assets_dir}"
+          gh run download "${tag_run_id}" --repo "${GITHUB_REPOSITORY}" \
+            --name "${artifact}" --dir "${assets_dir}"
+
+          (
+            cd "${assets_dir}"
+            sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
+          )
+
+          gh release create "${tag}" "${assets_dir}"/* \
+            --repo "${GITHUB_REPOSITORY}" \
+            --verify-tag \
+            --prerelease \
+            --title "Erdos 302 priority preprint ${version}" \
+            --notes-file "${assets_dir}/RELEASE_NOTES.md"
