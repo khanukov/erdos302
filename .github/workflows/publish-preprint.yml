@@ -23,10 +23,11 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Create tag, wait for tag verification, and publish prerelease
+      - name: Create tag and publish the verified main-run artifact
         env:
           GH_TOKEN: ${{ github.token }}
           VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           set -euo pipefail
 
@@ -51,8 +52,9 @@ jobs:
           fi
 
           if [[ -n "${remote_tag_sha}" && "${remote_tag_sha}" != "${VERIFIED_SHA}" ]]; then
-            echo "tag ${tag} already points to ${remote_tag_sha}, expected ${VERIFIED_SHA}" >&2
-            exit 1
+            echo "replacing unpublished tag ${tag}: ${remote_tag_sha} -> ${VERIFIED_SHA}"
+            git push origin ":refs/tags/${tag}"
+            remote_tag_sha=""
           fi
 
           if [[ -z "${remote_tag_sha}" ]]; then
@@ -63,36 +65,42 @@ jobs:
             git push origin "refs/tags/${tag}"
           fi
 
-          tag_run_id=""
-          for attempt in $(seq 1 60); do
-            tag_run_id="$(
-              gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/verify.yml/runs" \
-                --method GET \
-                -f event=push -f branch="${tag}" -f per_page=20 \
-                --jq ".workflow_runs[] | select(.head_sha == \"${VERIFIED_SHA}\" and .head_branch == \"${tag}\") | .id" |
-                head -n 1
-            )"
-            if [[ -n "${tag_run_id}" ]]; then
-              break
-            fi
-            sleep 10
-          done
-
-          if [[ -z "${tag_run_id}" ]]; then
-            echo "tag verification run did not appear" >&2
+          source_conclusion="$(
+            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
+              --jq .conclusion
+          )"
+          source_sha="$(
+            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
+              --jq .head_sha
+          )"
+          source_event="$(
+            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
+              --jq .event
+          )"
+          source_branch="$(
+            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
+              --jq .head_branch
+          )"
+          if [[ "${source_conclusion}" != "success" || \
+                "${source_sha}" != "${VERIFIED_SHA}" || \
+                "${source_event}" != "push" || \
+                "${source_branch}" != "main" ]]; then
+            echo "source Verify run does not match the successful main commit" >&2
             exit 1
           fi
 
-          gh run watch "${tag_run_id}" --repo "${GITHUB_REPOSITORY}" --exit-status
-
           readonly assets_dir="${RUNNER_TEMP}/preprint-assets"
           mkdir -p "${assets_dir}"
-          gh run download "${tag_run_id}" --repo "${GITHUB_REPOSITORY}" \
+          gh run download "${SOURCE_RUN_ID}" --repo "${GITHUB_REPOSITORY}" \
             --name "${artifact}" --dir "${assets_dir}"
 
           (
             cd "${assets_dir}"
             sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
+            grep -Fqx "commit ${VERIFIED_SHA}" COMMIT_SHA.txt
+            grep -Fqx \
+              "ci-run https://github.com/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
+              COMMIT_SHA.txt
           )
 
           gh release create "${tag}" "${assets_dir}"/* \
