@@ -17,23 +17,34 @@ from pathlib import Path
 from typing import Callable
 
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-VERIFIER = (
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+REPOSITORY_ROOT = SCRIPT_DIRECTORY.parent
+REPOSITORY_VERIFIER = (
     REPOSITORY_ROOT
     / "certificates"
     / "q139708800"
     / "hierarchical_certificate.py"
 )
-CERTIFICATE = (
-    REPOSITORY_ROOT / "certificates" / "q139708800" / "certificate.json"
-)
-BASE_VERIFIER = (
-    REPOSITORY_ROOT / "certificates" / "q3360" / "exact_certificate.py"
-)
+if REPOSITORY_VERIFIER.is_file():
+    VERIFIER = REPOSITORY_VERIFIER
+    CERTIFICATE = (
+        REPOSITORY_ROOT / "certificates" / "q139708800" / "certificate.json"
+    )
+    BASE_VERIFIER = (
+        REPOSITORY_ROOT / "certificates" / "q3360" / "exact_certificate.py"
+    )
+else:
+    # The verified release ZIP places all standalone acceptance files together.
+    VERIFIER = SCRIPT_DIRECTORY / "hierarchical_certificate.py"
+    CERTIFICATE = SCRIPT_DIRECTORY / "certificate.json"
+    BASE_VERIFIER = SCRIPT_DIRECTORY / "exact_certificate.py"
 FIRST_HIERARCHICAL_CONFIGURATION = 12_675
 
 
-def verifier_command(certificate: Path) -> list[str]:
+def verifier_command(
+    certificate: Path,
+    base_verifier: Path = BASE_VERIFIER,
+) -> list[str]:
     return [
         sys.executable,
         "-I",
@@ -43,7 +54,7 @@ def verifier_command(certificate: Path) -> list[str]:
         "verify",
         str(certificate),
         "--base-verifier",
-        str(BASE_VERIFIER),
+        str(base_verifier),
     ]
 
 
@@ -78,6 +89,41 @@ def change_verified_target(payload: dict[str, object]) -> None:
     certificate = payload["certificates"][0]
     certificate["prefix_size"] = 6
     certificate["threshold"] = 7
+
+
+def remove_certificate(payload: dict[str, object]) -> None:
+    payload["certificates"].pop()
+
+
+def duplicate_certificate(payload: dict[str, object]) -> None:
+    payload["certificates"].append(copy.deepcopy(payload["certificates"][-1]))
+
+
+def remove_weight(payload: dict[str, object]) -> None:
+    payload["certificates"][0]["weights"].clear()
+
+
+def make_weight_negative(payload: dict[str, object]) -> None:
+    weight = payload["certificates"][0]["weights"][0]
+    weight[1] = -abs(int(weight[1]))
+
+
+def duplicate_configuration_id(payload: dict[str, object]) -> None:
+    weights = payload["certificates"][0]["weights"]
+    weights.append(copy.deepcopy(weights[0]))
+
+
+def change_threshold_ledger(payload: dict[str, object]) -> None:
+    payload["thresholds"][0] = int(payload["thresholds"][0]) + 1
+
+
+def change_configuration_digest(payload: dict[str, object]) -> None:
+    payload["configuration_sha256"] = "0" * 64
+
+
+def change_multiplier_density(payload: dict[str, object]) -> None:
+    numerator, denominator = payload["multiplier_density"]
+    payload["multiplier_density"] = [int(numerator) + 1, int(denominator)]
 
 
 def require_rejection(
@@ -127,6 +173,21 @@ def require_missing_configuration_rejection() -> None:
     raise RuntimeError("verifier accepted a missing hierarchical configuration")
 
 
+def require_tampered_base_verifier_rejection(directory: Path) -> None:
+    """The verifier must pin the exact base checker, not only its API shape."""
+    path = directory / "tampered_exact_certificate.py"
+    path.write_bytes(BASE_VERIFIER.read_bytes() + b"\n# mutation\n")
+    result = subprocess.run(
+        verifier_command(CERTIFICATE, path),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if result.returncode == 0:
+        raise RuntimeError("verifier accepted a tampered base verifier")
+    print("rejected mutation: tampered-base-verifier")
+
+
 def main() -> None:
     require_baseline_acceptance()
     baseline = json.loads(CERTIFICATE.read_text(encoding="utf-8"))
@@ -134,11 +195,20 @@ def main() -> None:
         ("weight-numerator", mutate_weight_numerator),
         ("certificate-target", change_verified_target),
         ("smaller-upper-bound", decrease_claimed_upper_bound),
+        ("missing-certificate", remove_certificate),
+        ("duplicate-certificate", duplicate_certificate),
+        ("missing-weight", remove_weight),
+        ("negative-weight", make_weight_negative),
+        ("duplicate-configuration-id", duplicate_configuration_id),
+        ("threshold-ledger", change_threshold_ledger),
+        ("configuration-digest", change_configuration_digest),
+        ("multiplier-density", change_multiplier_density),
     )
     with tempfile.TemporaryDirectory(prefix="erdos302-mutations-") as temporary:
         directory = Path(temporary)
         for name, mutation in mutations:
             require_rejection(baseline, name, mutation, directory)
+        require_tampered_base_verifier_rejection(directory)
     require_missing_configuration_rejection()
 
 

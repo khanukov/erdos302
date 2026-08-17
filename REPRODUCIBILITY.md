@@ -22,7 +22,15 @@ No third-party Python package is required.
 python3 -m py_compile \
   certificates/q3360/exact_certificate.py \
   certificates/q139708800/hierarchical_certificate.py \
+  scripts/crosscheck_reciprocal_edges.py \
+  scripts/verify_wang_two_tail_baseline.py \
   scripts/test_upper_mutations.py
+
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O \
+  scripts/crosscheck_reciprocal_edges.py
+
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O \
+  scripts/verify_wang_two_tail_baseline.py
 
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S \
   certificates/q139708800/hierarchical_certificate.py verify \
@@ -61,6 +69,13 @@ The 15-place decimal display is rounded using integer arithmetic.
 The historical `scripts/verify_certificate.py` independently regenerates the
 47-vertex, 146-edge \(Q=3360\) instance, proves the 21 exact prefix cover
 values by a different exhaustive search, and checks explicit upper witnesses.
+The factorisation cross-check independently reconstructs the complete large
+edge set from \((b-a)(c-a)=a^2\). The Wang comparison verifier regenerates the
+29-vertex, 70-edge two-tail specialization of the public \(D(720)\) tile,
+computes its exact prefix covers, and checks the density arithmetic yielding
+\(2125/2418\). The multiplier disjointness and asymptotic prefix transfer are
+the human comparison argument in the manuscript; neither is a dependency of
+the new headline certificate.
 The SciPy/HiGHS script is a regression cross-check only.
 
 To run that optional cross-check, install the pinned requirements and use:
@@ -88,7 +103,8 @@ upper asymptotic proof.
 
 The lower bridge has its own Lean 4.33 project because the #301 proof uses a
 custom Mathlib fork and the #327 analytic library. The commands below reproduce
-the exact-pins build and axiom comparison.
+the exact-pins cache-backed build, Lean-kernel replay into a fresh environment,
+and axiom comparison.
 
 ```bash
 (
@@ -97,34 +113,52 @@ the exact-pins build and axiom comparison.
   git diff --exit-code -- lake-manifest.json
   lake exe cache get
   lake build
+  lake env leanchecker --fresh Erdos302Lower
   lake env lean Erdos302Lower/Axioms.lean | tee /tmp/erdos302-axioms.txt
   diff -u AXIOMS.txt /tmp/erdos302-axioms.txt
 )
 ```
 
-The committed manifest pins the complete dependency graph. The source audit
-must also succeed:
+The committed manifest pins the complete dependency graph and source
+revisions. `lake exe cache get` deliberately downloads precompiled upstream
+`.olean` files, so the following `lake build` is **not** a cache-free source
+rebuild of every dependency. `leanchecker --fresh Erdos302Lower` then reads the
+top module and its full imported `.olean` closure and replays every stored
+constant through Lean's kernel into a fresh environment. It kernel-checks
+those proof terms while structurally trusting `.olean` serialization.
+
+The source audit must also succeed:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
 ```
 
+That audit is a lexical guard over only the six project-owned lower Lean
+files. It rejects the configured escape tokens, but it is not a Lean parser and
+does not scan the pinned upstream trees. The fresh replay and transitive axiom
+report are separate checks rather than consequences of this source scan.
+
 GitHub Actions reproduced the transcript byte for byte without a local
 dependency workaround at commit
 `4c365e9ded04f04ecd9a6d89a38f97c529194475` in
 [run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465).
+That historical run predates the blocking fresh-replay step; it establishes
+the cache-backed build and byte-for-byte axiom comparison, not fresh replay.
 The transitive axiom set is limited to `propext`, `Classical.choice`, and
 `Quot.sound`. The pinned upstream packages are unrefereed formal developments
-whose imported proof terms are checked by the Lean kernel. This makes the
+whose stored imported proof terms are covered by the current replay through
+Lean's kernel into a fresh environment. This makes the
 qualitative, non-explicit-\(\delta\) lower theorem unconditional in the standard
 formal sense; that phrase refers to the axiom closure, not to a claim that the
 software stack is standard upstream Lean/Mathlib.  The reproduced stack is
 deliberately nonstandard and exact: prerelease Lean `v4.33.0-rc1` and the
 `teorth/mathlib4` fork containing the unmerged
 `Mathlib.NumberTheory.Mertens` module. It does not make the work peer-reviewed.
-The local build also checks explicit
-non-vacuity examples and the bridge to the finite maximum `f302`. A
-root-project build alone does not establish the lower theorem.
+The axiom report inventories logical assumptions but does not itself replay
+proof terms. Conversely, `leanchecker` is not an independent checker and does
+not validate the informal meaning of theorem statements. The local build also
+checks explicit non-vacuity examples and the bridge to the finite maximum
+`f302`. A root-project build alone does not establish the lower theorem.
 
 As of 15 August 2026, the pinned #327 base commit has an open
 [upstream correction](https://github.com/donalddellapietra/erdos-327-proof/pull/1)

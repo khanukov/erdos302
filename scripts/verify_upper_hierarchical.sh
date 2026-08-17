@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-readonly REPOSITORY_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+REPOSITORY_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly REPOSITORY_ROOT
 cd "${REPOSITORY_ROOT}"
 export PYTHONDONTWRITEBYTECODE=1
 
@@ -21,7 +22,10 @@ export PYTHONDONTWRITEBYTECODE=1
 python3 -m py_compile \
   certificates/q3360/exact_certificate.py \
   certificates/q139708800/hierarchical_certificate.py \
+  scripts/crosscheck_reciprocal_edges.py \
   scripts/test_upper_mutations.py
+
+python3 -I -S -O scripts/crosscheck_reciprocal_edges.py
 
 python3 -I -S certificates/q139708800/hierarchical_certificate.py verify \
   certificates/q139708800/certificate.json \

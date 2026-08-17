@@ -26,7 +26,7 @@ Equivalently,
 f(N)\leq\left(\frac{140803024}{163562355}+o(1)\right)N.
 \]
 
-This improves the repository's earlier, independently checked base result
+This improves the repository's earlier, algorithmically cross-checked base result
 
 \[
 \frac{5273}{6048}=0.8718584656\ldots
@@ -64,6 +64,81 @@ for Problem 302 too.  This is a transfer of the finite two-tail configuration
 and its counting argument, not an inference from the full all-tail Problem 301
 upper-bound statement.
 
+## Two-tail specialization of Wang's Problem 301 tile
+
+Xinjun Wang's May 2026 preprint,
+[A 667/806 Upper Bound for Erdős Problem #301 on Unit-Fraction-Free
+Sets](https://doi.org/10.5281/zenodo.20404609), proves
+
+\[
+f_{301}(N)\leq\left(\frac{667}{806}+o(1)\right)N
+\]
+
+for the all-tail Problem 301.  This inequality does **not** directly upper-bound
+the Problem 302 extremal function.  Problem 301 forbids relations with any
+number of tails, whereas Problem 302 forbids only two-tail relations; hence
+the Problem 301 admissible sets form a subset of the Problem 302 admissible
+sets and \(f_{301}(N)\leq f_{302}(N)\).
+
+There is nevertheless a valid Problem 302 specialization of Wang's finite
+construction.  Retain his tile
+
+\[
+D=\operatorname{Div}(720)\setminus\{1\}
+\]
+
+and his multiplier family, but regenerate the prefix hypergraphs using only
+the triples \(1/a=1/b+1/c\).  The resulting tile has 29 vertices and 70
+two-tail edges.  Exact exhaustive minimum-cover computations give the cover
+numbers, in divisor order,
+
+```text
+divisor: 2 3 4 5 6 8 9 10 12 15 16 18 20 24 30 36 40 45 48 60 72 80 90 120 144 180 240 360 720
+cover:   0 0 0 0 1 1 1  1  2  2  2  2  2  3  4  4  5  5  6  6  6  6  7   8   9  10  11  11  11
+```
+
+Thus the first thresholds for cover levels 1 through 11 are
+
+\[
+(6,12,24,30,40,48,90,120,144,180,240),
+\]
+
+and
+
+\[
+S_2=\sum_{k=1}^{11}\frac1{t_k}=\frac{293}{720}.
+\]
+
+Wang's valuation-restricted multiplier family remains disjoint for the same
+tile and has density
+
+\[
+\rho=\frac{120}{403}.
+\]
+
+Consequently the two-tail specialization forces omission density
+
+\[
+\rho S_2=\frac{293}{2418}
+\]
+
+and gives the derived Problem 302 comparison bound
+
+\[
+f_{302}(N)\leq\left(\frac{2125}{2418}+o(1)\right)N
+\approx(0.8788254756+o(1))N.
+\]
+
+This \(2125/2418\) statement is a derived two-tail specialization, not the
+theorem stated by Wang. The dependency-free exact verifier checks the finite
+edges, prefix covers, and density arithmetic; the disjoint-multiplier and
+asymptotic-prefix transfer is the human argument above. Run the verifier with
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O \
+  scripts/verify_wang_two_tail_baseline.py
+```
+
 ## External Pastebin context
 
 An [anonymous public note](https://pastebin.com/p7EfqMYQ) posted on
@@ -92,10 +167,11 @@ This external item is historical context only and is not a proof dependency.
 The committed certificate below uses many overlapping certified
 configurations inside a much larger divisor box.
 
-The complete public comparison relevant to this package is
+The exact transferable and derived comparison documented in this package is
 
 \[
-\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
+\frac{140803024}{163562355}<\frac{2125}{2418}
+<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
 \]
 
 ## Main finite tile

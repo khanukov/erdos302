@@ -11,6 +11,19 @@ The repository uses two licenses with deliberately separate scopes:
 - Original manuscript material under `paper/` is licensed under
   [Creative Commons Attribution 4.0 International](paper/LICENSE).
 
+The same path-specific split applies inside release ZIP files, source
+archives, and third-party repositories that preserve a snapshot of this
+repository. A single archive-level license field cannot replace these
+file-level grants: software and verification files remain MIT-licensed, while
+the original manuscript source and PDF remain CC BY 4.0.
+
+The exact `v0.1.0-priority-preprint` source snapshot is archived under version
+DOI [10.5281/zenodo.21966591](https://doi.org/10.5281/zenodo.21966591); its
+concept DOI is
+[10.5281/zenodo.21966590](https://doi.org/10.5281/zenodo.21966590). Those DOI
+records identify archived material but do not alter the license applying to
+any individual file.
+
 The licenses apply only to material for which the repository owner has
 authority to grant rights. They do **not** relicense:
 

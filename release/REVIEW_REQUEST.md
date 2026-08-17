@@ -1,8 +1,12 @@
 # Independent-review request
 
+This is a generic draft. Before sending it, address the recipient personally
+and insert one concrete sentence explaining why their expertise is relevant.
+Do not invent an arXiv link: no arXiv identifier is currently available.
+
 Subject: Preliminary preprint on Erdős Problem 302 — focused review request
 
-Dear [NAME],
+Dear colleague,
 
 I have posted a preliminary, unrefereed preprint proving two partial bounds
 for Erdős Problem 302:
@@ -18,7 +22,8 @@ formal developments. The manuscript explicitly discloses that it is
 unrefereed, that AI systems assisted with search, code, formalization, and
 audits, and that the upper asymptotic passage is not formalized end to end.
 
-[ONE_SENTENCE_REASON_THIS_PERSON_IS_RELEVANT]
+Please replace this paragraph before sending with one sentence explaining why
+this recipient's expertise is relevant. Suggested focus lines appear below.
 
 For an initial pass, I am not asking for a full journal-style report. The most
 useful first question is:
@@ -28,9 +33,10 @@ useful first question is:
 
 Links:
 
-- arXiv: [ARXIV_URL]
-- archived release/DOI: [ZENODO_DOI_URL]
-- exact verification release: [GITHUB_RELEASE_URL]
+- manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.1.0-priority-preprint/erdos302-v0.1.0-preprint.pdf>
+- archived source-snapshot DOI: <https://doi.org/10.5281/zenodo.21966591>
+- exact verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
+- arXiv: not yet available
 
 If you are willing to look, please say which part you checked and whether I
 may identify you publicly as a reviewer. Silence or receipt of this message

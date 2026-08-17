@@ -4,17 +4,30 @@ The two bounds use intentionally separate proof routes.
 
 The lower conclusion is an unconditional theorem of the current two-sided
 draft in the standard formal sense. The root Lean project does not check that
-route: a separate exact-pins `lower-lean` build kernel-checks its complete
-dependency closure and reproduces the committed transitive axiom report byte
-for byte. The result is qualitative and unrefereed, but it is not conditional
-on an upstream mathematical hypothesis.
+route. A separate exact-pins `lower-lean` job builds the local bridge against
+the pinned dependency environment, replays the complete imported-and-local
+`.olean` environment through Lean's kernel into a fresh environment, and
+reproduces the committed transitive axiom report byte for byte. The result is qualitative and
+unrefereed, but it is not conditional on an upstream mathematical hypothesis.
 
 Here "standard formal sense" refers only to the reported foundational axiom
 set.  It does **not** mean that the dependency stack is standard upstream
 Lean/Mathlib: the build deliberately pins prerelease Lean `v4.33.0-rc1`, the
 `teorth/mathlib4` fork containing the unmerged
-`Mathlib.NumberTheory.Mertens` module. Those exact sources are rebuilt by CI,
-and their complete imported proof-term closure is included in the axiom audit.
+`Mathlib.NumberTheory.Mertens` module. CI fetches those exact source revisions,
+but its ordinary build deliberately uses Mathlib's `lake exe cache get` binary
+cache and therefore does **not** source-recompile every upstream dependency.
+After that build, the blocking command
+
+```text
+lake env leanchecker --fresh Erdos302Lower
+```
+
+replays every stored constant in the top module and its import closure through
+Lean's kernel into a fresh environment. This closes the ordinary cached-`.olean` proof-term
+replay gap. It is not a cache-free source build: `leanchecker` reads and
+structurally trusts the serialized `.olean` files while kernel-checking the
+proof terms they contain.
 
 ## Upper bound
 
@@ -40,6 +53,13 @@ constant is checked. The configuration-family digest is
 ```text
 b6d0d19a51029400cc63e8cca5a4b7e1da99f7d4e6b62a479d5ed92cb8a1eafa
 ```
+
+As defense in depth, CI reconstructs the full 12,675-edge set independently
+from \((b-a)(c-a)=a^2\), requires equality between the two base-edge
+generators, and pins the imported \(Q=3360\) checker by SHA-256. Thirteen
+deliberate corruption classes exercise certificate presence and uniqueness,
+weights, configuration IDs, targets, the threshold ledger, digests, density,
+the final bound, generated gadgets, and the base-checker bytes.
 
 The discovery-time SciPy/HiGHS optimization is outside the proof boundary.
 Verification uses no third-party package, network, randomness, or
@@ -69,13 +89,21 @@ Lean             v4.33.0-rc1
 ```
 
 The analytic density theorem is upstream and unrefereed. It is imported as a
-checked proof term rather than assumed as a hypothesis. The repository's local
+stored proof term and is included in the replay into a fresh environment rather than
+assumed as a hypothesis. The repository's local
 theorems prove the structured wrapper, #301-to-#302 bridge, parity padding
 lemma, odd-quarter cardinality bound, final absorption of the additive loss,
 semantic anti-vacuity examples, and the bridge from a large witness to the
 finite maximum `f302`. `lower-lean/AXIOMS.txt` records the transitive
 `#print axioms` output; CI regenerates it from the exact pins and requires a
 byte-for-byte match.
+
+The axiom transcript and fresh replay answer different questions. The
+`#print axioms` command reports the transitive logical axioms used by the
+selected declarations;
+it does not by itself re-check imported proof terms. `leanchecker --fresh`
+performs that replay, but does not replace review of the theorem statements or
+the `.olean` serialization trust described above.
 
 The reported foundational axioms are:
 
@@ -89,8 +117,12 @@ These are the ordinary Lean/Mathlib foundations used by the imported proof
 terms, not project-local mathematical assumptions. No project-local open proof
 obligation is admitted.
 
-Project-local `sorry`, `admit`, `axiom`, `opaque`, `unsafe`, and
-`native_decide` are rejected by CI.
+The source audit is a deliberately narrow lexical policy over the six
+project-owned files in `lower-lean/Erdos302Lower*.lean`. It rejects the tokens
+`sorry`, `sorryAx`, `admit`, `axiom`, `opaque`, `unsafe`, and `native_decide`.
+It is not a parser, does not inspect the pinned upstream source trees, and does
+not replace either the transitive axiom report or replay into a fresh
+environment.
 
 At the pinned revisions, the two upstream repositories have no license file.
 This repository does not vendor their source. That licensing status and the
@@ -114,7 +146,15 @@ existence of that open pull request is therefore a provenance and exposition
 disclosure, not an additional hypothesis or an unverified patch in this
 repository's lower proof route.
 
-## Mutable prior-art source
+## Prior-art sources
+
+Wang's archived Problem 301 preprint is cited through version DOI
+[10.5281/zenodo.20404609](https://doi.org/10.5281/zenodo.20404609). Its
+\(667/806\) theorem does not directly bound Problem 302. The repository's
+derived \(2125/2418\) two-tail comparison has a separate dependency-free exact
+check of its finite prefix data and density arithmetic. Its multiplier and
+asymptotic transfer remains a human argument and is not attributed to Wang as
+a theorem.
 
 The anonymous public note cited for the intermediate \(373/420\) upper bound
 is hosted on Pastebin rather than in an archival repository.  The live page
@@ -150,7 +190,10 @@ jobs on `main` in
 [GitHub Actions run 31916282207](https://github.com/khanukov/erdos302/actions/runs/31916282207).
 The wording changes made after the first gate are recorded in
 [LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md). Every subsequent
-integration or release commit must pass the same required jobs. Green CI
+integration or release commit must pass the same required jobs. The historical
+runs above used the exact cache-backed build and axiom comparison but predate
+the blocking `leanchecker --fresh` step; they must not be cited as fresh-replay
+records. Green CI on the present workflow
 permits repository merge and a versioned preliminary GitHub/Zenodo/arXiv
 release when the unrefereed status and all trust-boundary disclosures remain
 explicit. Named independent human review, or complete end-to-end formalization

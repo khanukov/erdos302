@@ -1,9 +1,18 @@
 # Two-sided progress on Erdős Problem 302
 
-**Preliminary and unrefereed — version 0.1.0-preprint.** This repository and
-its manuscript report complete proofs of two partial bounds. They do not
-claim to solve Erdős Problem 302, to be peer reviewed, or to have received
-independent human verification.
+<!-- release-state:start -->
+**Version `0.1.1-dev` is an unreleased development tree — preliminary and
+unrefereed.** The latest published priority snapshot remains
+[`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint),
+archived under DOI
+[`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591).
+This tree contains post-release audit corrections that are not retroactively
+part of that snapshot.
+<!-- release-state:end -->
+
+The repository and manuscript report complete proofs of two partial bounds;
+they do not claim to solve Erdős Problem 302, to be peer reviewed, or to have
+received independent human verification.
 
 Let \(f_{302}(N)\) be the largest size of a subset of
 \(\{1,\ldots,N\}\) containing no **three distinct** integers \(a,b,c\)
@@ -33,12 +42,15 @@ The upper result is a computer-assisted proof with a dependency-free exact
 rational verifier. The lower result is an elementary odd-quarter padding
 derivation from Donald Della Pietra's pinned, unrefereed Lean development for
 Erdős Problem 301. The lower bound is unconditional in the standard formal
-sense: the upstream results are imported as checked proof terms, not assumed
-as hypotheses, and the complete dependency closure is kernel-checked at the
-exact revisions below. Its transitive axiom report contains only `propext`,
-`Classical.choice`, and `Quot.sound`. The constant \(\delta\) is qualitative
-and non-explicit, and the external developments and this manuscript are
-unrefereed.
+sense: the upstream results are imported as proof terms, not assumed as
+hypotheses. The ordinary build uses the pinned Mathlib binary cache; CI then
+runs `leanchecker --fresh Erdos302Lower` to replay the complete
+imported-and-local `.olean` closure through Lean's kernel into a fresh
+environment. This kernel-checks the stored proof terms while structurally
+trusting `.olean` serialization. Its
+transitive axiom report contains only `propext`, `Classical.choice`, and
+`Quot.sound`. The constant \(\delta\) is qualitative and non-explicit, and the
+external developments and this manuscript are unrefereed.
 
 This is partial progress, **not a solution of Problem 302**.
 
@@ -67,13 +79,30 @@ triples, so a full block forces two omissions; the truncated block
 \(\{2t,3t,4t,6t\}\) forces one via the first identity.  Together with the
 same disjoint-dilate count, these are exactly the ingredients needed for the
 \(25/28\) bound.  This does **not** transfer the full all-tail statement of
-Problem 301 to Problem 302.  An [anonymous public partial
-proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
-\(373/420\).  The certified bound in this repository improves all three public
-baselines:
+Problem 301 to Problem 302.
+
+Xinjun Wang's May 2026
+[\(667/806\) preprint](https://doi.org/10.5281/zenodo.20404609) concerns
+Problem 301 and likewise does not directly upper-bound \(f_{302}\). Restricting
+his public \(D=\operatorname{Div}(720)\setminus\{1\}\) tile to two-tail edges,
+while retaining its disjoint multiplier family, does give a valid derived
+Problem 302 comparison:
 
 \[
-\frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
+\frac{2125}{2418}\approx0.8788254756.
+\]
+
+[`verify_wang_two_tail_baseline.py`](scripts/verify_wang_two_tail_baseline.py)
+checks the finite two-tail edges, exact prefix covers, density arithmetic, and
+the displayed fraction. Applying Wang's disjoint multiplier family and the
+asymptotic prefix count is the short human comparison argument in the
+manuscript; the result is not the theorem stated by Wang. An [anonymous public partial
+proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
+\(373/420\). The exact transferable and derived comparison documented here is
+
+\[
+\frac{140803024}{163562355}<\frac{2125}{2418}
+<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
 \]
 
 ## Verification status
@@ -81,11 +110,17 @@ baselines:
 | Layer | Status |
 |---|---|
 | \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
+| Derived \(D(720)\) finite two-tail data and arithmetic | exact exhaustive standard-library verifier |
+| Derived \(D(720)\) multiplier/disjoint-prefix transfer | human comparison argument in the manuscript |
 | Upper asymptotic disjoint-block argument | human proof in the manuscript |
 | Upper end-to-end Lean formalization | not complete |
-| Lower analytic input | pinned external Lean theorem; complete dependency closure kernel-checked; unrefereed |
+| Lower analytic input | pinned cached `.olean` closure with blocking Lean-kernel replay into a fresh environment; serialization trusted; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
+
+Generated-data work toward the upper Lean proof must satisfy the
+[upper-formalization gate](docs/UPPER_LEAN_FORMALIZATION_GATE.md). Compiling
+shape-checked tables is a WIP milestone, not an end-to-end certificate proof.
 
 The lower theorem establishes
 
@@ -118,6 +153,11 @@ integers, and `fractions.Fraction`. It regenerates 719 divisor vertices, 12,675
 reciprocal-triple edges, 2,016 embedded base gadgets, and all 14,691
 configurations before checking the rational packing.
 
+CI also reconstructs the complete 12,675-edge set by the independent
+factorisation ((b-a)(c-a)=a^2), requires equality of the two base-edge
+generators, and pins the exact (Q=3360) checker by SHA-256 before importing
+its API.
+
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O \
   certificates/q139708800/hierarchical_certificate.py verify \
@@ -142,9 +182,11 @@ Run the negative tests as well:
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S -O scripts/test_upper_mutations.py
 ```
 
-They require rejection of a corrupted rational weight, a certificate attached
-to the wrong target, a missing generated hierarchical configuration, and a
-falsely smaller final bound.
+They require rejection of thirteen corruption classes: altered, missing, or
+negative weights; a repeated configuration ID; wrong, missing, or duplicated
+certificates; a changed threshold ledger, configuration digest, multiplier
+density, or final bound; a missing generated hierarchical configuration; and
+a base verifier whose pinned SHA-256 no longer matches.
 
 The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
 algorithmically separate cross-check of the 21 base demands used by the new
@@ -153,7 +195,8 @@ hierarchical certificate.
 ## Verify the lower bound
 
 The lower source is deliberately isolated from the root Lean 4.27 project.
-These commands reproduce its exact-pins build and axiom report:
+These commands reproduce its exact-pins build, replay into a fresh
+environment, and axiom report:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 -I -S scripts/audit_lower_sources.py
@@ -162,6 +205,7 @@ lake update
 git diff --exit-code -- lake-manifest.json
 lake exe cache get
 lake build
+lake env leanchecker --fresh Erdos302Lower
 lake env lean Erdos302Lower/Axioms.lean | tee /tmp/erdos302-axioms.txt
 diff -u AXIOMS.txt /tmp/erdos302-axioms.txt
 ```
@@ -174,9 +218,10 @@ The dependency graph is pinned to:
 - `leanprover/lean4:v4.33.0-rc1`.
 
 The local source contains no `sorry`, `admit`, project-local `axiom`,
-`opaque`, `unsafe`, or `native_decide`. CI reproduces an axiom report limited
-to the ordinary Mathlib foundations `propext`, `Classical.choice`, and
-`Quot.sound`.
+`opaque`, `unsafe`, or `native_decide`. CI fresh-replays the stored dependency
+closure and separately reproduces an axiom report limited to the ordinary
+Mathlib foundations `propext`, `Classical.choice`, and `Quot.sound`. The source
+audit itself is only a lexical guard over the six project-owned lower files.
 
 See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 [trust boundary](docs/TRUST_BOUNDARY.md) before reusing or citing the lower
@@ -247,9 +292,10 @@ replacement; earlier public versions remain part of the scientific record.
 
 ## Scope and disclosure
 
-The finite upper packing was discovered with AI-assisted search. The theorem
-depends only on the committed exact certificate and verifier, not on the
-floating-point solver used during discovery. AI systems also assisted with
+The finite upper packing was discovered with AI-assisted search. Its finite
+acceptance depends only on the committed exact certificate and verifier, not
+on the floating-point solver used during discovery; the asymptotic passage is
+the human proof in the manuscript. AI systems also assisted with
 code generation, proof audits, and Lean formalization. The external #301/#327
 work and the present manuscript are unrefereed. Repository merge is an
 engineering integration event: a fully green commit may be merged while

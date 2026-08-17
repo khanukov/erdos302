@@ -11,14 +11,18 @@ substitute for a named referee.
 
 - [x] 719 divisor vertices and 12,675 reciprocal edges regenerated.
 - [x] All 2,016 embedded \(Q=3360\) gadgets regenerated.
-- [x] Base edge counts independently reproduced through
+- [x] Complete large edge set independently reproduced through
       \((b-a)(c-a)=a^2\).
 - [x] Exact rational vertex capacities and objectives checked.
 - [x] 271 target certificates linked to the pinned target sequence.
 - [x] \(S=3251333/4989600\) and \(\rho=23520/110143\) recomputed.
 - [x] Disjoint multiplier residues and the finite-cutoff order of limits
       checked on paper.
-- [x] Four negative mutations rejected.
+- [x] Thirteen negative corruption classes rejected.
+- [x] Wang's Problem 301 theorem distinguished from the derived
+      \(2125/2418\) two-tail comparison; its finite prefix data and density
+      arithmetic are exact-checked, while the multiplier/asymptotic transfer
+      remains a human argument.
 - [x] No unsupported exploratory value is stated as a theorem.
 
 ## Lower checks completed
@@ -43,6 +47,10 @@ substitute for a named referee.
       `teorth/mathlib4` fork, and its unmerged `Mathlib.NumberTheory.Mertens`
       module) is disclosed separately from the standard foundational axiom
       set.
+- [x] The current workflow includes a blocking
+      `leanchecker --fresh Erdos302Lower` replay. Its exact pinned binary and
+      flag were smoke-tested locally; the complete closure must pass on the
+      exact PR/release CI run before publication.
 - [x] Open erdos-327-proof PR #1 at
       `6725359adfc2b0e3799777805da493df0613c1a2` is disclosed as an
       exposition-only correction: no Lean file and no theorem, exponent,
@@ -55,8 +63,9 @@ substitute for a named referee.
 ## Preliminary release gate
 
 Do not describe this work as a solution of Erdős Problem 302. A two-sided
-release requires green upper, mutation, root-Lean, lower-Lean, axiom-audit,
-paper, and release-bundle jobs for the exact commit being released. A tagged
+release requires green upper, mutation, root-Lean, lower-Lean fresh replay,
+axiom-audit, paper, and release-bundle jobs for the exact commit being
+released. A tagged
 GitHub/Zenodo release and an arXiv preprint may be published before the
 unchecked named-human-review item is completed only when they are explicitly
 labelled preliminary and unrefereed and make no claim of independent
