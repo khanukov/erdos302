@@ -33,9 +33,10 @@ useful first question is:
 
 Links:
 
-- manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.1.0-priority-preprint/erdos302-v0.1.0-preprint.pdf>
-- archived source-snapshot DOI: <https://doi.org/10.5281/zenodo.21966591>
-- exact verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
+- manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.1.1-corrected-preprint/erdos302-v0.1.1-preprint.pdf>
+- Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
+- exact verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint>
+- exact v0.1.1 Zenodo DOI: assigned after automatic GitHub ingestion
 - arXiv: not yet available
 
 If you are willing to look, please say which part you checked and whether I

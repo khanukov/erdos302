@@ -1,13 +1,16 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.1.1-dev` is an unreleased development tree. Preliminary and unrefereed.**
-The latest published priority snapshot remains
-[`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint),
-archived under DOI
-[`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591).
-This tree contains post-release audit corrections that are not retroactively
-part of that snapshot.
+**Version `0.1.1-preprint` is a corrected preprint. Preliminary and unrefereed;
+it is not independently verified.** It is released under
+[`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint).
+Zenodo archives the tagged source automatically under concept DOI
+[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assigns
+the immutable version DOI after GitHub release ingestion. The historical
+[`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint)
+and its version DOI
+[`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591) remain
+unchanged.
 <!-- release-state:end -->
 
 The repository and manuscript report complete proofs of two partial bounds;

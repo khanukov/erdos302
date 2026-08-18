@@ -41,6 +41,7 @@ PREPRINT_DOI = read_control("PREPRINT_DOI")
 CONCEPT_DOI = read_control("CONCEPT_DOI")
 
 DEVELOPMENT_DOI = "UNRESERVED"
+AUTOMATIC_DOI = "ZENODO_AUTO"
 HISTORICAL_VERSION = "0.1.0-preprint"
 HISTORICAL_DOI = "10.5281/zenodo.21966591"
 HISTORICAL_CONCEPT_DOI = "10.5281/zenodo.21966590"
@@ -143,9 +144,13 @@ def validate_release_metadata() -> None:
         raise RuntimeError(
             "release/CONCEPT_DOI must preserve the existing Zenodo version lineage"
         )
-    if PREPRINT_DOI != DEVELOPMENT_DOI and zenodo_doi.fullmatch(PREPRINT_DOI) is None:
+    if (
+        PREPRINT_DOI not in {DEVELOPMENT_DOI, AUTOMATIC_DOI}
+        and zenodo_doi.fullmatch(PREPRINT_DOI) is None
+    ):
         raise RuntimeError(
-            "release/PREPRINT_DOI must be UNRESERVED or a 10.5281/zenodo.<record> DOI"
+            "release/PREPRINT_DOI must be UNRESERVED, ZENODO_AUTO, or a "
+            "10.5281/zenodo.<record> DOI"
         )
     if PREPRINT_DOI == CONCEPT_DOI:
         raise RuntimeError("version DOI and concept DOI must be distinct")
@@ -215,7 +220,7 @@ def validate_release_metadata() -> None:
             "@RELEASE_URL@",
         ),
         "ARXIV_METADATA.template.md": (
-            "@PREPRINT_DOI@",
+            "@PREPRINT_DOI_REFERENCE@",
             "@CONCEPT_DOI@",
             "@RELEASE_URL@",
         ),
@@ -286,12 +291,15 @@ def validate_release_metadata() -> None:
             raise RuntimeError(
                 "released CFF message/abstract must name the version and release disclaimers"
             )
+        required_readme_values = {TAG, CONCEPT_DOI, release_url()}
+        if PREPRINT_DOI != AUTOMATIC_DOI:
+            required_readme_values.add(PREPRINT_DOI)
         if any(
             phrase in readme_state_lower
             for phrase in ("unreleased", "development", "not yet a new release")
         ) or not all(
             value in readme_state
-            for value in (TAG, PREPRINT_DOI, release_url())
+            for value in required_readme_values
         ):
             raise RuntimeError(
                 "released README release-state block does not match tag/DOI/status controls"
@@ -301,17 +309,14 @@ def validate_release_metadata() -> None:
             for phrase in ("preliminary", "unrefereed", "not independently verified")
         ):
             raise RuntimeError("released README state is missing release disclaimers")
-        expected_identifiers = {
-            PREPRINT_DOI,
-            CONCEPT_DOI,
-            release_url(),
-            manuscript_url(),
-        }
+        expected_identifiers = {CONCEPT_DOI, release_url(), manuscript_url()}
+        if PREPRINT_DOI != AUTOMATIC_DOI:
+            expected_identifiers.add(PREPRINT_DOI)
         if root_artifact != release_url() or root_date != RELEASE_DATE:
             raise RuntimeError("released CFF artifact URL/date do not match release controls")
         if identifier_values != expected_identifiers:
             raise RuntimeError(
-                "released CFF root identifiers must be exactly the version DOI, concept DOI, "
+                "released CFF root identifiers do not match the DOI mode, concept DOI, "
                 "release URL, and manuscript URL"
             )
         if (
@@ -491,7 +496,7 @@ def build(output: Path) -> None:
         f"version: {VERSION}\n",
         f"tag: {TAG}\n",
         f"release date: {RELEASE_DATE}\n",
-        f"version DOI: {PREPRINT_DOI}\n",
+        f"version DOI control: {PREPRINT_DOI}\n",
         f"concept DOI: {CONCEPT_DOI}\n",
         f"publication gate: {PUBLISH_READY}\n",
         f"commit: {commit}\n",
@@ -585,7 +590,12 @@ def build(output: Path) -> None:
         "PREPRINT_DOI_REFERENCE": (
             "not reserved (development candidate; publication gate closed)"
             if PREPRINT_DOI == DEVELOPMENT_DOI
-            else f"<https://doi.org/{PREPRINT_DOI}>"
+            else (
+                "assigned automatically by Zenodo after GitHub release ingestion "
+                f"(concept DOI <https://doi.org/{CONCEPT_DOI}>)"
+                if PREPRINT_DOI == AUTOMATIC_DOI
+                else f"<https://doi.org/{PREPRINT_DOI}>"
+            )
         ),
         "CONCEPT_DOI_URL": f"https://doi.org/{CONCEPT_DOI}",
         "RELEASE_URL": release_url(),

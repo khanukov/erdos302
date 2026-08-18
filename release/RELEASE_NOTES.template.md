@@ -57,14 +57,18 @@ for the `@VERSION@` candidate):
 - Zenodo version DOI for the source snapshot: <https://doi.org/10.5281/zenodo.21966591>
 - Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
 
-The v0.1.0 Zenodo record preserves the tagged source snapshot. The standalone
-PDF, verification transcript, release bundle, and release-asset manifest are
-preserved as GitHub Release assets. A future Zenodo version should upload
-those files explicitly rather than relying on source-only GitHub ingestion.
+Zenodo's enabled GitHub integration automatically creates the next archived
+source snapshot after this release. It assigns that snapshot's immutable
+version DOI under the existing concept DOI. The standalone PDF, verification
+transcript, release bundle, and release-asset manifest are preserved as the
+checked GitHub Release assets; automatic Zenodo ingestion is not described as
+copying those individual binary assets.
 
-Do not publish these notes for a `-dev` candidate or while the version DOI is
-`UNRESERVED`. The publication workflow machine-checks the candidate DOI,
-concept DOI, exact release URLs, and CFF metadata before any GitHub mutation.
+Do not publish these notes for a `-dev` candidate or while the DOI control is
+`UNRESERVED`. `ZENODO_AUTO` is the explicit final mode in which Zenodo assigns
+the version DOI after GitHub publication. The workflow machine-checks this
+mode, the concept DOI, exact release URLs, and CFF metadata before any GitHub
+mutation.
 
 The attached `GITHUB_RELEASE_SHA256SUMS.txt` authenticates every release
 asset. `VERIFICATION.txt` records the exact local acceptance outputs produced
