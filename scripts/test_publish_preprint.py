@@ -69,7 +69,7 @@ def write_release_evidence(
         (
             f"version: {FINAL_CONTROLS.version}",
             f"tag: {FINAL_CONTROLS.tag}",
-            f"version DOI: {FINAL_CONTROLS.preprint_doi}",
+            f"version DOI control: {FINAL_CONTROLS.preprint_doi}",
             f"concept DOI: {FINAL_CONTROLS.concept_doi}",
             "publication gate: true",
             f"commit: {commit}",
@@ -161,6 +161,29 @@ class GateTests(unittest.TestCase):
                 controls=controls,
                 publisher_factory=lambda _controls: self.fail("publisher constructed"),
             )
+
+    def test_true_gate_accepts_automatic_zenodo_doi_assignment(self) -> None:
+        controls = publisher.ReleaseControls(
+            version=FINAL_CONTROLS.version,
+            tag=FINAL_CONTROLS.tag,
+            publish_ready="true",
+            preprint_doi="ZENODO_AUTO",
+            concept_doi=FINAL_CONTROLS.concept_doi,
+        )
+        constructed: list[publisher.ReleaseControls] = []
+
+        class StubPublisher:
+            def publish(self) -> None:
+                return
+
+        publisher.run_publication(
+            metadata_validator=lambda: None,
+            controls=controls,
+            publisher_factory=lambda current: (
+                constructed.append(current) or StubPublisher()
+            ),
+        )
+        self.assertEqual(constructed, [controls])
 
 
 class ManifestTests(unittest.TestCase):

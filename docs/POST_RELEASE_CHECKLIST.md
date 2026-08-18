@@ -1,8 +1,9 @@
 # Post-release and corrected-archive checklist
 
-Use this checklist for any corrected preprint version after the immutable
-priority snapshot. It is deliberately manual: merging repository changes must
-not silently rewrite or republish an existing scientific record.
+Use this checklist for a corrected preprint version after the immutable
+priority snapshot. The GitHub release is validated automatically; the enabled
+Zenodo GitHub integration archives its tagged source as the next immutable
+version without rewriting the historical record.
 
 ## 1. Preserve the priority snapshot
 
@@ -24,49 +25,24 @@ the standalone release PDF, verification transcript, release ZIP, or release
 asset manifest. This is a preservation-scope limitation, not evidence that
 those GitHub assets were absent or unchecked.
 
-## 2. Reserve the corrected Zenodo version before freezing metadata
+## 2. Freeze metadata for automatic Zenodo assignment
 
-Do not rely on automatic GitHub ingestion for the corrected version: it
-archives source but does not preserve the complete verified asset set.
-
-1. Open the Zenodo GitHub integration and disable automatic archiving for
-   `khanukov/erdos302` before the corrected GitHub Release is published. Keep
-   it disabled throughout this checklist; otherwise the release event may
-   create a source-only or duplicate Zenodo version outside the reviewed
-   draft.
-2. From Zenodo record `21966591`, choose **New version** so the draft remains
-   under concept DOI `10.5281/zenodo.21966590`.
-3. Reserve the draft DOI, record it as the new **version DOI**, and leave the
-   draft unpublished.
-4. The repository may carry `0.1.1-dev`,
-   `v0.1.1-corrected-preprint`, `PREPRINT_DOI=UNRESERVED`, the unchanged
-   `CONCEPT_DOI=10.5281/zenodo.21966590`, and `PUBLISH_READY=false` while
-   corrections are reviewed. The tag name is only a candidate while the gate
-   is closed; no tag may exist remotely yet.
-5. In one release-preparation pull request, replace `0.1.1-dev` with the final
-   version such as `0.1.1-preprint`, confirm `release/PREPRINT_TAG` and
-   `release/PREPRINT_DATE`, put the reserved version DOI in
-   `release/PREPRINT_DOI`, update the `CITATION.cff` root message/abstract and
-   release fields, update the delimited release-state block at the top of
-   `README.md`, and update the version/date in the manuscript `\\date{...}`
-   line. The CFF and README must identify the final version as preliminary,
-   unrefereed, and not independently verified, with no stale development or
-   unreleased wording. Keep
-   `release/CONCEPT_DOI` unchanged. The shared validator renders and checks the
-   release templates dynamically and rejects a manuscript/control mismatch;
-   no CI assertion should pin a development version or closed-gate value.
-6. Set `release/PUBLISH_READY=true` only as the final reviewed publication
-   switch. Any absent value or value other than the exact strings `true` and
-   `false` must fail closed, and the publisher must reject any `-dev` version
-   even if this switch is accidentally opened.
-7. Keep the Zenodo draft unpublished until the exact GitHub assets and their
-   hashes have passed every check below.
-
-If Zenodo does not permit the GitHub-generated software record to become a
-publication/preprint record without ambiguity, keep it as a software record
-and describe the manuscript and verification bundle explicitly. Alternatively
-create a separate preprint deposit and relate it bidirectionally to the
-software DOI; do not silently change the identity of the old record.
+1. Keep `khanukov/erdos302` enabled in the Zenodo GitHub integration. Do not
+   create a manual **New version** draft for the same tag.
+2. Final controls are `0.1.1-preprint`,
+   `v0.1.1-corrected-preprint`, `PREPRINT_DOI=ZENODO_AUTO`, unchanged
+   `CONCEPT_DOI=10.5281/zenodo.21966590`, and `PUBLISH_READY=true`.
+3. `ZENODO_AUTO` is not presented as a DOI. It records that the exact version
+   DOI is unknowable until the public GitHub release webhook has been ingested.
+   CFF, README, and release notes use the stable concept DOI and exact GitHub
+   Release URL meanwhile.
+4. The shared validator rejects `UNRESERVED`, `-dev`, stale development
+   wording, a historical DOI reused for v0.1.1, or disagreement among controls,
+   CFF, README, and manuscript version/date.
+5. Automatic ingestion preserves the tagged source ZIP as a Zenodo software
+   record. The full PDF/bundle/manifest inventory remains on the validated
+   GitHub Release and must not be described as individually mirrored by
+   Zenodo.
 
 ## 3. Protect and optionally sign the next tag
 
@@ -146,58 +122,41 @@ was added before release). Verify that the tag is annotated, resolves to
 `$VERIFIED_SHA`, the release is a non-draft prerelease, and the recorded
 Verify run was a successful `push` run for `main` at that SHA.
 
-## 5. Upload the complete Zenodo file set
+## 5. Confirm automatic Zenodo ingestion
 
-Upload **every ordinary asset named in**
-`GITHUB_RELEASE_SHA256SUMS.txt` from the validated GitHub Release to the
-unpublished Zenodo version draft. This includes, at minimum:
+Wait for Zenodo to process `v0.1.1-corrected-preprint`, then confirm:
 
-- `erdos302-v<VERSION>.pdf`;
-- `erdos302-v<VERSION>-release.zip`;
-- `erdos302-v<VERSION>-arxiv.tar.gz`;
-- `GITHUB_RELEASE_SHA256SUMS.txt`;
-- `BUNDLE_SHA256SUMS.txt`;
-- `VERIFICATION.txt`;
-- `COMMIT_SHA.txt`;
-- `CITATION.cff`;
-- `LICENSE_SCOPE.md`;
-- the manuscript source, bibliography, licenses, certificates, exact
-  verification programs, release notes, and reproducibility records listed by
-  that manifest;
-- the tagged source archive, if Zenodo did not preserve it automatically;
-- any reviewed detached manifest signature and public-key/fingerprint record.
+- the new record is the next version under concept DOI
+  `10.5281/zenodo.21966590`;
+- the old version DOI `10.5281/zenodo.21966591` still resolves to v0.1.0;
+- the new record has its own immutable version DOI;
+- its single source ZIP names the v0.1.1 tag and corresponds to the tagged
+  GitHub source archive; and
+- title, author, version, keywords, and preliminary/unrefereed description were
+  taken from the release metadata.
 
-Use the exact filenames and require the Zenodo draft's ordinary-file inventory
-to equal the GitHub manifest's inventory. Do not rebuild locally after the
-GitHub Release.
-Download the Zenodo draft files back into a fresh directory and verify the
-GitHub manifest there before publishing:
-
-```bash
-sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
-```
-
-Also compare the downloaded manifest byte-for-byte with the GitHub Release
-manifest. Record the SHA-256 of any Zenodo-generated source archive that is
-not listed in the GitHub manifest.
+Record the new version DOI in the repository's moving documentation after
+ingestion. Do not alter the already tagged source or GitHub Release assets to
+retrofit that DOI. The exact PDF and complete verification inventory remain on
+GitHub and are authenticated there by `GITHUB_RELEASE_SHA256SUMS.txt`.
 
 ## 6. Required Zenodo metadata
 
-Confirm every field in the unpublished draft:
+Confirm every field in the automatically published record:
 
 - title: `Two-sided computer-assisted progress on Erdős Problem 302`;
 - creator: `Dmitry Khanukov`;
-- version: the exact repository version, for example `0.1.1-preprint`;
+- version: the exact tagged release version;
 - publication date: the date in `release/PREPRINT_DATE`;
-- resource type: `Publication / Preprint` when Zenodo permits this for the
-  version lineage; otherwise `Software` with the manuscript scope stated in
-  the description;
-- version DOI: the DOI reserved for this exact corrected snapshot;
+- resource type: `Software`, as created by the native GitHub integration, with
+  the manuscript scope stated in the description;
+- version DOI: the DOI automatically assigned to this corrected snapshot;
 - concept DOI: `10.5281/zenodo.21966590`;
-- related identifier: the exact GitHub Release URL;
-- related identifier: the exact tagged commit URL;
-- licenses: MIT for original software/verification material and CC BY 4.0 for
-  original manuscript material, with a link to `LICENSE_SCOPE.md`;
+- related identifier: the exact GitHub repository/release when extracted by
+  the integration;
+- archive-level license: MIT, matching the single-license field supported by
+  the GitHub integration; the description and tagged `LICENSE_SCOPE.md` must
+  separately disclose CC BY 4.0 for original manuscript material;
 - keywords: `Erdős problems`, `extremal number theory`, `unit fractions`,
   `Lean 4`, and `computer-assisted proof`.
 
@@ -214,25 +173,18 @@ The description must contain, in substance, all of the following statements:
 Do not describe an AI audit, green CI run, DOI, download, or unanswered review
 request as independent verification.
 
-## 7. Final cross-check and publication
+## 7. Final cross-check
 
-Before clicking **Publish** on Zenodo:
-
-1. Open the PDF downloaded from Zenodo and compare its SHA-256 and page count
-   with the GitHub Release PDF.
-2. Re-run `sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt` on the downloaded files.
-3. Confirm the DOI, concept DOI, tag, commit, CI run, version, and dates agree
-   across Zenodo, GitHub Release, `CITATION.cff`, and release notes.
-4. Confirm both license scopes and the external-dependency exclusions are
-   visible without interpreting a single-license field as covering all files.
-5. Confirm the preliminary, unrefereed, AI-assistance, trust-boundary, and
-   no-independent-verification disclosures are visible on the landing page.
-6. Have the author personally approve the final PDF and metadata.
-
-After publication, download the public record once more and repeat the hash
-check. Add the new version DOI and public file inventory to the release issue.
-Any later correction requires another version; do not replace files in the
-published record.
+1. Confirm the GitHub Release tag, commit, CI run, PDF, manifest, version, and
+   date agree.
+2. Confirm the Zenodo version DOI belongs to the unchanged concept DOI and the
+   archived source ZIP identifies the same tag.
+3. Confirm the preliminary, unrefereed, AI-assistance, trust-boundary, mixed
+   license, and no-independent-verification disclosures remain visible across
+   the repository, manuscript, and release notes.
+4. Have the author personally approve the final PDF and metadata.
+5. Record the automatically assigned version DOI without rewriting either
+   published version. Any later correction requires another tag and version.
 
 ## 8. Repository discovery metadata
 

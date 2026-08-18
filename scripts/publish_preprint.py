@@ -405,7 +405,7 @@ class Publisher:
             for line in (
                 f"version: {self.controls.version}",
                 f"tag: {self.controls.tag}",
-                f"version DOI: {self.controls.preprint_doi}",
+                f"version DOI control: {self.controls.preprint_doi}",
                 f"concept DOI: {self.controls.concept_doi}",
                 "publication gate: true",
                 f"commit: {published_sha}",
@@ -487,7 +487,7 @@ class Publisher:
         for line in (
             f"version: {self.controls.version}",
             f"tag: {self.controls.tag}",
-            f"version DOI: {self.controls.preprint_doi}",
+            f"version DOI control: {self.controls.preprint_doi}",
             f"concept DOI: {self.controls.concept_doi}",
             "publication gate: true",
             f"commit: {self.context.verified_sha}",

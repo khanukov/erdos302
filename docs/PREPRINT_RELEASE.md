@@ -4,15 +4,15 @@ This procedure prepares and publishes a preliminary, unrefereed version to
 establish a standard scientific timestamp. It does not authorize an Erdős
 Problems forum post or the phrase “independently verified.”
 
-Current unreleased correction controls:
+Current corrected-release controls:
 
 ```text
-version:       0.1.1-dev
-candidate tag: v0.1.1-corrected-preprint
-candidate date: 2026-08-17
-version DOI:   UNRESERVED
+version:       0.1.1-preprint
+tag:           v0.1.1-corrected-preprint
+release date:  2026-08-18
+version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
-PUBLISH_READY: false
+PUBLISH_READY: true
 ```
 
 Published immutable priority identifiers:
@@ -26,25 +26,15 @@ concept: 10.5281/zenodo.21966590
 ```
 
 The priority tag, GitHub Release, and Zenodo version are immutable historical
-records. Do not retarget, delete, replace, or silently edit them. Use
-[`POST_RELEASE_CHECKLIST.md`](POST_RELEASE_CHECKLIST.md) for a corrected
-version that preserves the PDF, verified bundle, and manifests on Zenodo.
-
-`main` now contains post-v0.1.0 corrections that are not yet a new release.
-The `0.1.1-dev` version prevents those changes from being mislabeled as the
-immutable v0.1.0 snapshot, while `release/PUBLISH_READY=false` makes the
-publisher exit before any tag or release action. The version DOI and concept
-DOI are machine-readable controls in `release/PREPRINT_DOI` and
-`release/CONCEPT_DOI`; `UNRESERVED` is permitted only for a `-dev` version with
-the publication gate closed. `CITATION.cff` describes the
-unreleased development tree at its root and identifies v0.1.0 as the preferred
-published citation. Reserve the next Zenodo version DOI, replace `-dev` with
-the final preprint version, update the CFF DOI/link/date fields and the
-root message/abstract, update the delimited release-state block at the top of
-`README.md`, update the version/date in the manuscript `\\date{...}` line, and
-set `PUBLISH_READY=true` only in a dedicated release-preparation change. The
-shared validator rejects stale development wording or any disagreement among
-those fields and the release controls.
+records. Do not retarget, delete, replace, or silently edit them. The corrected
+release uses the existing enabled GitHub-to-Zenodo integration, matching the
+v0.1.0 archival path. `ZENODO_AUTO` is an explicit machine-readable final mode:
+the GitHub release is frozen first, Zenodo then archives its tagged source and
+assigns the exact immutable version DOI under concept DOI
+`10.5281/zenodo.21966590`. `UNRESERVED` remains permitted only for a `-dev`
+version with the publication gate closed. The shared validator rejects stale
+development wording or disagreement among controls, CFF, README, and the
+manuscript date/version.
 
 ## 1. Author responsibility
 
@@ -53,22 +43,21 @@ accept responsibility for every mathematical and attribution claim, and
 confirm that the first page says “Preliminary and unrefereed.” AI systems are
 not authors and cannot perform this approval.
 
-## 2. Keep automatic Zenodo ingestion disabled for corrected releases
+## 2. Use the enabled automatic Zenodo ingestion
 
-The v0.1.0 priority snapshot used Zenodo's GitHub integration, which archived
-the tagged source but not the standalone GitHub Release assets. Do not use
-that automatic path for a corrected version. Before publishing the corrected
-GitHub Release, open the Zenodo GitHub integration and confirm that automatic
-archiving is disabled for `khanukov/erdos302`. Otherwise the GitHub Release
-event can create a source-only Zenodo version before the complete file
-inventory and hashes have been checked.
+The v0.1.0 priority snapshot used Zenodo's GitHub integration, and the same
+enabled repository integration is the publication path for v0.1.1. A public
+GitHub release triggers Zenodo to archive the tagged source, create the next
+version in the existing lineage, and assign its version DOI. Do not create a
+second manual **New version** draft for the same tag, because that could race
+or duplicate the automatic deposit.
 
-Instead, reserve an unpublished **New version** draft under the existing
-concept DOI, leave that draft unpublished while GitHub CI and the prerelease
-finish, and then explicitly upload every validated GitHub Release asset as
-specified in `POST_RELEASE_CHECKLIST.md`. Do not re-enable automatic ingestion
-for this repository unless a separately reviewed archival design prevents a
-duplicate or prematurely published Zenodo version.
+This path intentionally separates preservation scopes. Zenodo preserves the
+tagged source snapshot and DOI lineage. The standalone PDF, verification
+transcript, release ZIP, arXiv source bundle, and SHA-256 manifests remain the
+complete checked GitHub Release asset set. The repository and release notes
+must state that distinction rather than claiming that automatic ingestion
+copies every binary release asset.
 
 Official instructions:
 
@@ -120,9 +109,10 @@ push-triggered `Verify` workflow on `main`. It first requires
 the release controls and CFF to pass the same machine validator used by the
 candidate builder. It then requires `release/PUBLISH_READY` to contain exactly
 `true`; `false` exits without any GitHub mutation and every other value fails.
-A version ending in `-dev` or carrying an unreserved/historical DOI is also
-unpublishable even if the gate is accidentally opened. Once the author
-deliberately opens the gate for a final version, the workflow uses the tag in
+A version ending in `-dev` or carrying `UNRESERVED`/the historical v0.1.0 DOI
+is also unpublishable even if the gate is accidentally opened. A final version
+may carry a reserved DOI or the explicit `ZENODO_AUTO` mode. Once the author
+deliberately opens the gate, the workflow uses the tag in
 `release/PREPRINT_TAG` on the exact verified commit, downloads the matching
 candidate artifact, confirms that the artifact records the same commit and
 run URL, and verifies:
@@ -181,10 +171,13 @@ version; do not claim that the v0.1.0 Zenodo record contains them.
 Record both the version DOI and the concept DOI. Use the version DOI when
 citing this exact priority snapshot.
 
-For a corrected version, do not edit or overwrite v0.1.0. Reserve a Zenodo new-
-version draft, upload the exact validated GitHub assets, reproduce all hashes,
-add the mixed-license and AI/trust-boundary disclosures, and publish only after
-the cross-checks in `POST_RELEASE_CHECKLIST.md` pass.
+For the corrected version, do not edit or overwrite v0.1.0. Confirm that the
+automatic record appears as the next version under concept DOI
+`10.5281/zenodo.21966590`, record the new version DOI, and verify that its
+source ZIP corresponds to `v0.1.1-corrected-preprint`. The exact PDF and full
+verified asset inventory are authenticated on the GitHub Release by
+`GITHUB_RELEASE_SHA256SUMS.txt`; automatic Zenodo ingestion is not claimed to
+mirror those individual assets.
 
 ## 6. Submit arXiv v1
 
@@ -214,11 +207,13 @@ of the scientific record; later corrections belong in a replacement version.
 
 ## 7. Solicit review and announce carefully
 
-The DOI and GitHub Release links in `release/REVIEW_REQUEST.md` and
-`release/ANNOUNCEMENT.md` identify the actual v0.1.0 records. They explicitly
-state that no arXiv identifier is yet available. Before sending a review
-request, personalize the salutation and relevance sentence. Do not imply that
-a recipient has reviewed or endorsed the paper without explicit permission.
+The GitHub Release and concept-DOI links in `release/REVIEW_REQUEST.md` and
+`release/ANNOUNCEMENT.md` identify v0.1.1 while preserving the historical
+v0.1.0 DOI. They explicitly state that no arXiv identifier is yet available
+and that the exact v0.1.1 DOI is assigned after automatic ingestion. Before
+sending a review request, personalize the salutation and relevance sentence.
+Do not imply that a recipient has reviewed or endorsed the paper without
+explicit permission.
 
 ## 8. Still prohibited before validation
 
