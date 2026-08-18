@@ -1,8 +1,8 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.1.1-preprint` is a preliminary, unrefereed corrected preprint and
-is not independently verified.** It is released under
+**Version `0.1.1-preprint` is a corrected preprint. Preliminary and unrefereed;
+it is not independently verified.** It is released under
 [`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint).
 Zenodo archives the tagged source automatically under concept DOI
 [`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assigns
