@@ -1,8 +1,8 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.1.1-dev` is an unreleased development tree — preliminary and
-unrefereed.** The latest published priority snapshot remains
+**Version `0.1.1-dev` is an unreleased development tree. Preliminary and unrefereed.**
+The latest published priority snapshot remains
 [`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint),
 archived under DOI
 [`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591).
@@ -43,11 +43,13 @@ rational verifier. The lower result is an elementary odd-quarter padding
 derivation from Donald Della Pietra's pinned, unrefereed Lean development for
 Erdős Problem 301. The lower bound is unconditional in the standard formal
 sense: the upstream results are imported as proof terms, not assumed as
-hypotheses. The ordinary build uses the pinned Mathlib binary cache; CI then
-runs `leanchecker --fresh Erdos302Lower` to replay the complete
-imported-and-local `.olean` closure through Lean's kernel into a fresh
-environment. This kernel-checks the stored proof terms while structurally
-trusting `.olean` serialization. Its
+hypotheses. The ordinary build uses the pinned Mathlib binary cache. Pull
+request CI performs the source audit, exact-pins build, and axiom comparison;
+it skips the long full-closure replay. Blocking Verify runs on pushes to
+`main`, version tags, and manual dispatch additionally run
+`leanchecker --fresh Erdos302Lower` over the complete imported-and-local
+`.olean` closure. This kernel-checks the stored proof terms in a fresh
+environment while structurally trusting `.olean` serialization. Its
 transitive axiom report contains only `propext`, `Classical.choice`, and
 `Quot.sound`. The constant \(\delta\) is qualitative and non-explicit, and the
 external developments and this manuscript are unrefereed.
@@ -114,7 +116,7 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 | Derived \(D(720)\) multiplier/disjoint-prefix transfer | human comparison argument in the manuscript |
 | Upper asymptotic disjoint-block argument | human proof in the manuscript |
 | Upper end-to-end Lean formalization | not complete |
-| Lower analytic input | pinned cached `.olean` closure with blocking Lean-kernel replay into a fresh environment; serialization trusted; unrefereed |
+| Lower analytic input | pinned cached `.olean` closure; full Lean-kernel replay runs on `main`, tag, and manual Verify events but is skipped on pull requests; the automated publisher accepts only a successful push-to-`main` run for the exact commit; serialization trusted; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
 
@@ -218,10 +220,12 @@ The dependency graph is pinned to:
 - `leanprover/lean4:v4.33.0-rc1`.
 
 The local source contains no `sorry`, `admit`, project-local `axiom`,
-`opaque`, `unsafe`, or `native_decide`. CI fresh-replays the stored dependency
-closure and separately reproduces an axiom report limited to the ordinary
-Mathlib foundations `propext`, `Classical.choice`, and `Quot.sound`. The source
-audit itself is only a lexical guard over the six project-owned lower files.
+`opaque`, `unsafe`, or `native_decide`. Every lower CI path reproduces the
+axiom report limited to the ordinary Mathlib foundations `propext`,
+`Classical.choice`, and `Quot.sound`. The blocking `main`, tag, and manual
+paths additionally fresh-replay the stored dependency closure; pull requests
+skip that long step. The source audit itself is only a lexical guard over the
+six project-owned lower files.
 
 See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 [trust boundary](docs/TRUST_BOUNDARY.md) before reusing or citing the lower
@@ -255,8 +259,14 @@ The SciPy/HiGHS regression cross-check is outside the proof boundary. Run it
 as an additional layer with `RUN_MILP_CROSSCHECK=1 scripts/verify_all.sh`
 after installing `requirements-crosscheck.txt`.
 
-The manuscript source is `paper/erdos302_two_sided.tex`; CI produces its PDF
-artifact only after every proof-boundary job passes. The historical
+The manuscript source is `paper/erdos302_two_sided.tex`. Pull-request CI may
+produce development PDF and bundle artifacts after the PR-scoped checks pass;
+those artifacts do not include fresh-replay evidence and are not authoritative
+release candidates. The automated publisher accepts a release PDF and bundle
+only from a successful push-triggered Verify run on `main` for the exact
+commit, including the full lower closure replay. Tag-triggered and manual runs
+also execute that replay, but provide only additional evidence and are not
+authoritative publisher inputs. The historical
 `paper/erdos302_upper_bound.tex` is retained only to document the earlier
 \(Q=3360\) stage; it is no longer the headline result.
 
@@ -270,7 +280,8 @@ is provided in [CITATION.cff](CITATION.cff).
 A tagged GitHub/Zenodo release and an arXiv preprint may be published before
 independent human review to establish a public timestamp, provided that:
 
-1. every proof-boundary CI job passes on the exact released commit;
+1. every proof-boundary CI job passes in a push-triggered `main` Verify run on
+   the exact released commit;
 2. the manuscript and release are explicitly labelled preliminary and
    unrefereed;
 3. AI assistance, external dependencies, licensing, and trust boundaries

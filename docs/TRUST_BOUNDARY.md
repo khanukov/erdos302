@@ -5,10 +5,12 @@ The two bounds use intentionally separate proof routes.
 The lower conclusion is an unconditional theorem of the current two-sided
 draft in the standard formal sense. The root Lean project does not check that
 route. A separate exact-pins `lower-lean` job builds the local bridge against
-the pinned dependency environment, replays the complete imported-and-local
-`.olean` environment through Lean's kernel into a fresh environment, and
-reproduces the committed transitive axiom report byte for byte. The result is qualitative and
-unrefereed, but it is not conditional on an upstream mathematical hypothesis.
+the pinned dependency environment and reproduces the committed transitive
+axiom report byte for byte. On pushes to `main`, version tags, and manual
+workflow runs, it also replays the complete imported-and-local `.olean`
+environment through Lean's kernel into a fresh environment. Pull requests
+skip only that long replay. The result is qualitative and unrefereed, but it
+is not conditional on an upstream mathematical hypothesis.
 
 Here "standard formal sense" refers only to the reported foundational axiom
 set.  It does **not** mean that the dependency stack is standard upstream
@@ -17,7 +19,8 @@ Lean/Mathlib: the build deliberately pins prerelease Lean `v4.33.0-rc1`, the
 `Mathlib.NumberTheory.Mertens` module. CI fetches those exact source revisions,
 but its ordinary build deliberately uses Mathlib's `lake exe cache get` binary
 cache and therefore does **not** source-recompile every upstream dependency.
-After that build, the blocking command
+After that build, the command that is blocking on `main`, version tags, and
+manual `workflow_dispatch` runs is
 
 ```text
 lake env leanchecker --fresh Erdos302Lower
@@ -28,6 +31,13 @@ Lean's kernel into a fresh environment. This closes the ordinary cached-`.olean`
 replay gap. It is not a cache-free source build: `leanchecker` reads and
 structurally trusts the serialized `.olean` files while kernel-checking the
 proof terms they contain.
+
+The pull-request path still rejects source-level proof escapes, builds the
+exact pinned project, and reproduces the axiom transcript. It omits the full
+replay to keep routine review runs bounded. Tag-triggered and manual runs do
+execute the replay as additional evidence, but the automated release gate
+accepts only a successful push-triggered Verify run on `main` for the exact
+commit.
 
 ## Upper bound
 
@@ -189,13 +199,17 @@ The merged two-sided package at commit
 jobs on `main` in
 [GitHub Actions run 31916282207](https://github.com/khanukov/erdos302/actions/runs/31916282207).
 The wording changes made after the first gate are recorded in
-[LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md). Every subsequent
-integration or release commit must pass the same required jobs. The historical
+[LOWER_RELEASE_RESTORATION.md](LOWER_RELEASE_RESTORATION.md). Every commit
+integrated to `main`, and every tag or manual Verify run, executes the full
+replay path. The historical
 runs above used the exact cache-backed build and axiom comparison but predate
 the blocking `leanchecker --fresh` step; they must not be cited as fresh-replay
-records. Green CI on the present workflow
-permits repository merge and a versioned preliminary GitHub/Zenodo/arXiv
-release when the unrefereed status and all trust-boundary disclosures remain
-explicit. Named independent human review, or complete end-to-end formalization
-of every released claim, is still required before an Erdős Problems forum post
-or any description of the result as independently verified.
+records. Green pull-request CI permits repository merge; a versioned
+preliminary GitHub/Zenodo/arXiv release additionally requires a successful
+push-triggered Verify run on `main` for the exact commit, including the full
+replay. Tag and manual runs are additional evidence, not authoritative inputs
+to the automated publisher. The unrefereed status and all trust-boundary
+disclosures must remain explicit.
+Named independent human review, or complete end-to-end formalization of every
+released claim, is still required before an Erdős Problems forum post or any
+description of the result as independently verified.

@@ -48,9 +48,19 @@ substitute for a named referee.
       module) is disclosed separately from the standard foundational axiom
       set.
 - [x] The current workflow includes a blocking
-      `leanchecker --fresh Erdos302Lower` replay. Its exact pinned binary and
-      flag were smoke-tested locally; the complete closure must pass on the
-      exact PR/release CI run before publication.
+      `leanchecker --fresh Erdos302Lower` replay on pushes to `main`, version
+      tags, and manual runs. Its exact pinned binary and flag were smoke-tested
+      locally; pull requests skip the long replay, but the complete closure
+      must pass on the push-triggered `main` Verify run for the exact commit
+      before automated publication. Tag and manual runs are additional
+      evidence, not authoritative publisher inputs.
+- [x] In [GitHub Actions run 32082358958](https://github.com/khanukov/erdos302/actions/runs/32082358958),
+      the `lower-lean` job and its then-unconditional full replay succeeded;
+      the replay took about 26 minutes 46 seconds. The overall run later
+      failed at the case-sensitive README publication-wording grep corrected
+      here. It is useful replay evidence for that commit, but it is not a
+      successful push-to-`main` release-gating run and does not replace replay
+      on the exact eventual released commit.
 - [x] Open erdos-327-proof PR #1 at
       `6725359adfc2b0e3799777805da493df0613c1a2` is disclosed as an
       exposition-only correction: no Lean file and no theorem, exponent,
@@ -64,8 +74,8 @@ substitute for a named referee.
 
 Do not describe this work as a solution of Erdős Problem 302. A two-sided
 release requires green upper, mutation, root-Lean, lower-Lean fresh replay,
-axiom-audit, paper, and release-bundle jobs for the exact commit being
-released. A tagged
+axiom-audit, paper, and release-bundle jobs in a push-triggered `main` Verify
+run for the exact commit being released. A tagged
 GitHub/Zenodo release and an arXiv preprint may be published before the
 unchecked named-human-review item is completed only when they are explicitly
 labelled preliminary and unrefereed and make no claim of independent

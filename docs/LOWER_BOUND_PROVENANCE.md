@@ -3,9 +3,11 @@
 The unconditional lower-bound theorem in `lower-lean/` is a downstream
 derivation from a specific structured witness in Donald Della Pietra's Erdős
 Problem 301 Lean development. It does not import an informal numerical
-estimate or assume the upstream result as a hypothesis: the exact pinned proof
-terms stored in the imported `.olean` closure are replayed through Lean's
-kernel into a fresh environment. The theorem is qualitative and unrefereed.
+estimate or assume the upstream result as a hypothesis: the push-to-`main`
+release-gating Verify run replays the exact pinned proof terms stored in the
+imported `.olean` closure through Lean's kernel into a fresh environment. Tag
+and manual runs repeat the replay as additional evidence. The theorem is
+qualitative and unrefereed.
 The local bridge was
 compiled from the exact pins and its axiom report was reproduced in
 [GitHub Actions run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465)
@@ -44,7 +46,8 @@ nonstandard, exactly pinned stack: the prerelease Lean toolchain
 from `lake-manifest.json`, fetches the exact source revisions, downloads
 precompiled upstream `.olean` files with `lake exe cache get`, and builds the
 local project. Consequently the ordinary build is not a cache-free source
-recompilation of the complete dependency closure. CI then runs
+recompilation of the complete dependency closure. On pushes to `main`, version
+tags, and manual `workflow_dispatch` runs, CI then runs
 
 ```text
 lake env leanchecker --fresh Erdos302Lower
@@ -52,8 +55,9 @@ lake env leanchecker --fresh Erdos302Lower
 
 which replays all stored imported and local declarations through Lean's kernel
 into a fresh environment. The replay kernel-checks the proof terms, while
-structurally trusting the serialized `.olean` input. Separately, CI checks that the axiom
-report
+structurally trusting the serialized `.olean` input. Pull-request CI skips
+this long replay but still performs the source audit, exact-pins build, and
+axiom comparison. Separately, every CI path checks that the axiom report
 contains only `propext`, `Classical.choice`, and `Quot.sound`.  It would be
 incorrect to describe these dependencies as stock Mathlib or as a standard
 Lean release.
@@ -127,7 +131,8 @@ After increasing \(N_0\), the committed theorem takes
 \(\delta\) is asserted. The exact cache-backed dependency build and
 axiom-report comparison passed in the historical reproduction run recorded
 above. The current workflow additionally requires the fresh replay before the
-lower-bound job can pass.
+lower-bound job can pass on `main`, tag, and manual runs; it is deliberately
+skipped on pull requests.
 
 ## Source-audit scope
 

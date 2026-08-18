@@ -40,9 +40,10 @@ certificate on the nontrivial divisors of $139708800$ gives
 The upper finite certificate is checked by a dependency-free exact
 verification path.  The lower derivation is checked in Lean through pinned
 external Problem 301/327 dependencies. The lower statement is unconditional
-in the standard formal sense: CI fresh-replays its complete exact-pinned
-stored dependency closure through the Lean kernel and reports no nonstandard
-axioms. The replay structurally trusts the serialized \texttt{.olean} input.
+in the standard formal sense: push-to-main release-gating CI fresh-replays its
+complete exact-pinned stored dependency closure through the Lean kernel and
+reports no nonstandard axioms. The replay structurally trusts the serialized
+\texttt{.olean} input.
 Its constant is qualitative and non-explicit, and the external developments
 and this manuscript are unrefereed. The upper asymptotic proof is not
 formalized end to end in Lean. Neither result closes Problem 302.
@@ -174,9 +175,10 @@ uses the centered-tail library developed for Problem 327
 analytic estimates \cite{Tenenbaum2015,BretecheTenenbaum2026}.  These external
 developments are unrefereed.
 
-The structured proposition is not assumed as a hypothesis. Its exact pinned
-proof term and complete transitive stored dependency closure, including the
-analytic input, are replayed through Lean's kernel into a fresh environment.
+The structured proposition is not assumed as a hypothesis. For release
+verification, its exact pinned proof term and complete transitive stored
+dependency closure, including the analytic input, are replayed through Lean's
+kernel into a fresh environment.
 The replay kernel-checks the proof terms while structurally trusting the serialized
 \texttt{.olean} input. The resulting lower theorem is therefore unconditional
 in the standard formal sense, while remaining an unrefereed result with a
@@ -416,10 +418,14 @@ built from the exact pins and reproduced its committed transitive axiom report
 in GitHub Actions run
 \href{https://github.com/khanukov/erdos302/actions/runs/31909273465}{31909273465}.
 That historical run used the binary-cache-backed build and predates the
-current blocking fresh-replay step. The present workflow additionally runs
+current blocking fresh-replay step. On pushes to \texttt{main}, version tags,
+and manual runs, the present workflow additionally runs
 \texttt{lake env leanchecker {-}{-}fresh Erdos302Lower} over the complete top
-module import closure. The upstream results are imported as proof terms, not
-as hypotheses.
+module import closure. Pull-request CI still performs the source audit, exact
+build, and axiom comparison, but skips this long replay. Tag and manual runs
+provide additional replay evidence; automated publication accepts only the
+successful push-to-main run for the exact commit. The upstream results are
+imported as proof terms, not as hypotheses.
 The transitive axiom transcript contains only \texttt{propext},
 \texttt{Classical.choice}, and \texttt{Quot.sound}; no project-local open proof
 obligation is admitted.  Thus the lower statement is unconditional in the

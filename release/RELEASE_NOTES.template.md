@@ -25,8 +25,9 @@ for all sufficiently large \(N\), and that
 The upper bound is supported by an exact rational certificate and
 dependency-free verification path. The qualitative lower improvement is
 Lean-checked through immutable pinned external formal developments; the
-workflow fresh-replays the stored dependency closure through Lean's kernel and
-separately reproduces its axiom report. The replay structurally trusts
+required push-to-`main` release-gating Verify run fresh-replays the stored
+dependency closure through Lean's kernel and separately reproduces its axiom
+report. The replay structurally trusts
 `.olean` serialization. The upper asymptotic passage remains a human proof and
 is not formalized end to end in Lean. Full trust-boundary and AI-assistance
 disclosures are included in the manuscript and repository.

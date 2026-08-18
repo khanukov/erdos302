@@ -127,6 +127,13 @@ top module and its full imported `.olean` closure and replays every stored
 constant through Lean's kernel into a fresh environment. It kernel-checks
 those proof terms while structurally trusting `.olean` serialization.
 
+GitHub pull-request CI runs the source audit, exact-pins build, and axiom
+comparison, but deliberately skips this long full-closure replay. The replay
+is blocking on pushes to `main`, version tags, and manual `workflow_dispatch`
+runs. Tag and manual runs provide additional replay evidence, but the
+automated publisher accepts only a successful push-triggered Verify run on
+`main` for the exact released commit.
+
 The source audit must also succeed:
 
 ```bash
@@ -146,8 +153,9 @@ That historical run predates the blocking fresh-replay step; it establishes
 the cache-backed build and byte-for-byte axiom comparison, not fresh replay.
 The transitive axiom set is limited to `propext`, `Classical.choice`, and
 `Quot.sound`. The pinned upstream packages are unrefereed formal developments
-whose stored imported proof terms are covered by the current replay through
-Lean's kernel into a fresh environment. This makes the
+whose stored imported proof terms are covered by the blocking replay on
+`main`, tag, and manual runs. Automated release evidence comes specifically
+from the push-to-`main` run for the exact commit. This makes the
 qualitative, non-explicit-\(\delta\) lower theorem unconditional in the standard
 formal sense; that phrase refers to the axiom closure, not to a claim that the
 software stack is standard upstream Lean/Mathlib.  The reproduced stack is
@@ -222,8 +230,15 @@ The PDF is a build artifact and is not committed.
 
 ## Preliminary preprint bundle
 
-After every proof-boundary check is available, a clean checkout can assemble
-the exact release candidate with:
+On a pull request, GitHub Actions may assemble a development bundle once the
+PR-scoped checks pass. That path includes the lower source audit, exact-pins
+build, and axiom comparison, but not the full fresh replay, so its artifact is
+for review rather than publication. An authoritative release candidate must
+instead come from a successful push-triggered Verify run on `main` for the
+exact commit, including the full lower closure replay. Tag and manual runs may
+add replay evidence, but the automated publisher does not accept their bundle
+artifacts. The candidate artifact from that `main` run is authoritative; a
+clean checkout can reproduce it locally with:
 
 ```bash
 python3 scripts/build_preprint_release.py --output dist/preprint
@@ -236,9 +251,11 @@ python3 scripts/build_preprint_release.py --output dist/preprint
 The script refuses tracked worktree changes, records the exact commit and CI
 run, repeats every finite exact verifier and mutation test, rebuilds the PDF,
 and emits deterministic ZIP and arXiv-source archives. It does not rerun the
-two Lean builds itself; the GitHub Actions `preprint-bundle` job is dependency-
-gated on the successful root- and lower-Lean jobs and includes the reproduced
-lower axiom transcript. See
+two Lean builds itself. On pull requests, the GitHub Actions
+`preprint-bundle` job is gated on the PR-scoped root- and lower-Lean jobs and
+therefore produces only development evidence. Publication additionally
+requires the successful push-to-`main` run described above; its lower job
+includes both the reproduced axiom transcript and full fresh replay. See
 [docs/PREPRINT_RELEASE.md](docs/PREPRINT_RELEASE.md) for the publication
 sequence and human-only author-approval step.
 

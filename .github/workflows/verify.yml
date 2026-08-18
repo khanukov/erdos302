@@ -110,6 +110,48 @@ jobs:
         run: python3 -I -S -O scripts/verify_wang_two_tail_baseline.py
       - run: test -z "$(git status --porcelain)"
 
+  release-safety:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Compile the release builder, publisher, and safety tests
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/pycache
+        run: |
+          python3 -m py_compile \
+            scripts/build_preprint_release.py \
+            scripts/publish_preprint.py \
+            scripts/test_publish_preprint.py
+      - name: Run dependency-free publication safety tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -I -S scripts/test_publish_preprint.py -v
+      - name: Validate controls and exercise the closed publication gate
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python_bin="$(command -v python3)"
+          PATH=/nonexistent "${python_bin}" -I -S \
+            scripts/build_preprint_release.py --check-controls-only
+          case "$(cat release/PUBLISH_READY)" in
+            false)
+              PATH=/nonexistent "${python_bin}" -I -S \
+                scripts/publish_preprint.py
+              ;;
+            true)
+              echo "publication gate is open; closed-gate no-command smoke skipped"
+              ;;
+            *)
+              echo "release/PUBLISH_READY must contain exactly true or false" >&2
+              exit 1
+              ;;
+          esac
+      - run: test -z "$(git status --porcelain)"
+
   milp-crosscheck:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -153,6 +195,7 @@ jobs:
           cd lower-lean
           lake build
       - name: Replay through Lean's kernel into a fresh environment
+        if: github.event_name != 'pull_request'
         run: |
           cd lower-lean
           lake env leanchecker --fresh Erdos302Lower
@@ -164,7 +207,7 @@ jobs:
       - run: test -z "$(git status --porcelain)"
 
   paper:
-    # The manuscript PDF is produced only after every proof-boundary job passes.
+    # PR artifacts follow the PR-scoped gate; non-PR runs also require fresh replay.
     needs:
       - root-lean
       - q3360-exact
@@ -248,13 +291,14 @@ jobs:
           if-no-files-found: error
 
   preprint-bundle:
-    # This artifact exists only after every proof, regression, and paper job.
+    # PR bundles are development evidence; non-PR bundles include fresh replay.
     needs:
       - root-lean
       - q3360-exact
       - hierarchical-upper
       - upper-mutation-tests
       - comparison-baseline
+      - release-safety
       - milp-crosscheck
       - lower-lean
       - paper
