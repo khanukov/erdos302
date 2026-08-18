@@ -1,4 +1,8 @@
-# Public preprint announcement
+# Public preprint announcement for v0.1.0
+
+This file records the links that actually exist for the released priority
+snapshot. There is no arXiv identifier yet; do not add or imply one until an
+arXiv submission has been announced.
 
 We have posted a preliminary, unrefereed preprint giving two-sided partial
 progress on Erdős Problem 302:
@@ -24,6 +28,8 @@ This is partial progress, not a solution of Problem 302. The manuscript and
 external formal developments are unrefereed, and the upper asymptotic proof is
 not formalized end to end in Lean.
 
-- Preprint: [ARXIV_URL]
-- Archived release and DOI: [ZENODO_DOI_URL]
-- Verification release: [GITHUB_RELEASE_URL]
+- Manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.1.0-priority-preprint/erdos302-v0.1.0-preprint.pdf>
+- Version DOI for the archived source snapshot: <https://doi.org/10.5281/zenodo.21966591>
+- Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
+- Verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
+- arXiv: not yet available

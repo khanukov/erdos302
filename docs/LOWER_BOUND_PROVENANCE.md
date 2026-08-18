@@ -3,12 +3,17 @@
 The unconditional lower-bound theorem in `lower-lean/` is a downstream
 derivation from a specific structured witness in Donald Della Pietra's Erdős
 Problem 301 Lean development. It does not import an informal numerical
-estimate or assume the upstream result as a hypothesis: the exact pinned proof
-terms and their complete dependency closure are checked by the Lean kernel.
-The theorem is qualitative and unrefereed. The local bridge was compiled from
-the exact pins and its axiom report was reproduced in
+estimate or assume the upstream result as a hypothesis: the push-to-`main`
+release-gating Verify run replays the exact pinned proof terms stored in the
+imported `.olean` closure through Lean's kernel into a fresh environment. Tag
+and manual runs repeat the replay as additional evidence. The theorem is
+qualitative and unrefereed.
+The local bridge was
+compiled from the exact pins and its axiom report was reproduced in
 [GitHub Actions run 31909273465](https://github.com/khanukov/erdos302/actions/runs/31909273465)
 at commit `4c365e9ded04f04ecd9a6d89a38f97c529194475`.
+That historical run used the binary-cache-backed build described below and did
+not yet run the later `leanchecker --fresh` hardening step.
 
 ## Exact dependency pins
 
@@ -37,9 +42,22 @@ The phrase "unconditional in the standard formal sense" describes the
 *axiom closure*, not the software stack.  The lower build deliberately uses a
 nonstandard, exactly pinned stack: the prerelease Lean toolchain
 `v4.33.0-rc1` and the `teorth/mathlib4` fork containing the unmerged
-`Mathlib.NumberTheory.Mertens` module.  CI reconstructs that stack from
-`lake-manifest.json`, builds the complete dependency closure, and checks that
-the resulting axiom report
+`Mathlib.NumberTheory.Mertens` module. CI reconstructs the dependency graph
+from `lake-manifest.json`, fetches the exact source revisions, downloads
+precompiled upstream `.olean` files with `lake exe cache get`, and builds the
+local project. Consequently the ordinary build is not a cache-free source
+recompilation of the complete dependency closure. On pushes to `main`, version
+tags, and manual `workflow_dispatch` runs, CI then runs
+
+```text
+lake env leanchecker --fresh Erdos302Lower
+```
+
+which replays all stored imported and local declarations through Lean's kernel
+into a fresh environment. The replay kernel-checks the proof terms, while
+structurally trusting the serialized `.olean` input. Pull-request CI skips
+this long replay but still performs the source audit, exact-pins build, and
+axiom comparison. Separately, every CI path checks that the axiom report
 contains only `propext`, `Classical.choice`, and `Quot.sound`.  It would be
 incorrect to describe these dependencies as stock Mathlib or as a standard
 Lean release.
@@ -110,8 +128,20 @@ from \(C_N\). Consequently
 
 After increasing \(N_0\), the committed theorem takes
 \(\delta=\rho_L/48>0\). No numerical value of \(L\), \(\rho_L\), or
-\(\delta\) is asserted. The exact dependency build and axiom-report comparison
-passed in the reproduction run recorded above.
+\(\delta\) is asserted. The exact cache-backed dependency build and
+axiom-report comparison passed in the historical reproduction run recorded
+above. The current workflow additionally requires the fresh replay before the
+lower-bound job can pass on `main`, tag, and manual runs; it is deliberately
+skipped on pull requests.
+
+## Source-audit scope
+
+`scripts/audit_lower_sources.py` is a lexical guard over the six
+project-owned `lower-lean/Erdos302Lower*.lean` files. It rejects occurrences of
+`sorry`, `sorryAx`, `admit`, `axiom`, `opaque`, `unsafe`, and `native_decide`.
+It neither parses Lean nor scans the external #301, #327, and Mathlib source
+trees. Its role is defense in depth; the transitive `#print axioms` transcript
+and `leanchecker --fresh` replay establish different, stronger properties.
 
 ## Attribution and licensing
 

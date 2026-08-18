@@ -24,10 +24,19 @@ for all sufficiently large \(N\), and that
 
 The upper bound is supported by an exact rational certificate and
 dependency-free verification path. The qualitative lower improvement is
-Lean-checked through immutable pinned external formal developments. The
-upper asymptotic passage remains a human proof and is not formalized end to
-end in Lean. Full trust-boundary and AI-assistance disclosures are included
-in the manuscript and repository.
+Lean-checked through immutable pinned external formal developments; the
+required push-to-`main` release-gating Verify run fresh-replays the stored
+dependency closure through Lean's kernel and separately reproduces its axiom
+report. The replay structurally trusts
+`.olean` serialization. The upper asymptotic passage remains a human proof and
+is not formalized end to end in Lean. Full trust-boundary and AI-assistance
+disclosures are included in the manuscript and repository.
+
+This corrected version also cites Wang's May 2026 Problem 301 preprint and
+distinguishes its theorem from the \(2125/2418\) two-tail comparison used here.
+The accompanying script exactly checks its finite tile edges, prefix covers,
+and rational arithmetic; multiplier-block disjointness and asymptotic transfer
+remain human arguments.
 
 Release evidence:
 
@@ -37,6 +46,25 @@ Release evidence:
 - exact commit: `@COMMIT_SHA@`
 - required GitHub Actions run: @CI_RUN_URL@
 - manuscript length: @PDF_PAGES@ pages
+- GitHub Release: <@RELEASE_URL@>
+- version DOI: @PREPRINT_DOI_REFERENCE@
+- Zenodo concept DOI: <@CONCEPT_DOI_URL@>
+
+Preceding immutable priority snapshot (historical provenance, not identifiers
+for the `@VERSION@` candidate):
+
+- GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
+- Zenodo version DOI for the source snapshot: <https://doi.org/10.5281/zenodo.21966591>
+- Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
+
+The v0.1.0 Zenodo record preserves the tagged source snapshot. The standalone
+PDF, verification transcript, release bundle, and release-asset manifest are
+preserved as GitHub Release assets. A future Zenodo version should upload
+those files explicitly rather than relying on source-only GitHub ingestion.
+
+Do not publish these notes for a `-dev` candidate or while the version DOI is
+`UNRESERVED`. The publication workflow machine-checks the candidate DOI,
+concept DOI, exact release URLs, and CFF metadata before any GitHub mutation.
 
 The attached `GITHUB_RELEASE_SHA256SUMS.txt` authenticates every release
 asset. `VERIFICATION.txt` records the exact local acceptance outputs produced

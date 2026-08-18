@@ -1,11 +1,13 @@
 cff-version: 1.2.0
 message: >-
-  If you use this repository, its verification artifacts, or the accompanying
-  manuscript, please cite the manuscript using the metadata below.
+  The root metadata describe the unreleased post-v0.1.0 development tree.
+  Cite the preferred manuscript record below for the mathematical results and
+  the historical software reference below for the immutable v0.1.0
+  software/source snapshot. Do not cite this development version as a released
+  work.
 title: "Two-sided computer-assisted progress on Erdős Problem 302"
 type: software
-version: "0.1.0-preprint"
-date-released: 2026-08-16
+version: "0.1.1-dev"
 license: MIT
 authors:
   - family-names: Khanukov
@@ -13,9 +15,14 @@ authors:
 repository-code: "https://github.com/khanukov/erdos302"
 url: "https://github.com/khanukov/erdos302"
 abstract: >-
-  Verification materials and manuscript for unconditional but partial
-  two-sided progress on Erdős Problem 302: a qualitative Lean-checked lower
-  improvement over density 5/8 and a computer-assisted exact upper bound.
+  Unreleased development materials following the preliminary, unrefereed
+  v0.1.0 snapshot of two-sided partial progress on Erdős Problem 302. The
+  latest archived version contains a qualitative Lean-checked lower
+  improvement over density 5/8 and a computer-assisted exact upper bound; it
+  has not been independently verified. Software and verification material are
+  MIT-licensed; the manuscript is CC BY 4.0 under the path-specific scope in
+  LICENSE_SCOPE.md. The v0.1.0 tag and DOI, rather than the moving default
+  branch, define the latest published version.
 keywords:
   - Erdős problems
   - extremal number theory
@@ -30,4 +37,30 @@ preferred-citation:
     - family-names: Khanukov
       given-names: Dmitry
   year: 2026
-  status: in-preparation
+  date-released: "2026-08-16"
+  status: preprint
+  license: CC-BY-4.0
+  url: "https://github.com/khanukov/erdos302/releases/download/v0.1.0-priority-preprint/erdos302-v0.1.0-preprint.pdf"
+  notes: >-
+    Preliminary and unrefereed; not independently verified. The historical
+    software reference below names the archived source snapshot, not a
+    peer-reviewed publication.
+references:
+  - type: software
+    title: "Erdős 302 priority preprint source and verification snapshot"
+    version: "0.1.0-preprint"
+    authors:
+      - family-names: Khanukov
+        given-names: Dmitry
+    date-released: "2026-08-16"
+    doi: 10.5281/zenodo.21966591
+    license: MIT
+    repository-code: "https://github.com/khanukov/erdos302/tree/v0.1.0-priority-preprint"
+    repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint"
+    identifiers:
+      - type: doi
+        value: 10.5281/zenodo.21966590
+        description: "Zenodo concept DOI for the archived version lineage."
+    notes: >-
+      Immutable historical v0.1.0 software/source snapshot. Preliminary and
+      unrefereed; not independently verified or peer reviewed.

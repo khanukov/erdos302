@@ -15,7 +15,7 @@
 
 \title{Two-sided computer-assisted progress on Erd\H{o}s Problem 302}
 \author{Dmitry Khanukov}
-\date{Version 0.1.0-preprint, 16 August 2026\\[0.5ex]
+\date{Version 0.1.1-dev, 17 August 2026\\[0.5ex]
 \textbf{Preliminary and unrefereed}}
 
 \begin{document}
@@ -39,12 +39,14 @@ certificate on the nontrivial divisors of $139708800$ gives
 \]
 The upper finite certificate is checked by a dependency-free exact
 verification path.  The lower derivation is checked in Lean through pinned
-external Problem 301/327 dependencies.  The lower statement is unconditional
-in the standard formal sense: its complete exact-pinned dependency closure is
-kernel-checked and uses no nonstandard axioms.  Its constant is qualitative
-and non-explicit, and the external developments and this manuscript are
-unrefereed.  The upper asymptotic proof is not formalized end to end in Lean.
-Neither result closes Problem 302.
+external Problem 301/327 dependencies. The lower statement is unconditional
+in the standard formal sense: push-to-main release-gating CI fresh-replays its
+complete exact-pinned stored dependency closure through the Lean kernel and
+reports no nonstandard axioms. The replay structurally trusts the serialized
+\texttt{.olean} input.
+Its constant is qualitative and non-explicit, and the external developments
+and this manuscript are unrefereed. The upper asymptotic proof is not
+formalized end to end in Lean. Neither result closes Problem 302.
 \end{abstract}
 
 \section{Statement and prior context}
@@ -81,9 +83,33 @@ transfers only that finite two-tail configuration argument; it does not treat
 the full all-tail statement of Problem 301 as an upper-bound theorem for
 Problem 302.
 
-A previous publicly available anonymous partial proof posted in July 2026
-\cite{Partial302Pastebin2026} further refined the disjoint-dilate architecture
-to
+Wang subsequently proved the stronger bound $667/806$ for Problem 301 using
+the nontrivial divisors of $720$, exact prefix independence numbers, and a
+disjoint family of multiplier dilates \cite{Wang301_2026}.  That theorem does
+not directly give an upper bound for Problem 302: avoiding all tail lengths is
+a stricter condition than avoiding only two-tail relations, so the Problem
+301 extremal function is at most the Problem 302 extremal function.  However,
+Wang's finite tile and multiplier family can be specialized to Problem 302 by
+discarding every hyperedge except the two-tail triples.  An independent exact
+recomputation gives the first prefix thresholds at cover levels $1$ through
+$11$ as
+\[
+ 6,12,24,30,40,48,90,120,144,180,240.
+\]
+Their reciprocal sum is $293/720$, while Wang's multiplier family has density
+$120/403$.  The same disjoint-prefix count therefore gives the derived
+Problem 302 bound
+\[
+ f(N)\leq\left(1-\frac{120}{403}\frac{293}{720}+o(1)\right)N
+      =\left(\frac{2125}{2418}+o(1)\right)N.
+\]
+This specialization, rather than the $667/806$ theorem itself, is the
+transferable comparison.  The accompanying dependency-free standard-library
+verifier regenerates all divisors and two-tail edges, exhaustively computes
+the prefix cover numbers, and checks the displayed rational arithmetic.
+
+A publicly available anonymous partial proof posted independently in July 2026
+\cite{Partial302Pastebin2026} used the disjoint-dilate architecture and obtained
 \[
  f(N)\leq\left(\frac{373}{420}+o(1)\right)N.
 \]
@@ -95,7 +121,8 @@ hierarchical exact rational packings and obtains
 \]
 Numerically and exactly, the relevant upper bounds are ordered as
 \[
- \frac{140803024}{163562355}<\frac{373}{420}<\frac{25}{28}<\frac9{10}.
+ \frac{140803024}{163562355}<\frac{2125}{2418}
+ <\frac{373}{420}<\frac{25}{28}<\frac9{10}.
 \]
 It does not prove that $f(N)/N$ converges.
 
@@ -148,11 +175,14 @@ uses the centered-tail library developed for Problem 327
 analytic estimates \cite{Tenenbaum2015,BretecheTenenbaum2026}.  These external
 developments are unrefereed.
 
-The structured proposition is not assumed as a hypothesis: its exact pinned
-proof term and the complete transitive dependency closure, including the
-analytic input, are checked by the Lean kernel.  The resulting lower theorem
-is therefore unconditional in the standard formal sense, while remaining an
-unrefereed result with a qualitative, non-explicit constant.
+The structured proposition is not assumed as a hypothesis. For release
+verification, its exact pinned proof term and complete transitive stored
+dependency closure, including the analytic input, are replayed through Lean's
+kernel into a fresh environment.
+The replay kernel-checks the proof terms while structurally trusting the serialized
+\texttt{.olean} input. The resulting lower theorem is therefore unconditional
+in the standard formal sense, while remaining an unrefereed result with a
+qualitative, non-explicit constant.
 
 Define the odd quarter
 \[
@@ -387,7 +417,15 @@ The lower result imports analytic input from pinned Della Pietra Problem
 built from the exact pins and reproduced its committed transitive axiom report
 in GitHub Actions run
 \href{https://github.com/khanukov/erdos302/actions/runs/31909273465}{31909273465}.
-The upstream results are imported as checked proof terms, not as hypotheses.
+That historical run used the binary-cache-backed build and predates the
+current blocking fresh-replay step. On pushes to \texttt{main}, version tags,
+and manual runs, the present workflow additionally runs
+\texttt{lake env leanchecker {-}{-}fresh Erdos302Lower} over the complete top
+module import closure. Pull-request CI still performs the source audit, exact
+build, and axiom comparison, but skips this long replay. Tag and manual runs
+provide additional replay evidence; automated publication accepts only the
+successful push-to-main run for the exact commit. The upstream results are
+imported as proof terms, not as hypotheses.
 The transitive axiom transcript contains only \texttt{propext},
 \texttt{Classical.choice}, and \texttt{Quot.sound}; no project-local open proof
 obligation is admitted.  Thus the lower statement is unconditional in the
@@ -395,7 +433,11 @@ standard formal sense, although its constant is non-explicit and the work is
 unrefereed.  Here ``standard formal sense'' describes the axiom closure, not
 the software pedigree: the exact build deliberately uses prerelease Lean
 \texttt{v4.33.0-rc1} and the pinned \texttt{teorth/mathlib4} fork containing
-the then-unmerged \texttt{Mathlib.NumberTheory.Mertens} module.
+the then-unmerged \texttt{Mathlib.NumberTheory.\allowbreak Mertens} module.
+The ordinary build downloads precompiled Mathlib \texttt{.olean} files; fresh replay
+kernel-checks their stored proof terms but structurally trusts their
+serialization. The checker uses Lean's own kernel and is not an independent
+checker. The axiom transcript and fresh replay are separate checks.
 
 As of 15 August 2026, the pinned Problem 327 base has an open
 \href{https://github.com/donalddellapietra/erdos-327-proof/pull/1}{upstream

@@ -9,6 +9,10 @@ permissions:
   contents: write
   actions: read
 
+concurrency:
+  group: publish-preprint-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   publish:
     if: >-
@@ -23,89 +27,14 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Create tag and publish the verified main-run artifact
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+
+      - name: Validate or publish the verified main-run artifact
         env:
           GH_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: "1"
           VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
-        run: |
-          set -euo pipefail
-
-          readonly tag="$(cat release/PREPRINT_TAG)"
-          readonly version="$(cat release/PREPRINT_VERSION)"
-          readonly artifact="erdos302-v${version}-candidate"
-
-          if gh release view "${tag}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            echo "release ${tag} already exists; nothing to do"
-            exit 0
-          fi
-
-          remote_tag_sha="$(
-            git ls-remote --tags origin "refs/tags/${tag}^{}" |
-              awk 'NR == 1 {print $1}'
-          )"
-          if [[ -z "${remote_tag_sha}" ]]; then
-            remote_tag_sha="$(
-              git ls-remote --tags origin "refs/tags/${tag}" |
-                awk 'NR == 1 {print $1}'
-            )"
-          fi
-
-          if [[ -n "${remote_tag_sha}" && "${remote_tag_sha}" != "${VERIFIED_SHA}" ]]; then
-            echo "replacing unpublished tag ${tag}: ${remote_tag_sha} -> ${VERIFIED_SHA}"
-            git push origin ":refs/tags/${tag}"
-            remote_tag_sha=""
-          fi
-
-          if [[ -z "${remote_tag_sha}" ]]; then
-            git config user.name github-actions[bot]
-            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-            git tag -a "${tag}" "${VERIFIED_SHA}" \
-              -m "Erdos 302 preliminary unrefereed preprint ${version}"
-            git push origin "refs/tags/${tag}"
-          fi
-
-          source_conclusion="$(
-            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
-              --jq .conclusion
-          )"
-          source_sha="$(
-            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
-              --jq .head_sha
-          )"
-          source_event="$(
-            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
-              --jq .event
-          )"
-          source_branch="$(
-            gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
-              --jq .head_branch
-          )"
-          if [[ "${source_conclusion}" != "success" || \
-                "${source_sha}" != "${VERIFIED_SHA}" || \
-                "${source_event}" != "push" || \
-                "${source_branch}" != "main" ]]; then
-            echo "source Verify run does not match the successful main commit" >&2
-            exit 1
-          fi
-
-          readonly assets_dir="${RUNNER_TEMP}/preprint-assets"
-          mkdir -p "${assets_dir}"
-          gh run download "${SOURCE_RUN_ID}" --repo "${GITHUB_REPOSITORY}" \
-            --name "${artifact}" --dir "${assets_dir}"
-
-          (
-            cd "${assets_dir}"
-            sha256sum -c GITHUB_RELEASE_SHA256SUMS.txt
-            grep -Fqx "commit ${VERIFIED_SHA}" COMMIT_SHA.txt
-            grep -Fqx \
-              "ci-run https://github.com/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}" \
-              COMMIT_SHA.txt
-          )
-
-          gh release create "${tag}" "${assets_dir}"/* \
-            --repo "${GITHUB_REPOSITORY}" \
-            --verify-tag \
-            --prerelease \
-            --title "Erdos 302 priority preprint ${version}" \
-            --notes-file "${assets_dir}/RELEASE_NOTES.md"
+        run: python3 -I -S scripts/publish_preprint.py

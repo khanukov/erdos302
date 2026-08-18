@@ -72,6 +72,9 @@ EXPECTED_COVER_LEVELS = 274
 EXPECTED_CONFIGURATION_DIGEST = (
     "b6d0d19a51029400cc63e8cca5a4b7e1da99f7d4e6b62a479d5ed92cb8a1eafa"
 )
+EXPECTED_BASE_VERIFIER_SHA256 = (
+    "1c58a0b497bb2b2f91eae115dc602dd86264c618edab2234c55e392b9707209d"
+)
 
 G_DENOMINATORS: tuple[int, ...] = ()
 G_CONFIGS: tuple[tuple[int, int, tuple[int, ...]], ...] = ()
@@ -410,6 +413,11 @@ def load_base_verifier(path: Path):
     """Load the pinned base checker from an explicit, auditable path."""
     resolved = path.resolve()
     require(resolved.is_file(), f"base verifier not found: {resolved}")
+    digest = hashlib.sha256(resolved.read_bytes()).hexdigest()
+    require(
+        digest == EXPECTED_BASE_VERIFIER_SHA256,
+        f"base verifier sha256: {digest}",
+    )
     spec = importlib.util.spec_from_file_location(
         "erdos302_q3360_exact_certificate",
         resolved,
@@ -440,7 +448,13 @@ def verify_base_gadgets(base_verifier_path: Path | None) -> None:
 
     denominators = list(divisors_from_box(BASE_PRIMES, BASE_EXPONENTS))
     require(denominators == expected_denominators, "base denominators")
-    edges = base_edges(denominators)
+    edges = tuple(base_edges(denominators))
+    locally_generated_edges = reciprocal_edges(denominators)
+    require(
+        len(edges) == len(locally_generated_edges)
+        and set(edges) == set(locally_generated_edges),
+        "base reciprocal-edge generators disagree",
+    )
     checker = exact_prefix_cover(denominators, edges)
     q_values, _ = checker.exact_prefix_values()
     require(q_values == expected_q_values, "base exact prefix values")
