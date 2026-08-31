@@ -6,4 +6,5 @@ import Erdos302.Valuation
 import Erdos302.Generated.DivisorHypergraph
 import Erdos302.Generated.PrefixStrength
 import Erdos302.Generated.Gadgets
+import Erdos302.Generated.BasePrefix.All
 import Erdos302.Generated.Configurations
