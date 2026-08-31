@@ -19,6 +19,7 @@ import Erdos302.Generated.BasePrefix.Certificate17
 import Erdos302.Generated.BasePrefix.Certificate18
 import Erdos302.Generated.BasePrefix.Certificate19
 import Erdos302.Generated.BasePrefix.Certificate20
+import Erdos302.Generated.BasePrefix.Semantic
 import Erdos302.Generated.Gadgets
 
 namespace Erdos302.Generated
@@ -51,5 +52,8 @@ theorem basePrefixDemands_valid : BasePrefixDemandsValid := by
   | 18 => exact Certificate18.demand_valid
   | 19 => exact Certificate19.demand_valid
   | 20 => exact Certificate20.demand_valid
+
+/-- The public aggregate exposes the exact mathematical hypergraph bridge. -/
+theorem basePrefix_cover_semantics := BasePrefix.cover_iff_mathematical
 
 end Erdos302.Generated

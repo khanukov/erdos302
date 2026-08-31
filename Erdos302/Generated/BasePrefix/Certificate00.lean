@@ -1,35 +1,9 @@
-import Erdos302.Generated.BasePrefix.Data
-
-set_option maxRecDepth 1000000
-set_option maxHeartbeats 0
+import Erdos302.Generated.BasePrefix.Chunked.Certificate00.Root
 
 namespace Erdos302.Generated.BasePrefix.Certificate00
 
-open Erdos302.BasePrefixCover
-open Erdos302.Generated.BasePrefix
-
-def certificate : Array (Node 47 146) := #[
-  { mask := 1, budget := 0, rule := .packing [0].toFinset }
-]
-
-def root : Fin certificate.size := ⟨0, by decide⟩
-
-theorem certificate_valid : TableValid support certificate := by
-  unfold TableValid
-  letI (i : Fin certificate.size) : Decidable (Node.Valid support certificate i) :=
-    inferInstance
-  letI : Decidable (∀ i : Fin certificate.size, Node.Valid support certificate i) :=
-    Nat.decidableForallFin _
-  decide
-theorem root_semantics :
-    activeEdges certificate[root].mask = prefixEdges 6 ∧
-    certificate[root].budget + 1 = 1 := by decide
-
-theorem demand_valid : PrefixDemand 6 1 := by
-  intro cover hcover
-  have h := valid_root_forces_cover support certificate certificate_valid root cover
-  rw [root_semantics.1] at h
-  rw [← root_semantics.2]
-  exact Nat.succ_le_iff.mpr (h hcover)
+/-- Public route to the bounded, kernel-composed certificate. -/
+theorem demand_valid : PrefixDemand 6 1 :=
+  Chunked.Certificate00.demand_valid
 
 end Erdos302.Generated.BasePrefix.Certificate00
