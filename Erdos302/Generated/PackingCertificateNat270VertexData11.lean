@@ -1,11 +1,11 @@
-import Erdos302.CertificateNatSchema
+import Erdos302.CertificateNat
 
 set_option maxRecDepth 1000
 set_option maxHeartbeats 0
 
 namespace Erdos302.Generated
 
-def packingCertificateNat270VertexChunk11 : List Erdos302.PackingTermNat := [
+def packingCertificateNat270VertexGroup44 : List Erdos302.PackingTermNat := [
   { configurationId := 3963, snapshot := { maximum := 464, demand := 1, support := [292, 302, 464] },
     numerator := 8166152516320, denominator := 22358877193079, units := 0 },
   { configurationId := 4008, snapshot := { maximum := 382, demand := 1, support := [278, 305, 382] },
@@ -16,6 +16,9 @@ def packingCertificateNat270VertexChunk11 : List Erdos302.PackingTermNat := [
     numerator := 2548402768024, denominator := 11094959211679, units := 0 },
   { configurationId := 4017, snapshot := { maximum := 322, demand := 1, support := [256, 306, 322] },
     numerator := 36334382720, denominator := 249415326731, units := 0 },
+]
+
+def packingCertificateNat270VertexGroup45 : List Erdos302.PackingTermNat := [
   { configurationId := 4075, snapshot := { maximum := 457, demand := 1, support := [295, 308, 457] },
     numerator := 84477439824, denominator := 2180372694971, units := 0 },
   { configurationId := 4076, snapshot := { maximum := 484, demand := 1, support := [299, 308, 484] },
@@ -26,6 +29,9 @@ def packingCertificateNat270VertexChunk11 : List Erdos302.PackingTermNat := [
     numerator := 619501225376, denominator := 35988217950573, units := 0 },
   { configurationId := 4132, snapshot := { maximum := 368, demand := 1, support := [276, 311, 368] },
     numerator := 8757494595088, denominator := 26639166026011, units := 0 },
+]
+
+def packingCertificateNat270VertexGroup46 : List Erdos302.PackingTermNat := [
   { configurationId := 4202, snapshot := { maximum := 554, demand := 1, support := [311, 313, 554] },
     numerator := 17881058096080, denominator := 26639166026011, units := 0 },
   { configurationId := 4204, snapshot := { maximum := 349, demand := 1, support := [272, 314, 349] },
@@ -36,6 +42,9 @@ def packingCertificateNat270VertexChunk11 : List Erdos302.PackingTermNat := [
     numerator := 4505463457280, denominator := 20218732776613, units := 0 },
   { configurationId := 4252, snapshot := { maximum := 505, demand := 1, support := [309, 316, 505] },
     numerator := 56318293216, denominator := 20218732776613, units := 0 },
+]
+
+def packingCertificateNat270VertexGroup47 : List Erdos302.PackingTermNat := [
   { configurationId := 4257, snapshot := { maximum := 333, demand := 1, support := [266, 317, 333] },
     numerator := 999649704584, denominator := 11432876751121, units := 0 },
   { configurationId := 4292, snapshot := { maximum := 543, demand := 1, support := [313, 318, 543] },
@@ -47,5 +56,8 @@ def packingCertificateNat270VertexChunk11 : List Erdos302.PackingTermNat := [
   { configurationId := 4330, snapshot := { maximum := 491, demand := 1, support := [310, 320, 491] },
     numerator := 337909759296, denominator := 6122743988461, units := 0 },
 ]
+
+def packingCertificateNat270VertexChunk11 : List Erdos302.PackingTermNat :=
+  packingCertificateNat270VertexGroup44 ++ packingCertificateNat270VertexGroup45 ++ packingCertificateNat270VertexGroup46 ++ packingCertificateNat270VertexGroup47
 
 end Erdos302.Generated

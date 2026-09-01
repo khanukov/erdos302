@@ -60,4 +60,17 @@ def checkVertexCapacityChunks (chunks : List (List PackingTermNat))
       if v ∈ t.snapshot.support then decide (t.VertexScaleOK scale) else true)) &&
     decide (vertexUnitLoadChunks chunks v scale ≤ scale)
 
+def objectiveUnitValueChunks (chunks : List (List PackingTermNat)) (scale : ℕ) : ℕ :=
+  (chunks.flatten.map fun t =>
+    t.numerator * (scale / t.denominator) * t.snapshot.demand).sum
+
+/-- Exact scalar objective check at one supplied common multiple.  Unlike the
+legacy trace checker this stores no global per-term units and builds no load
+array. -/
+def checkObjectiveChunks (chunks : List (List PackingTermNat))
+    (requiredCoverSize scale : ℕ) : Bool :=
+  decide (0 < scale) &&
+    chunks.all (fun terms => terms.all (fun t => decide (t.VertexScaleOK scale))) &&
+    decide ((requiredCoverSize - 1) * scale < objectiveUnitValueChunks chunks scale)
+
 end Erdos302

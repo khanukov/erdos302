@@ -32,7 +32,15 @@ namespace Erdos302.Generated
 def packingCertificateNat270VertexChunks : List (List Erdos302.PackingTermNat) :=
   [packingCertificateNat270VertexChunk0, packingCertificateNat270VertexChunk1, packingCertificateNat270VertexChunk2, packingCertificateNat270VertexChunk3, packingCertificateNat270VertexChunk4, packingCertificateNat270VertexChunk5, packingCertificateNat270VertexChunk6, packingCertificateNat270VertexChunk7, packingCertificateNat270VertexChunk8, packingCertificateNat270VertexChunk9, packingCertificateNat270VertexChunk10, packingCertificateNat270VertexChunk11, packingCertificateNat270VertexChunk12, packingCertificateNat270VertexChunk13, packingCertificateNat270VertexChunk14, packingCertificateNat270VertexChunk15, packingCertificateNat270VertexChunk16, packingCertificateNat270VertexChunk17, packingCertificateNat270VertexChunk18, packingCertificateNat270VertexChunk19, packingCertificateNat270VertexChunk20, packingCertificateNat270VertexChunk21, packingCertificateNat270VertexChunk22, packingCertificateNat270VertexChunk23, packingCertificateNat270VertexChunk24]
 
-def packingCertificateNat270VertexTerms : List Erdos302.PackingTermNat :=
-  packingCertificateNat270VertexChunks.flatten
+def packingCertificateNat270VertexTerms := packingCertificateNat270VertexChunks.flatten
+
+def packingCertificateNat270 : Erdos302.PackingCertificateNat := {
+  prefixSize := 719
+  requiredCoverSize := 274
+  threshold := 139708800
+  scale := 1
+  termChunks := packingCertificateNat270VertexChunks
+  unitStages := []
+}
 
 end Erdos302.Generated

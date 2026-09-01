@@ -123,6 +123,31 @@ theorem checkVertexCapacity_sound_of_links
   intro t ht
   rw [← hlinks t ht]
 
+theorem checkObjectiveChunks_sound (chunks : List (List PackingTermNat))
+    (requiredCoverSize scale : ℕ)
+    (hcheck : checkObjectiveChunks chunks requiredCoverSize scale = true) :
+    ((requiredCoverSize - 1 : ℕ) : ℚ) <
+      (chunks.flatten.map fun t => t.weight * (t.snapshot.demand : ℚ)).sum := by
+  simp only [checkObjectiveChunks, Bool.and_eq_true, decide_eq_true_eq] at hcheck
+  rcases hcheck with ⟨⟨hscale, hall⟩, hobjective⟩
+  have heach : (chunks.flatten.map fun t =>
+      t.weight * (t.snapshot.demand : ℚ)).sum =
+      (objectiveUnitValueChunks chunks scale : ℚ) / scale := by
+    rw [objectiveUnitValueChunks, ← vertexSumRatDiv]
+    simp only [List.map_map, Function.comp_apply]
+    apply vertexSumCongr
+    intro t ht
+    rcases List.mem_flatten.mp ht with ⟨terms, hterms, htterms⟩
+    have hok : t.VertexScaleOK scale := of_decide_eq_true
+      (List.all_eq_true.mp (List.all_eq_true.mp hall terms hterms) t htterms)
+    rw [t.weight_eq_vertexUnits_div hscale hok]
+    simp only [PackingTermNat.vertexUnits]
+    norm_num [Nat.cast_mul]
+    ring
+  rw [heach]
+  apply (lt_div_iff₀ (by exact_mod_cast hscale)).2
+  exact_mod_cast hobjective
+
 structure PackingCertificateNat where
   prefixSize : ℕ
   requiredCoverSize : ℕ
@@ -141,6 +166,65 @@ def PackingCertificateNat.toPackingCertificate (cert : PackingCertificateNat) : 
   threshold := cert.threshold
   termChunks := cert.termChunks.map (List.map PackingTermNat.toPackingTerm)
   loadStages := []
+
+/-- Certificate-level API for the lightweight per-vertex architecture.  All
+expensive executable checks are external hypotheses, so assembling this proof
+does not evaluate any capacity or objective checker. -/
+theorem PackingCertificateNat.valid_of_vertex_checks
+    (denominatorCount configurationCount : ℕ)
+    (denominatorAt : ℕ → ℕ) (configs : ℕ → RawConfiguration)
+    (cert : PackingCertificateNat)
+    (hp : 0 < cert.prefixSize)
+    (hpcount : cert.prefixSize ≤ denominatorCount)
+    (hthreshold : denominatorAt (cert.prefixSize - 1) = cert.threshold)
+    (hrequired : 0 < cert.requiredCoverSize)
+    (hrange : ∀ t ∈ cert.terms,
+      t.configurationId < configurationCount ∧ t.snapshot.maximum.val < cert.prefixSize)
+    (hlinks : ∀ t ∈ cert.terms, t.LinkOK configs)
+    (hpositive : ∀ t ∈ cert.terms, 0 < t.numerator ∧ 0 < t.denominator)
+    (hcapacity : ∀ v : Fin 719,
+      (cert.terms.map fun t => if v ∈ t.snapshot.support then t.weight else 0).sum ≤ 1)
+    (hobjective : ((cert.requiredCoverSize - 1 : ℕ) : ℚ) <
+      (cert.terms.map fun t => t.weight * (t.snapshot.demand : ℚ)).sum) :
+    cert.toPackingCertificate.Valid denominatorCount configurationCount denominatorAt configs := by
+  have hconverted : cert.toPackingCertificate.terms =
+      cert.terms.map PackingTermNat.toPackingTerm := by
+    simp [PackingCertificateNat.toPackingCertificate, PackingCertificate.terms,
+      PackingCertificateNat.terms]
+  refine ⟨hp, hpcount, hthreshold, hrequired, ?_, ?_, ?_⟩
+  · intro t ht
+    rw [hconverted] at ht
+    obtain ⟨term, htmem, rfl⟩ := List.mem_map.mp ht
+    exact ⟨(hrange term htmem).1, by
+      change (configs term.configurationId).maximum.val < cert.prefixSize
+      rw [← hlinks term htmem]
+      exact (hrange term htmem).2, by
+      have hn := (hpositive term htmem).1
+      have hd := (hpositive term htmem).2
+      simp only [PackingTermNat.toPackingTerm]
+      unfold PackingTermNat.weight
+      positivity⟩
+  · intro v
+    rw [PackingCertificate.load, hconverted]
+    simp only [List.map_map, Function.comp_apply, PackingTerm.configuration,
+      PackingTermNat.toPackingTerm, PackingTerm.raw, RawConfiguration.asConfiguration,
+      List.mem_toFinset]
+    convert hcapacity v using 1
+    congr 1
+    apply List.map_congr_left
+    intro t ht
+    simp only [Function.comp_apply, PackingTermNat.toPackingTerm]
+    rw [hlinks t ht]
+  · rw [PackingCertificate.objective, hconverted]
+    simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+      PackingTerm.raw, RawConfiguration.asConfiguration]
+    convert hobjective using 1
+    congr 1
+    apply List.map_congr_left
+    intro t ht
+    simp only [Function.comp_apply, PackingTermNat.toPackingTerm,
+      PackingTerm.configuration, PackingTerm.raw, RawConfiguration.asConfiguration]
+    rw [hlinks t ht]
 
 /-- Sparse natural-number update; duplicate support entries count once, exactly
 as in the existing rational certificate semantics. -/
