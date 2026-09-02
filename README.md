@@ -278,6 +278,16 @@ For the complete command ledger and audit status, see
 [independent-review checklist](docs/INDEPENDENT_REVIEW.md). Citation metadata
 is provided in [CITATION.cff](CITATION.cff).
 
+## Research notes
+
+[`docs/LOWER_BOUND_RESEARCH.md`](docs/LOWER_BOUND_RESEARCH.md) collects
+unrefereed research material on improving the lower bound: a literature
+survey, a proved obstruction to the "add conflict-free odd heads" family, a
+vertex-cover reformulation with certified finite-\(N\) values, and ranked
+directions. The supporting exploratory scripts live in
+[`scripts/explore/`](scripts/explore/README.md); they are outside the proof
+boundary and are not run by CI.
+
 ## Preliminary release policy
 
 A tagged GitHub/Zenodo release and an arXiv preprint may be published before
