@@ -197,6 +197,70 @@ The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
 algorithmically separate cross-check of the 21 base demands used by the new
 hierarchical certificate.
 
+## What the Lean files prove
+
+The single statement to read is
+`Erdos302Lower.erdos302_f302_lower_five_eighths_plus`, in
+[`lower-lean/Erdos302Lower/Maximum.lean`](lower-lean/Erdos302Lower/Maximum.lean).
+The proof modules `Defs.lean`, `FromErdos301.lean`, and `Maximum.lean`
+culminate in it; `Validate.lean` and `Axioms.lean` are not among its
+dependencies and provide independent anti-vacuity and axiom-audit checks.
+
+Its type is the wrapper `Erdos302MaximumLowerConclusion`, which unfolds to
+
+```lean
+∃ δ : ℝ, 0 < δ ∧ ∃ N₀ : ℕ, ∀ N ≥ N₀, ((5 : ℝ) / 8 + δ) * N ≤ (f302 N : ℝ)
+```
+
+The unfolded statement mentions one project definition, `f302`. Reading that
+one in turn requires `admissibleSubsets` and `NoUnitFractionTriple`, so three
+project definitions in total make up the whole vocabulary:
+
+```lean
+def NoUnitFractionTriple (A : Finset ℕ) : Prop :=
+  ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, a ≠ b → a ≠ c → b ≠ c →
+    (1 : ℚ) / a ≠ (1 : ℚ) / b + (1 : ℚ) / c
+
+noncomputable def admissibleSubsets (N : ℕ) : Finset (Finset ℕ) :=
+  (Finset.Icc 1 N).powerset.filter NoUnitFractionTriple
+
+noncomputable def f302 (N : ℕ) : ℕ :=
+  (admissibleSubsets N).sup Finset.card
+```
+
+(`admissibleSubsets` is written with `classical` in the source; it is shown
+here without that wrapper for readability.)
+
+To build it and print its axiom dependencies:
+
+```bash
+cd lower-lean
+lake exe cache get && lake build
+lake env lean Erdos302Lower/Axioms.lean
+```
+
+The last command reports the transitive axioms of that theorem, and of the
+six supporting results, as `[propext, Classical.choice, Quot.sound]`; CI
+diffs its output against the committed `AXIOMS.txt`.
+
+Two independent checks guard against the statement being vacuously true:
+`not_noUnitFractionTriple_236` and `full_interval_not_triple_free` prove that
+`{2,3,6}` and every full interval with `N ≥ 6` are *not* triple-free, so
+`NoUnitFractionTriple` is not accidentally an empty or trivial predicate.
+
+**What this does not establish.** The proof imports Della Pietra's Problem 301
+development as checked proof terms rather than as hypotheses, so its axiom
+report is clean; but its mathematical content rests entirely on that
+unrefereed external work. See [dependence on Problem 301](#dependence-on-problem-301)
+below.
+
+The upper-bound theorem is not formalized end to end in Lean. The root Lean
+project checks only reusable arithmetic components of it: the implication
+`b * c = a * (b + c) → 1/a = 1/b + 1/c`, invariance of a reciprocal relation
+under scaling, the two final rational identities, and the numerical chain
+comparing the certified bound with its predecessors. None of these establish
+the finite certificate or the asymptotic passage.
+
 ## Verify the lower bound
 
 The lower source is deliberately isolated from the root Lean 4.27 project.
@@ -235,6 +299,47 @@ See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 route. At the pinned revisions, the upstream repositories provide no license
 file; this repository pins them as external dependencies and does not vendor
 their source.
+
+## Dependence on Problem 301
+
+The lower bound is not self-contained, and the distinction between its formal
+and its mathematical status matters.
+
+*Formally*, it is unconditional: Della Pietra's Problem 301 result is imported
+as a checked proof term, not assumed as a hypothesis, so no project-local
+hypothesis appears in the statement and the transitive axiom report contains
+only `propext`, `Classical.choice`, and `Quot.sound`.
+
+*Mathematically*, it is exactly as reliable as that external work. The chain is
+
+```
+this repository's 5/8 + δ
+  └── donalddellapietra/erdos-301-proof   (unrefereed)
+        └── donalddellapietra/erdos-327-proof   (unrefereed)
+              └── standard analytic estimates in the literature
+```
+
+A clean axiom report means the Lean kernel accepted the proof terms at the
+pinned revisions. It does not mean the upstream mathematics has been reviewed
+by anyone. **Any defect in the upstream formal statement, in its
+correspondence to the intended Problem 301 claim, or in the trusted pinned
+toolchain and serialized inputs would propagate directly to the lower bound
+in this repository.**
+
+The odd-quarter padding argument, which is the part of the lower bound
+original to this work, remains valid on its own terms: it is the implication
+that adding the odd quarter to a structured carrier creates no new triple.
+What it cannot do without the upstream construction is deliver the
+\(5/8+\delta\) conclusion, because the padding contributes only
+`N/8 - O(1)` elements to a set whose `(1/2 + ρ_L/24)N` bulk comes entirely
+from upstream.
+
+The upper bound has no such dependency: it rests on the exact certificate and
+the asymptotic argument in the manuscript, both self-contained.
+
+As of 15 August 2026 the pinned Problem 327 base carries an open upstream pull
+request, which corrects manuscript and finite-certificate exposition only and
+changes no Lean file; see [trust boundary](docs/TRUST_BOUNDARY.md).
 
 ## Licensing
 
