@@ -5,68 +5,68 @@ set_option maxHeartbeats 0
 
 namespace Erdos302.Generated
 
-theorem packingConfigurationLink_7439_516575fd98f2 :
-    ({ maximum := 607, demand := 1, support := [451, 458, 607] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7439 := by decide
+theorem packingConfigurationLink_456_390d95fb0c9e :
+    ({ maximum := 134, demand := 1, support := [66, 79, 134] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 456 := by decide
 
-theorem packingConfigurationLink_7452_e623cd00006d :
-    ({ maximum := 541, demand := 1, support := [436, 459, 541] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7452 := by decide
+theorem packingConfigurationLink_457_2dd352ae5d2f :
+    ({ maximum := 151, demand := 1, support := [68, 79, 151] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 457 := by decide
 
-theorem packingConfigurationLink_7488_3b4b1592bd61 :
-    ({ maximum := 469, demand := 1, support := [406, 461, 469] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7488 := by decide
+theorem packingConfigurationLink_458_d74866cccff6 :
+    ({ maximum := 167, demand := 1, support := [71, 79, 167] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 458 := by decide
 
-theorem packingConfigurationLink_7534_f0fdfa211656 :
-    ({ maximum := 678, demand := 1, support := [460, 462, 678] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7534 := by decide
+theorem packingConfigurationLink_459_8f8638aca797 :
+    ({ maximum := 188, demand := 1, support := [72, 79, 188] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 459 := by decide
 
-theorem packingConfigurationLink_7535_4b9dea911cce :
-    ({ maximum := 710, demand := 1, support := [461, 462, 710] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7535 := by decide
+theorem packingConfigurationLink_460_a1db46cc60c5 :
+    ({ maximum := 207, demand := 1, support := [74, 79, 207] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 460 := by decide
 
-theorem packingConfigurationLink_7569_0e622c6eb7e5 :
-    ({ maximum := 468, demand := 1, support := [409, 464, 468] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7569 := by decide
+theorem packingConfigurationLink_461_1543c9ae9663 :
+    ({ maximum := 284, demand := 1, support := [76, 79, 284] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 461 := by decide
 
-theorem packingConfigurationLink_7602_8d2fb6284a55 :
-    ({ maximum := 572, demand := 1, support := [451, 465, 572] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7602 := by decide
+theorem packingConfigurationLink_462_297881ac8bc5 :
+    ({ maximum := 343, demand := 1, support := [77, 79, 343] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 462 := by decide
 
-theorem packingConfigurationLink_7606_197ae4e77f08 :
-    ({ maximum := 624, demand := 1, support := [459, 465, 624] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7606 := by decide
+theorem packingConfigurationLink_463_03e4d744a326 :
+    ({ maximum := 402, demand := 1, support := [78, 79, 402] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 463 := by decide
 
-theorem packingConfigurationLink_7620_6f3a50c49201 :
-    ({ maximum := 552, demand := 1, support := [445, 466, 552] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7620 := by decide
+theorem packingConfigurationLink_464_9de5a6098fdb :
+    ({ maximum := 85, demand := 1, support := [56, 80, 85] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 464 := by decide
 
-theorem packingConfigurationLink_7622_ef5db0fcf51b :
-    ({ maximum := 571, demand := 1, support := [450, 466, 571] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7622 := by decide
+theorem packingConfigurationLink_466_1f41a9cb66fc :
+    ({ maximum := 92, demand := 1, support := [58, 80, 92] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 466 := by decide
 
-theorem packingConfigurationLink_7633_67c05c0d15ad :
-    ({ maximum := 489, demand := 1, support := [421, 467, 489] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7633 := by decide
+theorem packingConfigurationLink_467_f1507cf608fb :
+    ({ maximum := 98, demand := 1, support := [59, 80, 98] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 467 := by decide
 
-theorem packingConfigurationLink_7640_aed2cce0efce :
-    ({ maximum := 606, demand := 1, support := [457, 467, 606] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7640 := by decide
+theorem packingConfigurationLink_468_e7642b8c88db :
+    ({ maximum := 106, demand := 1, support := [62, 80, 106] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 468 := by decide
 
-theorem packingConfigurationLink_7686_336a101ba1ec :
-    ({ maximum := 560, demand := 1, support := [449, 469, 560] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7686 := by decide
+theorem packingConfigurationLink_470_53c7c29ab54f :
+    ({ maximum := 121, demand := 1, support := [65, 80, 121] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 470 := by decide
 
-theorem packingConfigurationLink_7706_3b312197f618 :
-    ({ maximum := 529, demand := 1, support := [438, 470, 529] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7706 := by decide
+theorem packingConfigurationLink_471_08a9522cb136 :
+    ({ maximum := 124, demand := 1, support := [66, 80, 124] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 471 := by decide
 
-theorem packingConfigurationLink_7715_b4ce7e7bef03 :
-    ({ maximum := 618, demand := 1, support := [462, 470, 618] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7715 := by decide
+theorem packingConfigurationLink_473_f3e79fb358f0 :
+    ({ maximum := 148, demand := 1, support := [70, 80, 148] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 473 := by decide
 
-theorem packingConfigurationLink_7836_798640f2c2f2 :
-    ({ maximum := 507, demand := 1, support := [433, 475, 507] } : Erdos302.RawConfiguration) =
-      concreteConfigurationAt 7836 := by decide
+theorem packingConfigurationLink_475_0edd6f8b69c0 :
+    ({ maximum := 167, demand := 1, support := [72, 80, 167] } : Erdos302.RawConfiguration) =
+      concreteConfigurationAt 475 := by decide
 
 end Erdos302.Generated

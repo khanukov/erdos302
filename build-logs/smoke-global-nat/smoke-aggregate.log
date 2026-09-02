@@ -1,0 +1,208 @@
+⚠ [3067/3159] Replayed Erdos302.Certificate
+warning: Erdos302/Certificate.lean:215:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/Certificate.lean:219:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/Certificate.lean:217:21: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hsize, h̵,̵ ̵Ne.symm h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Certificate.lean:309:4: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp [PackingCertificate.objectiveValue, PackingCertificate.objective, PackingCertificate.terms,
+  ̲  ̲ ̲ ̲PackingTerm.configuration, R̵a̵w̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵.̵a̵s̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵,̵
+  ̵ ̵ ̵ ̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]̵R̲a̲w̲C̲o̲n̲f̲i̲g̲u̲r̲a̲t̲i̲o̲n̲.̲a̲s̲C̲o̲n̲f̲i̲g̲u̲r̲a̲t̲i̲o̲n̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Certificate.lean:358:17: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [3069/3159] Replayed Erdos302.CertificateNat
+warning: Erdos302/CertificateNat.lean:74:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:137:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:209:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTerm.configuration, PackingTermNat.toPackingTerm,
+  ̲  ̲ ̲ ̲ ̲ ̲PackingTerm.raw, RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:210:6: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTerm.configuration, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵ ̵PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:219:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTermNat.toPackingTerm, PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:219:50: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵PackingTerm.raw, RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:220:6: This simp argument is unused:
+  PackingTerm.raw
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+        P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:220:23: This simp argument is unused:
+  RawConfiguration.asConfiguration
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵R̵a̵w̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵.̵a̵s̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵]̵P̲a̲c̲k̲i̲n̲g̲T̲e̲r̲m̲.̲r̲a̲w̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:340:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:344:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:342:21: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hsize, h̵,̵ ̵Ne.symm h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:502:17: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:470:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTerm.configuration, PackingTermNat.toPackingTerm,
+  ̲  ̲ ̲ ̲ ̲ ̲PackingTerm.raw, RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:471:6: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTerm.configuration, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵ ̵PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:513:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTermNat.toPackingTerm, PackingTerm.raw, PackingTermNat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:513:50: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵PackingTerm.raw, PackingTermNat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:514:6: This simp argument is unused:
+  PackingTerm.raw
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+        PackingTerm.̵r̵a̵w̵,̵ ̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵Nat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:514:23: This simp argument is unused:
+  PackingTermNat.weight
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵w̵e̵i̵g̵h̵t̵]̵P̲a̲c̲k̲i̲n̲g̲T̲e̲r̲m̲.̲r̲a̲w̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+⚠ [3368/3443] Replayed Erdos302.Generated.PackingCertificateNat0LinkChunk0
+warning: Erdos302/Generated/PackingCertificateNat0LinkChunk0.lean:11:49: This simp argument is unused:
+  List.all_append
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat0VertexChunk0, L̵i̵s̵t̵.̵a̵l̵l̵_̵a̵pp̵e̵n̵d̵,̵ ̵p̵ackingCertificateNat0_linkGroup0, Bool.true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Generated/PackingCertificateNat0LinkChunk0.lean:11:101: This simp argument is unused:
+  Bool.true_and
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat0VertexChunk0, List.all_append, packingCertificateNat0_linkGroup0,̵ ̵B̵o̵o̵l̵.̵t̵r̵u̵e̵_̵a̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ℹ [3509/3652] Replayed Erdos302.Generated.PackingCertificateNat0
+info: Erdos302/Generated/PackingCertificateNat0.lean:52:0: 'Erdos302.Generated.packingCertificateNat0_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [3924/3949] Replayed Erdos302.Generated.PackingCertificateNat135
+info: Erdos302/Generated/PackingCertificateNat135.lean:52:0: 'Erdos302.Generated.packingCertificateNat135_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [4366/4531] Replayed Erdos302.Generated.PackingCertificateNat250LinkChunk30
+warning: Erdos302/Generated/PackingCertificateNat250LinkChunk30.lean:11:52: This simp argument is unused:
+  List.all_append
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat250VertexChunk30, L̵i̵s̵t̵.̵a̵l̵l̵_̵a̵pp̵e̵n̵d̵,̵ ̵p̵ackingCertificateNat250_linkGroup120,
+  ̲  ̲ ̲ ̲Bool.true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Generated/PackingCertificateNat250LinkChunk30.lean:11:108: This simp argument is unused:
+  Bool.true_and
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat250VertexChunk30, List.all_append,
+  ̲  ̲ ̲ ̲packingCertificateNat250_linkGroup120,̵ ̵B̵o̵o̵l̵.̵t̵r̵u̵e̵_̵a̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ℹ [4508/4531] Replayed Erdos302.Generated.PackingCertificateNat250
+info: Erdos302/Generated/PackingCertificateNat250.lean:52:0: 'Erdos302.Generated.packingCertificateNat250_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [4759/4780] Replayed Erdos302.Generated.PackingCertificateNat270LinkChunk24
+warning: Erdos302/Generated/PackingCertificateNat270LinkChunk24.lean:11:52: This simp argument is unused:
+  List.all_append
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat270VertexChunk24, L̵i̵s̵t̵.̵a̵l̵l̵_̵a̵pp̵e̵n̵d̵,̵ ̵p̵ackingCertificateNat270_linkGroup96,
+  ̲  ̲ ̲ ̲Bool.true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Generated/PackingCertificateNat270LinkChunk24.lean:11:107: This simp argument is unused:
+  Bool.true_and
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat270VertexChunk24, List.all_append,
+  ̲  ̲ ̲ ̲packingCertificateNat270_linkGroup96,̵ ̵B̵o̵o̵l̵.̵t̵r̵u̵e̵_̵a̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+ℹ [4900/4901] Replayed Erdos302.Generated.PackingCertificateNat270
+info: Erdos302/Generated/PackingCertificateNat270.lean:52:0: 'Erdos302.Generated.packingCertificateNat270_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [4901/4901] Built Erdos302.Generated.PackingCertificatesNatSmoke (6.4s)
+info: Erdos302/Generated/PackingCertificatesNatSmoke.lean:28:0: 'Erdos302.Generated.packingCertificatesNatSmokeValid' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (4901 jobs).

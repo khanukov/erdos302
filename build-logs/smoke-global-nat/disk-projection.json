@@ -1,0 +1,40 @@
+{
+  "manifest_files": 71094,
+  "actual_source_bytes": 106403622,
+  "certificate_source_bytes": 104487649,
+  "smoke_samples": [
+    [
+      0,
+      223015,
+      27792576,
+      124.62200300428222
+    ],
+    [
+      135,
+      372429,
+      39427568,
+      105.86599861987116
+    ],
+    [
+      250,
+      538304,
+      52197312,
+      96.96623469266437
+    ],
+    [
+      270,
+      487269,
+      47039240,
+      96.53649216346618
+    ]
+  ],
+  "max_olean_to_source_ratio": 124.62200300428222,
+  "catalogue_olean_bytes_actual": 28312448,
+  "projected_certificate_olean_bytes": 13021460108,
+  "projected_total_olean_bytes": 13049772556,
+  "free_bytes_before_projected_build": 16841535488,
+  "projected_free_bytes_after": 3791762932,
+  "limit_bytes": 17179869184,
+  "safety_margin_bytes": 3221225472,
+  "pass": true
+}

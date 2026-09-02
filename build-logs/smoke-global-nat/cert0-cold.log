@@ -1,0 +1,305 @@
+⚠ [3067/3125] Replayed Erdos302.Certificate
+warning: Erdos302/Certificate.lean:215:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/Certificate.lean:219:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/Certificate.lean:217:21: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hsize, h̵,̵ ̵Ne.symm h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Certificate.lean:309:4: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp [PackingCertificate.objectiveValue, PackingCertificate.objective, PackingCertificate.terms,
+  ̲  ̲ ̲ ̲PackingTerm.configuration, R̵a̵w̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵.̵a̵s̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵,̵
+  ̵ ̵ ̵ ̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]̵R̲a̲w̲C̲o̲n̲f̲i̲g̲u̲r̲a̲t̲i̲o̲n̲.̲a̲s̲C̲o̲n̲f̲i̲g̲u̲r̲a̲t̲i̲o̲n̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Certificate.lean:358:17: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [3069/3125] Replayed Erdos302.CertificateNat
+warning: Erdos302/CertificateNat.lean:74:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:137:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:209:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTerm.configuration, PackingTermNat.toPackingTerm,
+  ̲  ̲ ̲ ̲ ̲ ̲PackingTerm.raw, RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:210:6: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTerm.configuration, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵ ̵PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:219:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTermNat.toPackingTerm, PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:219:50: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵PackingTerm.raw, RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:220:6: This simp argument is unused:
+  PackingTerm.raw
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+        P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:220:23: This simp argument is unused:
+  RawConfiguration.asConfiguration
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵R̵a̵w̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵.̵a̵s̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵]̵P̲a̲c̲k̲i̲n̲g̲T̲e̲r̲m̲.̲r̲a̲w̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:340:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:344:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:342:21: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hsize, h̵,̵ ̵Ne.symm h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:502:17: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:470:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTerm.configuration, PackingTermNat.toPackingTerm,
+  ̲  ̲ ̲ ̲ ̲ ̲PackingTerm.raw, RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:471:6: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTerm.configuration, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵ ̵PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:513:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTermNat.toPackingTerm, PackingTerm.raw, PackingTermNat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:513:50: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵PackingTerm.raw, PackingTermNat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:514:6: This simp argument is unused:
+  PackingTerm.raw
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+        PackingTerm.̵r̵a̵w̵,̵ ̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵Nat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:514:23: This simp argument is unused:
+  PackingTermNat.weight
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵w̵e̵i̵g̵h̵t̵]̵P̲a̲c̲k̲i̲n̲g̲T̲e̲r̲m̲.̲r̲a̲w̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [3370/3510] Built Erdos302.Generated.PackingCertificateNat0VertexData0 (4.4s)
+✔ [3371/3510] Built Erdos302.Generated.PackingCertificateNat0VertexData (4.2s)
+✔ [3372/3510] Built Erdos302.Generated.PackingCertificateNat0LinkGroup0 (4.3s)
+✔ [3373/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch704 (4.3s)
+✔ [3374/3510] Built Erdos302.Generated.PackingCertificateNat0ObjectiveScalar (4.5s)
+✔ [3375/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch688 (4.6s)
+✔ [3376/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch672 (4.6s)
+✔ [3377/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch640 (4.5s)
+✔ [3378/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch656 (4.9s)
+✔ [3379/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch624 (4.8s)
+✔ [3380/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch608 (4.6s)
+✔ [3381/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch576 (4.5s)
+✔ [3382/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch592 (4.5s)
+✔ [3383/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch544 (4.7s)
+✔ [3384/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch560 (4.7s)
+✔ [3385/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch512 (4.4s)
+✔ [3386/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch528 (4.6s)
+✔ [3387/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch496 (4.5s)
+✔ [3388/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch480 (4.5s)
+✔ [3389/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch464 (4.3s)
+✔ [3390/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch448 (4.3s)
+✔ [3391/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch432 (5.0s)
+✔ [3392/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch416 (5.0s)
+✔ [3393/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch400 (4.7s)
+✔ [3394/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch384 (4.7s)
+✔ [3395/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch368 (4.5s)
+✔ [3396/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch352 (4.8s)
+✔ [3397/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch320 (4.6s)
+✔ [3398/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch336 (5.3s)
+✔ [3399/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch304 (4.6s)
+✔ [3400/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch288 (4.6s)
+✔ [3401/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch272 (4.6s)
+✔ [3402/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch256 (4.5s)
+✔ [3403/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch240 (4.5s)
+✔ [3404/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch224 (4.5s)
+✔ [3405/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch192 (4.4s)
+✔ [3406/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch208 (4.4s)
+✔ [3407/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch160 (4.5s)
+✔ [3408/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch176 (4.5s)
+✔ [3409/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch128 (4.6s)
+✔ [3410/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch144 (4.6s)
+✔ [3411/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch96 (4.6s)
+✔ [3412/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch112 (4.7s)
+✔ [3413/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch80 (4.5s)
+✔ [3414/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch64 (4.5s)
+✔ [3415/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch48 (4.6s)
+✔ [3416/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch32 (4.5s)
+✔ [3417/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch16 (4.7s)
+✔ [3418/3510] Built Erdos302.Generated.PackingCertificateNat0VertexCapacityBatch0 (4.8s)
+⚠ [3419/3510] Built Erdos302.Generated.PackingCertificateNat0LinkChunk0 (4.5s)
+warning: Erdos302/Generated/PackingCertificateNat0LinkChunk0.lean:11:49: This simp argument is unused:
+  List.all_append
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat0VertexChunk0, L̵i̵s̵t̵.̵a̵l̵l̵_̵a̵pp̵e̵n̵d̵,̵ ̵p̵ackingCertificateNat0_linkGroup0, Bool.true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Generated/PackingCertificateNat0LinkChunk0.lean:11:101: This simp argument is unused:
+  Bool.true_and
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat0VertexChunk0, List.all_append, packingCertificateNat0_linkGroup0,̵ ̵B̵o̵o̵l̵.̵t̵r̵u̵e̵_̵a̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [3420/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_704 (4.6s)
+✔ [3421/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_688 (4.7s)
+✔ [3422/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_672 (4.7s)
+✔ [3423/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_640 (4.9s)
+✔ [3424/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_656 (4.8s)
+✔ [3425/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_624 (4.9s)
+✔ [3426/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_608 (4.8s)
+✔ [3427/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_576 (4.7s)
+✔ [3428/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_592 (4.0s)
+✔ [3429/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_560 (4.9s)
+✔ [3430/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_544 (4.8s)
+✔ [3431/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_512 (4.8s)
+✔ [3432/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_528 (4.7s)
+✔ [3433/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_480 (4.7s)
+✔ [3434/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_496 (5.0s)
+✔ [3435/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_464 (4.8s)
+✔ [3436/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_448 (4.9s)
+✔ [3437/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_432 (4.6s)
+✔ [3438/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_416 (4.5s)
+✔ [3439/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_400 (4.6s)
+✔ [3440/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_384 (4.8s)
+✔ [3441/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_368 (4.7s)
+✔ [3442/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_352 (4.9s)
+✔ [3443/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_320 (4.8s)
+✔ [3444/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_336 (4.8s)
+✔ [3445/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_304 (4.6s)
+✔ [3446/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_288 (4.7s)
+✔ [3447/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_272 (4.9s)
+✔ [3448/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_256 (5.1s)
+✔ [3449/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_240 (4.6s)
+✔ [3450/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_224 (4.6s)
+✔ [3451/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_192 (4.5s)
+✔ [3452/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_208 (4.6s)
+✔ [3453/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_160 (4.8s)
+✔ [3454/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_176 (4.7s)
+✔ [3455/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_144 (4.0s)
+✔ [3456/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_128 (4.6s)
+✔ [3457/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_96 (4.7s)
+✔ [3458/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_112 (4.5s)
+✔ [3459/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_80 (4.6s)
+✔ [3460/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_64 (4.6s)
+✔ [3461/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_48 (4.7s)
+✔ [3462/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_32 (4.7s)
+✔ [3463/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_16 (4.4s)
+✔ [3464/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate0_0 (4.6s)
+✔ [3465/3510] Built Erdos302.Generated.PackingCertificateNat0LinkAggregate0_0 (4.3s)
+✔ [3466/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_672 (4.2s)
+✔ [3467/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_640 (4.4s)
+✔ [3468/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_608 (4.2s)
+✔ [3469/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_576 (4.3s)
+✔ [3470/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_544 (4.4s)
+✔ [3471/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_480 (4.1s)
+✔ [3472/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_512 (4.3s)
+✔ [3473/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_416 (4.3s)
+✔ [3474/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_448 (4.3s)
+✔ [3475/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_352 (4.2s)
+✔ [3476/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_384 (4.2s)
+✔ [3477/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_288 (4.1s)
+✔ [3478/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_320 (4.2s)
+✔ [3479/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_224 (3.0s)
+✔ [3480/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_256 (4.2s)
+✔ [3481/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_192 (4.3s)
+✔ [3482/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_160 (4.3s)
+✔ [3483/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_128 (4.1s)
+✔ [3484/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_96 (4.1s)
+✔ [3485/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_64 (4.2s)
+✔ [3486/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_32 (4.1s)
+✔ [3487/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate1_0 (4.1s)
+✔ [3488/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_640 (4.3s)
+✔ [3489/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_576 (4.6s)
+✔ [3490/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_512 (4.4s)
+✔ [3491/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_384 (4.1s)
+✔ [3492/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_448 (4.4s)
+✔ [3493/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_320 (4.4s)
+✔ [3494/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_256 (4.5s)
+✔ [3495/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_128 (4.4s)
+✔ [3496/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_192 (4.6s)
+✔ [3497/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_64 (4.4s)
+✔ [3498/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate2_0 (4.5s)
+✔ [3499/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate3_640 (4.3s)
+✔ [3500/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate3_512 (4.4s)
+✔ [3501/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate3_384 (4.2s)
+✔ [3502/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate3_256 (4.1s)
+✔ [3503/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate3_128 (4.1s)
+✔ [3504/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate3_0 (4.1s)
+✔ [3505/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate4_512 (4.2s)
+✔ [3506/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate4_256 (4.1s)
+✔ [3507/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate4_0 (4.2s)
+✔ [3508/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate5_0 (3.0s)
+✔ [3509/3510] Built Erdos302.Generated.PackingCertificateNat0CapacityAggregate6_0 (4.5s)
+ℹ [3510/3510] Built Erdos302.Generated.PackingCertificateNat0 (5.2s)
+info: Erdos302/Generated/PackingCertificateNat0.lean:52:0: 'Erdos302.Generated.packingCertificateNat0_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (3510 jobs).

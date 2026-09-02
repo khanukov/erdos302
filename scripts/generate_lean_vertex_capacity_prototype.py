@@ -1,19 +1,27 @@
 #!/usr/bin/env python3
-"""Generate lightweight bounded-Nat certificates for selected certificate IDs.
+"""Generate the lightweight bounded-Nat packing certificates.
 
-Certificate 270 remains the only production target today.  Names and the core
-generation entry point are ID-parameterized so the all-certificate driver can
-reuse this architecture without cloning the proof generator.
+The link catalogue is global: every configuration snapshot used anywhere in
+the 271-certificate payload gets exactly one equality theorem.  Individual
+certificate modules only import and consume those shared theorems.
 """
 from __future__ import annotations
 import argparse, hashlib, importlib.util, json, math
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "Erdos302/Generated"
 CHUNK, GROUP, CAPACITY_BATCH, LINK_BATCH = 20, 5, 16, 16
+CURRENT_CID: int | None = None
+WRITTEN: set[str] = set()
 
 def write(name: str, xs: list[str]) -> None:
+    if CURRENT_CID is not None:
+        replacement = f"Nat{CURRENT_CID}"
+        name = name.replace("Nat270", replacement)
+        xs = [line.replace("Nat270", replacement) for line in xs]
+    WRITTEN.add(name)
     path, text = OUT / name, "\n".join(xs) + "\n"
     if not path.exists() or path.read_text() != text: path.write_text(text)
 
@@ -23,8 +31,6 @@ def head(imports: list[str], depth: int = 1000) -> list[str]:
 
 PRED = ("fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ "
         "t.LinkOK concreteConfigurationAt ∧ 0 < t.numerator ∧ 0 < t.denominator)")
-BASE_PRED = ("fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ "
-             "0 < t.numerator ∧ 0 < t.denominator)")
 
 def snapshot_text(snapshot: tuple) -> str:
     maximum, demand, support = snapshot
@@ -39,26 +45,25 @@ def link_name(configuration_id: int, snapshot: tuple) -> str:
     digest = hashlib.sha256(repr((configuration_id, snapshot)).encode()).hexdigest()[:12]
     return f"packingConfigurationLink_{configuration_id}_{digest}"
 
-def generate(cid: int, payload: dict, configs: list) -> None:
-    if cid != 270:
-        raise ValueError(f"certificate {cid}: lightweight proof generation is not enabled yet")
-    cert, weights = payload["certificates"][cid], payload["certificates"][cid]["weights"]
-    chunks = [weights[i:i+CHUNK] for i in range(0, len(weights), CHUNK)]
-
-    # Catalogue keys include both the ID and complete concrete snapshot.  Any
-    # conflicting duplicate ID is rejected before Lean generation.
-    catalogue = {}
-    for configuration_id, _, _ in weights:
-        snapshot = snapshot_key(configs[configuration_id])
-        key = (configuration_id, snapshot)
-        catalogue[key] = link_name(configuration_id, snapshot)
-    by_id = {}
-    for configuration_id, snapshot in catalogue:
-        if configuration_id in by_id and by_id[configuration_id] != snapshot:
-            raise ValueError(f"configuration {configuration_id}: conflicting snapshots")
-        by_id[configuration_id] = snapshot
-    catalogue_items = sorted(catalogue.items())
+def build_catalogue(payload: dict, configs: list) -> tuple[dict, dict]:
+    """Validate all links and emit the one global snapshot catalogue."""
+    by_id: dict[int, tuple] = {}
+    occurrences: Counter[int] = Counter()
+    for cert in payload["certificates"]:
+        for configuration_id, _, _ in cert["weights"]:
+            if not 0 <= configuration_id < len(configs):
+                raise ValueError(f"missing configuration ID {configuration_id}")
+            snapshot = snapshot_key(configs[configuration_id])
+            previous = by_id.setdefault(configuration_id, snapshot)
+            if previous != snapshot:
+                raise ValueError(f"configuration {configuration_id}: conflicting snapshots")
+            occurrences[configuration_id] += 1
+    if any(count <= 0 for count in occurrences.values()):
+        raise ValueError("missing link occurrence")
+    catalogue = {(configuration_id, snapshot): link_name(configuration_id, snapshot)
+                 for configuration_id, snapshot in by_id.items()}
     catalogue_modules = {}
+    catalogue_items = sorted(catalogue.items())
     for batch, start in enumerate(range(0, len(catalogue_items), LINK_BATCH)):
         items = catalogue_items[start:start + LINK_BATCH]
         out = head(["Erdos302.Generated.Configurations"])
@@ -68,6 +73,18 @@ def generate(cid: int, payload: dict, configs: list) -> None:
             catalogue_modules[(configuration_id, snapshot)] = batch
         out += ["end Erdos302.Generated"]
         write(f"PackingConfigurationLinkCatalogue{batch}.lean", out)
+    return catalogue, catalogue_modules
+
+
+def generate(cid: int, payload: dict, configs: list, catalogue: dict,
+             catalogue_modules: dict) -> None:
+    global CURRENT_CID
+    CURRENT_CID = cid
+    cert, weights = payload["certificates"][cid], payload["certificates"][cid]["weights"]
+    base_pred = ("fun t => decide (t.configurationId < 14691 ∧ "
+                 f"t.snapshot.maximum.val < {cert['prefix_size']} ∧ "
+                 "0 < t.numerator ∧ 0 < t.denominator)")
+    chunks = [weights[i:i+CHUNK] for i in range(0, len(weights), CHUNK)]
 
     gid, chunk_groups = 0, []
     for ci, chunk in enumerate(chunks):
@@ -206,7 +223,7 @@ def generate(cid: int, payload: dict, configs: list) -> None:
             "    denominatorAt (packingCertificateNat270.prefixSize - 1) = packingCertificateNat270.threshold ∧",
             "    0 < packingCertificateNat270.requiredCoverSize := by decide", "",
             "theorem packingCertificateNat270_baseTermsOK :",
-            f"    packingCertificateNat270.termChunks.all (fun c => c.all ({BASE_PRED})) = true := by decide", "",
+            f"    packingCertificateNat270.termChunks.all (fun c => c.all ({base_pred})) = true := by decide", "",
             "theorem packingCertificateNat270_linksOK :",
             "    packingCertificateNat270.termChunks.all (fun c => c.all (fun t => decide",
             "      (t.LinkOK concreteConfigurationAt))) = true := by",
@@ -235,20 +252,95 @@ def generate(cid: int, payload: dict, configs: list) -> None:
             "  · exact Erdos302.checkObjectiveChunks_sound _ _ _ packingCertificateNat270_objectiveCheck",
             "", "#print axioms packingCertificateNat270_valid", "", "end Erdos302.Generated"]
     write("PackingCertificateNat270.lean",out)
-    print(f"generated certificate {cid}: {len(weights)} terms, {len(catalogue)} shared links, {gid} groups, 719 vertices; objective scale {len(str(scale))} digits")
+    print(f"generated certificate {cid}: {len(weights)} terms, {gid} groups, "
+          f"719 vertices; objective scale {len(str(scale))} digits")
+
+
+def generate_all_aggregate() -> None:
+    """Emit the provider-facing theorem without building it in this task."""
+    global CURRENT_CID
+    CURRENT_CID = None
+    imports = [f"Erdos302.Generated.PackingCertificateNat{cid}" for cid in range(271)]
+    out = head(imports, 10000)
+    out += ["def packingCertificateNatAt (cid : Fin 271) : Erdos302.PackingCertificateNat :=",
+            "  match cid.val with"]
+    out += [f"  | {cid} => packingCertificateNat{cid}" for cid in range(271)]
+    out += ["  | _ => packingCertificateNat0", "",
+            "theorem allPackingCertificatesNatValid (cid : Fin 271) :",
+            "    (packingCertificateNatAt cid).toPackingCertificate.Valid 719 14691",
+            "      denominatorAt concreteConfigurationAt := by",
+            "  fin_cases cid <;> simp only [packingCertificateNatAt] <;>",
+            "    first | exact packingCertificateNat0_valid"]
+    # `first` cannot enumerate dynamically, so use a direct case proof per ID.
+    out[-2:] = ["  fin_cases cid"] + [f"  · exact packingCertificateNat{cid}_valid" for cid in range(271)]
+    out += ["", "#print axioms allPackingCertificatesNatValid", "", "end Erdos302.Generated"]
+    write("PackingCertificatesNat.lean", out)
+
+
+def generate_mutations(ids: list[int], payload: dict, configs: list) -> None:
+    """Emit uniform negative tests for every selected certificate API."""
+    global CURRENT_CID
+    CURRENT_CID = None
+    out = head([*(f"Erdos302.Generated.PackingCertificateNat{cid}VertexData" for cid in ids),
+                "Erdos302.Generated.Configurations"], 10000)
+    for cid in ids:
+        configuration_id, numerator, denominator = payload["certificates"][cid]["weights"][0]
+        maximum, demand, support = configs[configuration_id]
+        out += [f"def packingMutationBase{cid} : Erdos302.PackingTermNat :=",
+                f"  {{ configurationId := {configuration_id}, snapshot := {{ maximum := {maximum}, demand := {demand}, support := [{', '.join(map(str, support))}] }},",
+                f"    numerator := {numerator}, denominator := {denominator}, units := 0 }}", "",
+                f"example : decide (0 < ({{ packingMutationBase{cid} with numerator := 0 }}).numerator) = false := by decide",
+                f"example : decide (({{ packingMutationBase{cid} with denominator := 0 }}).VertexScaleOK 1) = false := by decide",
+                f"example : decide (({{ packingMutationBase{cid} with snapshot := {{ packingMutationBase{cid}.snapshot with support := [] }} }}).LinkOK concreteConfigurationAt) = false := by decide",
+                f"example : Erdos302.checkVertexCapacityChunks packingCertificateNat{cid}VertexChunks 0 0 = false := by rfl", ""]
+    out += ["end Erdos302.Generated"]
+    write("PackingCertificateNatMutations.lean", out)
+
+
+def generate_smoke_aggregate(ids: list[int]) -> None:
+    global CURRENT_CID
+    CURRENT_CID = None
+    out = head([f"Erdos302.Generated.PackingCertificateNat{cid}" for cid in ids], 10000)
+    out += [f"def packingCertificateNatSmokeAt (cid : Fin {len(ids)}) : Erdos302.PackingCertificateNat :=",
+            "  match cid.val with"]
+    out += [f"  | {index} => packingCertificateNat{cid}" for index, cid in enumerate(ids)]
+    out += [f"  | _ => packingCertificateNat{ids[0]}", "",
+            f"theorem packingCertificatesNatSmokeValid (cid : Fin {len(ids)}) :",
+            "    (packingCertificateNatSmokeAt cid).toPackingCertificate.Valid 719 14691",
+            "      denominatorAt concreteConfigurationAt := by", "  fin_cases cid"]
+    out += [f"  · exact packingCertificateNat{cid}_valid" for cid in ids]
+    out += ["", "#print axioms packingCertificatesNatSmokeValid", "", "end Erdos302.Generated"]
+    write("PackingCertificatesNatSmoke.lean", out)
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--only", nargs="+", type=int, default=[270])
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--only", nargs="+", type=int)
+    selection.add_argument("--all", action="store_true")
     args = parser.parse_args()
     payload = json.loads((ROOT / "certificates/q139708800/certificate.json").read_text())
     spec = importlib.util.spec_from_file_location("cfg", ROOT / "certificates/q139708800/hierarchical_certificate.py")
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     configs = mod.build_configurations()[1]
-    for cid in sorted(set(args.only)):
+    catalogue, catalogue_modules = build_catalogue(payload, configs)
+    selected = list(range(len(payload["certificates"]))) if args.all else sorted(set(args.only))
+    for cid in selected:
         if not 0 <= cid < len(payload["certificates"]):
             raise SystemExit(f"unknown certificate ID {cid}")
-        generate(cid, payload, configs)
+        generate(cid, payload, configs, catalogue, catalogue_modules)
+    if args.all:
+        generate_all_aggregate()
+    generate_mutations(selected, payload, configs)
+    if not args.all:
+        generate_smoke_aggregate(selected)
+    manifest = OUT / "PackingCertificateNatManifest.json"
+    manifest_text = json.dumps({"certificate_ids": selected,
+                                "capacity_batch": CAPACITY_BATCH,
+                                "global_link_count": len(catalogue),
+                                "files": sorted(WRITTEN)}, indent=2) + "\n"
+    if not manifest.exists() or manifest.read_text() != manifest_text:
+        manifest.write_text(manifest_text)
+    print(f"global link catalogue: {len(catalogue)} unique configuration snapshots")
 
 if __name__ == "__main__": main()

@@ -1,5 +1,9 @@
 import Erdos302.Generated.PackingCertificateNat270VertexData19
-import Erdos302.Generated.PackingConfigurationLinkCatalogue24
+import Erdos302.Generated.PackingConfigurationLinkCatalogue350
+import Erdos302.Generated.PackingConfigurationLinkCatalogue351
+import Erdos302.Generated.PackingConfigurationLinkCatalogue352
+import Erdos302.Generated.PackingConfigurationLinkCatalogue356
+import Erdos302.Generated.PackingConfigurationLinkCatalogue358
 
 set_option maxRecDepth 1000
 set_option maxHeartbeats 0

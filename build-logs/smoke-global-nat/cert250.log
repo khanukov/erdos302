@@ -1,0 +1,630 @@
+⚠ [3067/3157] Replayed Erdos302.Certificate
+warning: Erdos302/Certificate.lean:215:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/Certificate.lean:219:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/Certificate.lean:217:21: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hsize, h̵,̵ ̵Ne.symm h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Certificate.lean:309:4: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp [PackingCertificate.objectiveValue, PackingCertificate.objective, PackingCertificate.terms,
+  ̲  ̲ ̲ ̲PackingTerm.configuration, R̵a̵w̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵.̵a̵s̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵,̵
+  ̵ ̵ ̵ ̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]̵R̲a̲w̲C̲o̲n̲f̲i̲g̲u̲r̲a̲t̲i̲o̲n̲.̲a̲s̲C̲o̲n̲f̲i̲g̲u̲r̲a̲t̲i̲o̲n̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Certificate.lean:358:17: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+⚠ [3069/3157] Replayed Erdos302.CertificateNat
+warning: Erdos302/CertificateNat.lean:74:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:137:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:209:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTerm.configuration, PackingTermNat.toPackingTerm,
+  ̲  ̲ ̲ ̲ ̲ ̲PackingTerm.raw, RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:210:6: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTerm.configuration, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵ ̵PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:219:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTermNat.toPackingTerm, PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:219:50: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵PackingTerm.raw, RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:220:6: This simp argument is unused:
+  PackingTerm.raw
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+        P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵RawConfiguration.asConfiguration]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:220:23: This simp argument is unused:
+  RawConfiguration.asConfiguration
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵R̵a̵w̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵.̵a̵s̵C̵o̵n̵f̵i̵g̵u̵r̵a̵t̵i̵o̵n̵]̵P̲a̲c̲k̲i̲n̲g̲T̲e̲r̲m̲.̲r̲a̲w̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:340:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:344:36: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:342:21: This simp argument is unused:
+  h
+
+Hint: Omit it from the simp argument list.
+  simp [hsize, h̵,̵ ̵Ne.symm h]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:502:17: try 'simp' instead of 'simpa'
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: Erdos302/CertificateNat.lean:470:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTerm.configuration, PackingTermNat.toPackingTerm,
+  ̲  ̲ ̲ ̲ ̲ ̲PackingTerm.raw, RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:471:6: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTerm.configuration, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵ ̵PackingTerm.raw,
+  ̲  ̲ ̲ ̲ ̲ ̲RawConfiguration.asConfiguration, List.mem_toFinset]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:513:29: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵a̵p̵p̵l̵y̵,̵ ̵PackingTermNat.toPackingTerm, PackingTerm.raw, PackingTermNat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:513:50: This simp argument is unused:
+  PackingTermNat.toPackingTerm
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵t̵o̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵,̵PackingTerm.raw, PackingTermNat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:514:6: This simp argument is unused:
+  PackingTerm.raw
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm,
+        PackingTerm.̵r̵a̵w̵,̵ ̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵Nat.weight]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/CertificateNat.lean:514:23: This simp argument is unused:
+  PackingTermNat.weight
+
+Hint: Omit it from the simp argument list.
+  simp only [List.map_map, Function.comp_apply, PackingTermNat.toPackingTerm, P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵.̵r̵a̵w̵,̵ ̵P̵a̵c̵k̵i̵n̵g̵T̵e̵r̵m̵N̵a̵t̵.̵w̵e̵i̵g̵h̵t̵]̵P̲a̲c̲k̲i̲n̲g̲T̲e̲r̲m̲.̲r̲a̲w̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [3370/3381] Built Erdos302.Generated.PackingCertificateNat250VertexData0 (4.9s)
+✔ [3372/3381] Built Erdos302.Generated.PackingCertificateNat250VertexData1 (4.9s)
+✔ [3373/3381] Built Erdos302.Generated.PackingCertificateNat250LinkGroup2 (4.8s)
+✔ [3374/3381] Built Erdos302.Generated.PackingCertificateNat250LinkGroup3 (5.0s)
+✔ [3375/3381] Built Erdos302.Generated.PackingCertificateNat250LinkGroup0 (4.7s)
+✔ [3376/3382] Built Erdos302.Generated.PackingCertificateNat250LinkGroup1 (5.1s)
+✔ [3377/3384] Built Erdos302.Generated.PackingConfigurationLinkCatalogue6 (2.6s)
+✔ [3379/3386] Built Erdos302.Generated.PackingCertificateNat250LinkChunk0 (5.2s)
+✔ [3381/3386] Built Erdos302.Generated.PackingCertificateNat250LinkGroup4 (5.2s)
+✔ [3382/3387] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_0 (5.1s)
+✔ [3384/3392] Built Erdos302.Generated.PackingCertificateNat250LinkGroup5 (5.2s)
+✔ [3387/3394] Built Erdos302.Generated.PackingCertificateNat250LinkGroup6 (4.0s)
+✔ [3388/3396] Built Erdos302.Generated.PackingCertificateNat250LinkGroup7 (4.8s)
+✔ [3390/3397] Built Erdos302.Generated.PackingCertificateNat250VertexData2 (4.7s)
+✔ [3392/3399] Built Erdos302.Generated.PackingCertificateNat250LinkChunk1 (4.8s)
+✔ [3394/3401] Built Erdos302.Generated.PackingCertificateNat250LinkGroup8 (4.6s)
+✔ [3396/3403] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_1 (4.5s)
+✔ [3399/3408] Built Erdos302.Generated.PackingCertificateNat250LinkGroup9 (4.8s)
+✔ [3401/3408] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_0 (4.0s)
+✔ [3404/3411] Built Erdos302.Generated.PackingCertificateNat250LinkGroup10 (4.8s)
+✔ [3405/3412] Built Erdos302.Generated.PackingCertificateNat250LinkGroup11 (4.7s)
+✔ [3407/3414] Built Erdos302.Generated.PackingCertificateNat250VertexData3 (4.7s)
+✔ [3409/3414] Built Erdos302.Generated.PackingCertificateNat250LinkChunk2 (4.8s)
+✔ [3410/3416] Built Erdos302.Generated.PackingConfigurationLinkCatalogue23 (2.6s)
+✔ [3411/3416] Built Erdos302.Generated.PackingCertificateNat250LinkGroup12 (5.0s)
+✔ [3412/3417] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_2 (5.4s)
+✔ [3414/3423] Built Erdos302.Generated.PackingCertificateNat250LinkGroup13 (5.7s)
+✔ [3416/3423] Built Erdos302.Generated.PackingConfigurationLinkCatalogue27 (2.6s)
+✔ [3417/3426] Built Erdos302.Generated.PackingCertificateNat250LinkGroup14 (4.9s)
+✔ [3418/3427] Built Erdos302.Generated.PackingCertificateNat250LinkGroup15 (4.6s)
+✔ [3420/3429] Built Erdos302.Generated.PackingCertificateNat250VertexData4 (4.8s)
+✔ [3422/3430] Built Erdos302.Generated.PackingCertificateNat250LinkChunk3 (4.9s)
+✔ [3424/3430] Built Erdos302.Generated.PackingCertificateNat250LinkGroup16 (4.7s)
+✔ [3425/3432] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_3 (4.7s)
+✔ [3427/3433] Built Erdos302.Generated.PackingCertificateNat250LinkGroup17 (4.8s)
+✔ [3429/3437] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_2 (4.0s)
+✔ [3430/3437] Built Erdos302.Generated.PackingCertificateNat250LinkGroup18 (5.2s)
+✔ [3431/3437] Built Erdos302.Generated.PackingConfigurationLinkCatalogue35 (2.8s)
+✔ [3433/3440] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_0 (4.0s)
+✔ [3434/3441] Built Erdos302.Generated.PackingCertificateNat250LinkGroup19 (4.9s)
+✔ [3436/3443] Built Erdos302.Generated.PackingCertificateNat250VertexData5 (4.6s)
+✔ [3438/3446] Built Erdos302.Generated.PackingCertificateNat250LinkChunk4 (4.6s)
+✔ [3440/3446] Built Erdos302.Generated.PackingCertificateNat250LinkGroup20 (4.5s)
+✔ [3441/3448] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_4 (4.4s)
+✔ [3444/3454] Built Erdos302.Generated.PackingCertificateNat250LinkGroup21 (4.6s)
+✔ [3449/3456] Built Erdos302.Generated.PackingCertificateNat250LinkGroup22 (4.7s)
+✔ [3450/3458] Built Erdos302.Generated.PackingCertificateNat250LinkGroup23 (4.6s)
+✔ [3452/3460] Built Erdos302.Generated.PackingCertificateNat250VertexData6 (4.4s)
+✔ [3454/3460] Built Erdos302.Generated.PackingCertificateNat250LinkChunk5 (4.7s)
+✔ [3455/3462] Built Erdos302.Generated.PackingCertificateNat250LinkGroup24 (4.7s)
+✔ [3457/3463] Built Erdos302.Generated.PackingConfigurationLinkCatalogue49 (2.7s)
+✔ [3459/3466] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_5 (5.3s)
+✔ [3461/3470] Built Erdos302.Generated.PackingCertificateNat250LinkGroup25 (5.0s)
+✔ [3464/3470] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_4 (4.8s)
+✔ [3466/3472] Built Erdos302.Generated.PackingCertificateNat250LinkGroup26 (4.6s)
+✔ [3467/3475] Built Erdos302.Generated.PackingCertificateNat250LinkGroup27 (4.7s)
+✔ [3469/3476] Built Erdos302.Generated.PackingCertificateNat250VertexData7 (4.8s)
+✔ [3472/3478] Built Erdos302.Generated.PackingCertificateNat250LinkChunk6 (4.8s)
+✔ [3474/3480] Built Erdos302.Generated.PackingCertificateNat250LinkGroup28 (4.5s)
+✔ [3476/3480] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_6 (4.4s)
+✔ [3477/3491] Built Erdos302.Generated.PackingCertificateNat250LinkGroup29 (4.5s)
+✔ [3483/3491] Built Erdos302.Generated.PackingConfigurationLinkCatalogue64 (2.3s)
+✔ [3484/3493] Built Erdos302.Generated.PackingCertificateNat250LinkGroup31 (4.5s)
+✔ [3485/3495] Built Erdos302.Generated.PackingCertificateNat250LinkGroup30 (4.4s)
+✔ [3487/3496] Built Erdos302.Generated.PackingCertificateNat250VertexData8 (4.7s)
+✔ [3489/3498] Built Erdos302.Generated.PackingCertificateNat250LinkChunk7 (4.8s)
+✔ [3491/3501] Built Erdos302.Generated.PackingCertificateNat250LinkGroup32 (4.5s)
+✔ [3493/3501] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_7 (4.5s)
+✔ [3496/3503] Built Erdos302.Generated.PackingCertificateNat250LinkGroup33 (4.5s)
+✔ [3497/3504] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_6 (4.6s)
+✔ [3500/3508] Built Erdos302.Generated.PackingCertificateNat250LinkGroup34 (4.6s)
+✔ [3503/3509] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_4 (4.5s)
+✔ [3504/3512] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate3_0 (4.5s)
+✔ [3505/3512] Built Erdos302.Generated.PackingCertificateNat250LinkGroup35 (4.6s)
+✔ [3507/3516] Built Erdos302.Generated.PackingCertificateNat250LinkChunk8 (4.7s)
+✔ [3508/3516] Built Erdos302.Generated.PackingCertificateNat250VertexData9 (4.8s)
+✔ [3512/3517] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_8 (4.7s)
+✔ [3513/3525] Built Erdos302.Generated.PackingCertificateNat250LinkGroup36 (5.0s)
+✔ [3517/3527] Built Erdos302.Generated.PackingCertificateNat250LinkGroup37 (4.9s)
+✔ [3518/3527] Built Erdos302.Generated.PackingCertificateNat250LinkGroup38 (4.6s)
+✔ [3521/3529] Built Erdos302.Generated.PackingCertificateNat250LinkGroup39 (4.7s)
+✔ [3523/3531] Built Erdos302.Generated.PackingCertificateNat250VertexData10 (5.0s)
+✔ [3525/3532] Built Erdos302.Generated.PackingCertificateNat250LinkChunk9 (4.6s)
+✔ [3528/3537] Built Erdos302.Generated.PackingCertificateNat250LinkGroup40 (4.9s)
+✔ [3531/3538] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_9 (4.6s)
+✔ [3534/3539] Built Erdos302.Generated.PackingCertificateNat250LinkGroup41 (4.8s)
+✔ [3535/3543] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_8 (4.6s)
+✔ [3539/3545] Built Erdos302.Generated.PackingCertificateNat250LinkGroup42 (4.6s)
+✔ [3540/3546] Built Erdos302.Generated.PackingCertificateNat250LinkGroup43 (4.9s)
+✔ [3542/3551] Built Erdos302.Generated.PackingCertificateNat250VertexData11 (4.9s)
+✔ [3545/3551] Built Erdos302.Generated.PackingCertificateNat250LinkChunk10 (4.7s)
+✔ [3546/3551] Built Erdos302.Generated.PackingCertificateNat250LinkGroup44 (4.9s)
+✔ [3548/3553] Built Erdos302.Generated.PackingConfigurationLinkCatalogue113 (2.4s)
+✔ [3549/3562] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_10 (4.9s)
+✔ [3553/3562] Built Erdos302.Generated.PackingCertificateNat250LinkGroup45 (4.7s)
+✔ [3556/3564] Built Erdos302.Generated.PackingCertificateNat250LinkGroup46 (4.9s)
+✔ [3557/3565] Built Erdos302.Generated.PackingCertificateNat250LinkGroup47 (4.8s)
+✔ [3558/3566] Built Erdos302.Generated.PackingConfigurationLinkCatalogue123 (2.4s)
+✔ [3559/3570] Built Erdos302.Generated.PackingCertificateNat250VertexData12 (5.8s)
+✔ [3563/3572] Built Erdos302.Generated.PackingCertificateNat250LinkChunk11 (4.5s)
+✔ [3566/3574] Built Erdos302.Generated.PackingCertificateNat250LinkGroup48 (4.6s)
+✔ [3568/3576] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_11 (4.6s)
+✔ [3570/3576] Built Erdos302.Generated.PackingConfigurationLinkCatalogue131 (2.5s)
+✔ [3571/3576] Built Erdos302.Generated.PackingCertificateNat250LinkGroup49 (4.7s)
+✔ [3572/3581] Built Erdos302.Generated.PackingConfigurationLinkCatalogue133 (2.5s)
+✔ [3573/3581] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_10 (4.8s)
+✔ [3576/3581] Built Erdos302.Generated.PackingCertificateNat250LinkGroup50 (4.5s)
+✔ [3577/3583] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_8 (4.6s)
+✔ [3578/3584] Built Erdos302.Generated.PackingCertificateNat250LinkGroup51 (4.8s)
+✔ [3580/3587] Built Erdos302.Generated.PackingCertificateNat250VertexData13 (4.8s)
+✔ [3583/3590] Built Erdos302.Generated.PackingCertificateNat250LinkChunk12 (4.6s)
+✔ [3585/3593] Built Erdos302.Generated.PackingCertificateNat250LinkGroup52 (4.8s)
+✔ [3588/3595] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_12 (4.8s)
+✔ [3591/3600] Built Erdos302.Generated.PackingCertificateNat250LinkGroup53 (4.7s)
+✔ [3594/3602] Built Erdos302.Generated.PackingCertificateNat250LinkGroup54 (4.8s)
+✔ [3595/3602] Built Erdos302.Generated.PackingConfigurationLinkCatalogue150 (2.5s)
+✔ [3596/3604] Built Erdos302.Generated.PackingCertificateNat250LinkGroup55 (4.8s)
+✔ [3598/3606] Built Erdos302.Generated.PackingCertificateNat250VertexData14 (4.8s)
+✔ [3600/3608] Built Erdos302.Generated.PackingCertificateNat250LinkChunk13 (4.6s)
+✔ [3603/3611] Built Erdos302.Generated.PackingCertificateNat250LinkGroup56 (4.6s)
+✔ [3605/3612] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_13 (4.6s)
+✔ [3608/3613] Built Erdos302.Generated.PackingCertificateNat250LinkGroup57 (4.6s)
+✔ [3609/3617] Built Erdos302.Generated.PackingCertificateNat250LinkGroup58 (4.6s)
+✔ [3613/3619] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_12 (4.7s)
+✔ [3614/3624] Built Erdos302.Generated.PackingCertificateNat250VertexData15 (4.6s)
+✔ [3618/3626] Built Erdos302.Generated.PackingCertificateNat250LinkGroup59 (5.1s)
+✔ [3621/3627] Built Erdos302.Generated.PackingCertificateNat250LinkGroup60 (4.5s)
+✔ [3623/3629] Built Erdos302.Generated.PackingCertificateNat250LinkChunk14 (4.7s)
+✔ [3624/3629] Built Erdos302.Generated.PackingConfigurationLinkCatalogue180 (2.4s)
+✔ [3625/3631] Built Erdos302.Generated.PackingCertificateNat250LinkGroup61 (5.1s)
+✔ [3627/3640] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_14 (4.8s)
+✔ [3632/3642] Built Erdos302.Generated.PackingCertificateNat250LinkGroup62 (5.1s)
+✔ [3633/3643] Built Erdos302.Generated.PackingCertificateNat250LinkGroup63 (4.9s)
+✔ [3635/3648] Built Erdos302.Generated.PackingCertificateNat250VertexData16 (5.5s)
+✔ [3640/3649] Built Erdos302.Generated.PackingCertificateNat250LinkChunk15 (5.5s)
+✔ [3641/3651] Built Erdos302.Generated.PackingConfigurationLinkCatalogue194 (2.8s)
+✔ [3642/3651] Built Erdos302.Generated.PackingCertificateNat250LinkGroup64 (5.4s)
+✔ [3643/3653] Built Erdos302.Generated.PackingConfigurationLinkCatalogue195 (2.5s)
+✔ [3645/3655] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_15 (5.1s)
+✔ [3648/3657] Built Erdos302.Generated.PackingCertificateNat250LinkGroup65 (4.7s)
+✔ [3650/3661] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_14 (4.7s)
+✔ [3653/3661] Built Erdos302.Generated.PackingCertificateNat250LinkGroup66 (4.8s)
+✔ [3655/3663] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_12 (4.8s)
+✔ [3656/3663] Built Erdos302.Generated.PackingCertificateNat250LinkGroup67 (4.7s)
+✔ [3657/3665] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate3_8 (4.7s)
+✔ [3659/3665] Built Erdos302.Generated.PackingCertificateNat250VertexData17 (4.4s)
+✔ [3660/3667] Built Erdos302.Generated.PackingCertificateNat250LinkChunk16 (4.4s)
+✔ [3662/3667] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate4_0 (4.6s)
+✔ [3663/3667] Built Erdos302.Generated.PackingConfigurationLinkCatalogue208 (2.2s)
+✔ [3664/3669] Built Erdos302.Generated.PackingConfigurationLinkCatalogue210 (2.2s)
+✔ [3665/3676] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_16 (4.9s)
+✔ [3671/3677] Built Erdos302.Generated.PackingCertificateNat250LinkGroup68 (4.4s)
+✔ [3674/3682] Built Erdos302.Generated.PackingCertificateNat250LinkGroup69 (4.6s)
+✔ [3677/3683] Built Erdos302.Generated.PackingCertificateNat250LinkGroup70 (4.5s)
+✔ [3678/3687] Built Erdos302.Generated.PackingCertificateNat250LinkGroup71 (4.6s)
+✔ [3680/3687] Built Erdos302.Generated.PackingCertificateNat250VertexData18 (4.4s)
+✔ [3682/3689] Built Erdos302.Generated.PackingConfigurationLinkCatalogue232 (2.5s)
+✔ [3683/3692] Built Erdos302.Generated.PackingCertificateNat250LinkChunk17 (4.7s)
+✔ [3686/3692] Built Erdos302.Generated.PackingCertificateNat250LinkGroup72 (4.7s)
+✔ [3688/3694] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_17 (4.0s)
+✔ [3689/3697] Built Erdos302.Generated.PackingConfigurationLinkCatalogue240 (2.6s)
+✔ [3692/3699] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_16 (4.7s)
+✔ [3695/3703] Built Erdos302.Generated.PackingCertificateNat250LinkGroup73 (4.4s)
+✔ [3697/3703] Built Erdos302.Generated.PackingConfigurationLinkCatalogue248 (2.4s)
+✔ [3699/3705] Built Erdos302.Generated.PackingCertificateNat250LinkGroup74 (4.7s)
+✔ [3700/3706] Built Erdos302.Generated.PackingCertificateNat250LinkGroup75 (4.7s)
+✔ [3701/3707] Built Erdos302.Generated.PackingCertificateNat250VertexData19 (4.7s)
+✔ [3702/3711] Built Erdos302.Generated.PackingConfigurationLinkCatalogue251 (2.4s)
+✔ [3706/3713] Built Erdos302.Generated.PackingCertificateNat250LinkChunk18 (4.7s)
+✔ [3709/3715] Built Erdos302.Generated.PackingCertificateNat250LinkGroup76 (4.5s)
+✔ [3711/3717] Built Erdos302.Generated.PackingConfigurationLinkCatalogue262 (2.3s)
+✔ [3713/3719] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_18 (4.7s)
+✔ [3715/3721] Built Erdos302.Generated.PackingConfigurationLinkCatalogue267 (2.5s)
+✔ [3717/3728] Built Erdos302.Generated.PackingCertificateNat250LinkGroup77 (4.8s)
+✔ [3720/3728] Built Erdos302.Generated.PackingConfigurationLinkCatalogue274 (2.7s)
+✔ [3722/3730] Built Erdos302.Generated.PackingCertificateNat250LinkGroup78 (5.2s)
+✔ [3723/3731] Built Erdos302.Generated.PackingCertificateNat250LinkGroup79 (4.0s)
+✔ [3724/3732] Built Erdos302.Generated.PackingCertificateNat250VertexData20 (5.0s)
+✔ [3725/3735] Built Erdos302.Generated.PackingConfigurationLinkCatalogue279 (2.8s)
+✔ [3729/3736] Built Erdos302.Generated.PackingCertificateNat250LinkChunk19 (4.7s)
+✔ [3730/3736] Built Erdos302.Generated.PackingCertificateNat250LinkGroup80 (4.5s)
+✔ [3731/3737] Built Erdos302.Generated.PackingConfigurationLinkCatalogue285 (2.3s)
+✔ [3732/3739] Built Erdos302.Generated.PackingConfigurationLinkCatalogue286 (2.4s)
+✔ [3734/3740] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_19 (4.7s)
+✔ [3735/3743] Built Erdos302.Generated.PackingConfigurationLinkCatalogue289 (2.4s)
+✔ [3737/3744] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_18 (4.6s)
+✔ [3740/3745] Built Erdos302.Generated.PackingCertificateNat250LinkGroup81 (4.3s)
+✔ [3741/3745] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_16 (4.6s)
+✔ [3742/3750] Built Erdos302.Generated.PackingCertificateNat250LinkGroup82 (4.7s)
+✔ [3744/3752] Built Erdos302.Generated.PackingConfigurationLinkCatalogue296 (2.3s)
+✔ [3746/3753] Built Erdos302.Generated.PackingConfigurationLinkCatalogue298 (2.4s)
+✔ [3748/3757] Built Erdos302.Generated.PackingCertificateNat250VertexData21 (4.8s)
+✔ [3752/3759] Built Erdos302.Generated.PackingCertificateNat250LinkGroup83 (4.8s)
+✔ [3753/3759] Built Erdos302.Generated.PackingConfigurationLinkCatalogue308 (2.4s)
+✔ [3754/3761] Built Erdos302.Generated.PackingCertificateNat250LinkGroup84 (5.4s)
+✔ [3756/3762] Built Erdos302.Generated.PackingCertificateNat250LinkChunk20 (5.1s)
+✔ [3758/3763] Built Erdos302.Generated.PackingCertificateNat250LinkGroup85 (4.6s)
+✔ [3759/3763] Built Erdos302.Generated.PackingConfigurationLinkCatalogue316 (2.7s)
+✔ [3760/3771] Built Erdos302.Generated.PackingConfigurationLinkCatalogue317 (2.5s)
+✔ [3763/3771] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_20 (5.4s)
+✔ [3766/3773] Built Erdos302.Generated.PackingCertificateNat250LinkGroup86 (4.6s)
+✔ [3767/3775] Built Erdos302.Generated.PackingCertificateNat250LinkGroup87 (6.5s)
+✔ [3768/3775] Built Erdos302.Generated.PackingCertificateNat250VertexData22 (4.7s)
+✔ [3769/3775] Built Erdos302.Generated.PackingConfigurationLinkCatalogue323 (2.5s)
+✔ [3770/3776] Built Erdos302.Generated.PackingConfigurationLinkCatalogue325 (2.6s)
+✔ [3771/3778] Built Erdos302.Generated.PackingCertificateNat250LinkChunk21 (5.2s)
+✔ [3773/3780] Built Erdos302.Generated.PackingCertificateNat250LinkGroup88 (4.6s)
+✔ [3775/3781] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_21 (4.9s)
+✔ [3777/3783] Built Erdos302.Generated.PackingConfigurationLinkCatalogue333 (2.7s)
+✔ [3779/3783] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_20 (4.9s)
+✔ [3780/3785] Built Erdos302.Generated.PackingCertificateNat250LinkGroup89 (4.6s)
+✔ [3781/3791] Built Erdos302.Generated.PackingConfigurationLinkCatalogue342 (2.3s)
+✔ [3784/3791] Built Erdos302.Generated.PackingConfigurationLinkCatalogue343 (2.6s)
+✔ [3785/3791] Built Erdos302.Generated.PackingConfigurationLinkCatalogue347 (2.6s)
+✔ [3786/3791] Built Erdos302.Generated.PackingConfigurationLinkCatalogue349 (2.6s)
+✔ [3787/3793] Built Erdos302.Generated.PackingCertificateNat250LinkGroup90 (4.9s)
+✔ [3788/3796] Built Erdos302.Generated.PackingCertificateNat250LinkGroup91 (4.8s)
+✔ [3790/3796] Built Erdos302.Generated.PackingCertificateNat250VertexData23 (4.9s)
+✔ [3792/3797] Built Erdos302.Generated.PackingCertificateNat250LinkChunk22 (4.8s)
+✔ [3793/3798] Built Erdos302.Generated.PackingConfigurationLinkCatalogue353 (2.5s)
+✔ [3794/3798] Built Erdos302.Generated.PackingConfigurationLinkCatalogue354 (2.3s)
+✔ [3795/3799] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_22 (5.1s)
+✔ [3796/3800] Built Erdos302.Generated.PackingConfigurationLinkCatalogue355 (2.5s)
+✔ [3797/3802] Built Erdos302.Generated.PackingCertificateNat250LinkGroup92 (4.0s)
+✔ [3798/3804] Built Erdos302.Generated.PackingConfigurationLinkCatalogue357 (2.5s)
+✔ [3800/3806] Built Erdos302.Generated.PackingConfigurationLinkCatalogue359 (2.5s)
+✔ [3801/3806] Built Erdos302.Generated.PackingConfigurationLinkCatalogue366 (2.4s)
+✔ [3802/3806] Built Erdos302.Generated.PackingConfigurationLinkCatalogue367 (2.5s)
+✔ [3803/3808] Built Erdos302.Generated.PackingConfigurationLinkCatalogue371 (2.4s)
+✔ [3804/3815] Built Erdos302.Generated.PackingCertificateNat250LinkGroup93 (4.9s)
+✔ [3806/3815] Built Erdos302.Generated.PackingConfigurationLinkCatalogue374 (2.3s)
+✔ [3808/3817] Built Erdos302.Generated.PackingCertificateNat250LinkGroup94 (4.6s)
+✔ [3809/3819] Built Erdos302.Generated.PackingCertificateNat250LinkGroup95 (4.3s)
+✔ [3810/3819] Built Erdos302.Generated.PackingCertificateNat250VertexData24 (4.2s)
+✔ [3811/3821] Built Erdos302.Generated.PackingConfigurationLinkCatalogue378 (2.3s)
+✔ [3813/3823] Built Erdos302.Generated.PackingCertificateNat250LinkChunk23 (4.4s)
+✔ [3815/3823] Built Erdos302.Generated.PackingCertificateNat250LinkGroup96 (4.4s)
+✔ [3816/3825] Built Erdos302.Generated.PackingConfigurationLinkCatalogue387 (2.3s)
+✔ [3818/3825] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_23 (4.8s)
+✔ [3821/3829] Built Erdos302.Generated.PackingCertificateNat250LinkGroup97 (4.4s)
+✔ [3823/3829] Built Erdos302.Generated.PackingConfigurationLinkCatalogue397 (2.4s)
+✔ [3824/3831] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_22 (4.7s)
+✔ [3825/3835] Built Erdos302.Generated.PackingConfigurationLinkCatalogue398 (2.5s)
+✔ [3828/3835] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_20 (5.1s)
+✔ [3830/3835] Built Erdos302.Generated.PackingCertificateNat250LinkGroup98 (4.9s)
+✔ [3831/3837] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate3_16 (5.1s)
+✔ [3832/3838] Built Erdos302.Generated.PackingCertificateNat250LinkGroup99 (4.7s)
+✔ [3833/3840] Built Erdos302.Generated.PackingConfigurationLinkCatalogue402 (2.3s)
+✔ [3834/3840] Built Erdos302.Generated.PackingCertificateNat250VertexData25 (4.6s)
+✔ [3835/3842] Built Erdos302.Generated.PackingConfigurationLinkCatalogue404 (2.3s)
+✔ [3837/3842] Built Erdos302.Generated.PackingCertificateNat250LinkChunk24 (4.6s)
+✔ [3838/3844] Built Erdos302.Generated.PackingConfigurationLinkCatalogue410 (2.4s)
+✔ [3839/3844] Built Erdos302.Generated.PackingCertificateNat250LinkGroup100 (5.0s)
+✔ [3840/3844] Built Erdos302.Generated.PackingConfigurationLinkCatalogue411 (2.6s)
+✔ [3841/3846] Built Erdos302.Generated.PackingConfigurationLinkCatalogue412 (2.5s)
+✔ [3842/3846] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_24 (4.0s)
+✔ [3843/3856] Built Erdos302.Generated.PackingCertificateNat250LinkGroup101 (4.7s)
+✔ [3849/3856] Built Erdos302.Generated.PackingConfigurationLinkCatalogue413 (2.4s)
+✔ [3850/3857] Built Erdos302.Generated.PackingConfigurationLinkCatalogue421 (2.4s)
+✔ [3851/3858] Built Erdos302.Generated.PackingCertificateNat250LinkGroup102 (4.6s)
+✔ [3852/3859] Built Erdos302.Generated.PackingCertificateNat250LinkGroup103 (4.7s)
+✔ [3853/3861] Built Erdos302.Generated.PackingCertificateNat250VertexData26 (4.4s)
+✔ [3854/3861] Built Erdos302.Generated.PackingConfigurationLinkCatalogue422 (2.4s)
+✔ [3856/3864] Built Erdos302.Generated.PackingConfigurationLinkCatalogue424 (2.3s)
+✔ [3857/3864] Built Erdos302.Generated.PackingCertificateNat250LinkChunk25 (4.8s)
+✔ [3858/3867] Built Erdos302.Generated.PackingCertificateNat250LinkGroup104 (4.4s)
+✔ [3859/3867] Built Erdos302.Generated.PackingConfigurationLinkCatalogue427 (2.4s)
+✔ [3862/3867] Built Erdos302.Generated.PackingCertificateNat250LinkGroup105 (4.2s)
+✔ [3863/3869] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_25 (4.5s)
+✔ [3865/3869] Built Erdos302.Generated.PackingConfigurationLinkCatalogue430 (2.5s)
+✔ [3866/3871] Built Erdos302.Generated.PackingConfigurationLinkCatalogue435 (2.3s)
+✔ [3867/3871] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_24 (4.6s)
+✔ [3868/3875] Built Erdos302.Generated.PackingConfigurationLinkCatalogue436 (2.5s)
+✔ [3869/3878] Built Erdos302.Generated.PackingCertificateNat250LinkGroup106 (4.9s)
+✔ [3870/3878] Built Erdos302.Generated.PackingConfigurationLinkCatalogue437 (2.4s)
+✔ [3872/3879] Built Erdos302.Generated.PackingConfigurationLinkCatalogue440 (2.5s)
+✔ [3873/3881] Built Erdos302.Generated.PackingCertificateNat250VertexData27 (4.8s)
+✔ [3875/3881] Built Erdos302.Generated.PackingCertificateNat250LinkGroup107 (4.4s)
+✔ [3876/3882] Built Erdos302.Generated.PackingConfigurationLinkCatalogue443 (2.3s)
+✔ [3877/3884] Built Erdos302.Generated.PackingConfigurationLinkCatalogue445 (2.2s)
+✔ [3878/3884] Built Erdos302.Generated.PackingConfigurationLinkCatalogue447 (2.2s)
+✔ [3879/3885] Built Erdos302.Generated.PackingCertificateNat250LinkChunk26 (4.3s)
+✔ [3881/3886] Built Erdos302.Generated.PackingCertificateNat250LinkGroup108 (4.3s)
+✔ [3882/3888] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_26 (4.3s)
+✔ [3885/3890] Built Erdos302.Generated.PackingConfigurationLinkCatalogue451 (2.4s)
+✔ [3886/3890] Built Erdos302.Generated.PackingCertificateNat250LinkGroup109 (4.8s)
+✔ [3887/3896] Built Erdos302.Generated.PackingConfigurationLinkCatalogue452 (2.7s)
+✔ [3890/3898] Built Erdos302.Generated.PackingCertificateNat250LinkGroup110 (5.2s)
+✔ [3891/3901] Built Erdos302.Generated.PackingCertificateNat250LinkGroup111 (4.9s)
+✔ [3893/3901] Built Erdos302.Generated.PackingCertificateNat250VertexData28 (4.8s)
+✔ [3894/3901] Built Erdos302.Generated.PackingConfigurationLinkCatalogue456 (2.3s)
+✔ [3895/3903] Built Erdos302.Generated.PackingConfigurationLinkCatalogue457 (2.5s)
+✔ [3896/3905] Built Erdos302.Generated.PackingCertificateNat250LinkChunk27 (5.1s)
+✔ [3898/3905] Built Erdos302.Generated.PackingConfigurationLinkCatalogue459 (2.5s)
+✔ [3899/3905] Built Erdos302.Generated.PackingCertificateNat250LinkGroup112 (4.9s)
+✔ [3900/3907] Built Erdos302.Generated.PackingConfigurationLinkCatalogue460 (2.4s)
+✔ [3901/3907] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_27 (4.8s)
+✔ [3902/3912] Built Erdos302.Generated.PackingConfigurationLinkCatalogue461 (2.6s)
+✔ [3903/3912] Built Erdos302.Generated.PackingCertificateNat250LinkGroup113 (4.0s)
+✔ [3904/3912] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_26 (4.8s)
+✔ [3906/3913] Built Erdos302.Generated.PackingCertificateNat250LinkGroup114 (5.1s)
+✔ [3907/3913] Built Erdos302.Generated.PackingConfigurationLinkCatalogue463 (2.4s)
+✔ [3908/3914] Built Erdos302.Generated.PackingCertificateNat250LinkGroup115 (4.7s)
+✔ [3909/3914] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_24 (4.7s)
+✔ [3910/3914] Built Erdos302.Generated.PackingCertificateNat250LinkChunk28 (4.8s)
+✔ [3911/3916] Built Erdos302.Generated.PackingCertificateNat250VertexData29 (6.0s)
+✔ [3912/3920] Built Erdos302.Generated.PackingConfigurationLinkCatalogue464 (2.5s)
+✔ [3916/3920] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_28 (4.7s)
+✔ [3918/3926] Built Erdos302.Generated.PackingCertificateNat250LinkGroup116 (4.8s)
+✔ [3921/3927] Built Erdos302.Generated.PackingConfigurationLinkCatalogue475 (3.9s)
+✔ [3923/3929] Built Erdos302.Generated.PackingConfigurationLinkCatalogue479 (4.3s)
+✔ [3925/3929] Built Erdos302.Generated.PackingCertificateNat250LinkGroup117 (4.9s)
+✔ [3926/3936] Built Erdos302.Generated.PackingCertificateNat250LinkGroup118 (4.5s)
+✔ [3929/3945] Built Erdos302.Generated.PackingConfigurationLinkCatalogue483 (3.0s)
+✔ [3931/3945] Built Erdos302.Generated.PackingCertificateNat250VertexData30 (5.7s)
+✔ [3932/3945] Built Erdos302.Generated.PackingCertificateNat250LinkGroup119 (4.7s)
+✔ [3934/3945] Built Erdos302.Generated.PackingConfigurationLinkCatalogue487 (3.8s)
+✔ [3935/3945] Built Erdos302.Generated.PackingCertificateNat250LinkChunk29 (5.0s)
+✔ [3936/3945] Built Erdos302.Generated.PackingCertificateNat250LinkGroup120 (4.6s)
+✔ [3937/3945] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_29 (4.0s)
+⚠ [3938/3948] Built Erdos302.Generated.PackingCertificateNat250LinkChunk30 (4.4s)
+warning: Erdos302/Generated/PackingCertificateNat250LinkChunk30.lean:11:52: This simp argument is unused:
+  List.all_append
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat250VertexChunk30, L̵i̵s̵t̵.̵a̵l̵l̵_̵a̵pp̵e̵n̵d̵,̵ ̵p̵ackingCertificateNat250_linkGroup120,
+  ̲  ̲ ̲ ̲Bool.true_and]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Erdos302/Generated/PackingCertificateNat250LinkChunk30.lean:11:108: This simp argument is unused:
+  Bool.true_and
+
+Hint: Omit it from the simp argument list.
+  simp only [packingCertificateNat250VertexChunk30, List.all_append,
+  ̲  ̲ ̲ ̲packingCertificateNat250_linkGroup120,̵ ̵B̵o̵o̵l̵.̵t̵r̵u̵e̵_̵a̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+✔ [3939/3948] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate1_28 (4.6s)
+✔ [3940/3951] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate0_30 (4.4s)
+✔ [3941/3953] Built Erdos302.Generated.PackingCertificateNat250VertexData (4.2s)
+✔ [3942/3953] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate2_28 (4.2s)
+✔ [3943/3953] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch16 (49s)
+✔ [3944/3957] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch0 (49s)
+✔ [3945/3957] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate3_24 (4.9s)
+✔ [3946/3957] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_16 (6.7s)
+✔ [3947/3957] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_0 (6.5s)
+✔ [3948/3957] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch32 (47s)
+✔ [3949/3957] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate4_16 (4.0s)
+✔ [3950/3957] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_0 (4.2s)
+✔ [3951/3959] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_32 (4.9s)
+✔ [3952/3959] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch48 (44s)
+✔ [3953/3962] Built Erdos302.Generated.PackingCertificateNat250LinkAggregate5_0 (4.9s)
+✔ [3954/3962] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_48 (6.2s)
+✔ [3955/3962] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch64 (49s)
+✔ [3956/3964] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_32 (4.6s)
+✔ [3957/3964] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch80 (46s)
+✔ [3958/3964] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_64 (5.0s)
+✔ [3959/3969] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_0 (4.1s)
+✔ [3960/3969] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_80 (5.9s)
+✔ [3961/3969] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch96 (49s)
+✔ [3962/3969] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_64 (4.7s)
+✔ [3963/3971] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch112 (48s)
+✔ [3964/3971] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_96 (5.1s)
+✔ [3965/3974] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_112 (5.3s)
+✔ [3966/3974] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_96 (6.1s)
+✔ [3967/3976] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch128 (50s)
+✔ [3968/3976] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_64 (4.4s)
+✔ [3969/3976] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch144 (49s)
+✔ [3970/3980] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_128 (4.7s)
+✔ [3971/3980] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate3_0 (6.5s)
+✔ [3972/3980] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_144 (7.2s)
+✔ [3973/3980] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch160 (49s)
+✔ [3974/3980] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_128 (4.4s)
+✔ [3975/3982] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_160 (4.6s)
+✔ [3976/3985] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch176 (44s)
+✔ [3977/3985] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_176 (6.8s)
+✔ [3978/3985] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch192 (50s)
+✔ [3979/3985] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_160 (4.2s)
+✔ [3980/3987] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch208 (47s)
+✔ [3981/3987] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_192 (4.5s)
+✔ [3982/3987] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_128 (4.3s)
+✔ [3983/3993] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_208 (4.9s)
+✔ [3984/3993] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_192 (5.8s)
+✔ [3985/3993] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch224 (48s)
+✔ [3986/3995] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_224 (4.8s)
+✔ [3987/3998] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch240 (46s)
+✔ [3988/3998] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_240 (5.8s)
+✔ [3989/4000] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch256 (48s)
+✔ [3990/4000] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_224 (4.2s)
+✔ [3991/4000] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch272 (46s)
+✔ [3992/4004] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_256 (5.1s)
+✔ [3993/4004] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_192 (7.1s)
+✔ [3994/4004] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_272 (6.8s)
+✔ [3995/4004] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch288 (48s)
+✔ [3996/4004] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate3_128 (4.2s)
+✔ [3997/4004] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_256 (4.3s)
+✔ [3998/4004] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_288 (4.8s)
+✔ [3999/4006] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch304 (44s)
+✔ [4000/4006] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate4_0 (4.4s)
+✔ [4001/4009] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_304 (4.6s)
+✔ [4002/4009] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_288 (4.4s)
+✔ [4003/4009] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch320 (51s)
+✔ [4004/4009] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch336 (50s)
+✔ [4005/4011] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_256 (4.3s)
+✔ [4006/4011] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_320 (4.8s)
+✔ [4007/4016] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_336 (4.7s)
+✔ [4008/4016] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_320 (4.4s)
+✔ [4009/4016] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch352 (49s)
+✔ [4010/4016] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch368 (48s)
+✔ [4011/4018] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_352 (4.7s)
+✔ [4012/4021] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_368 (4.9s)
+✔ [4013/4021] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_352 (6.7s)
+✔ [4014/4023] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch384 (50s)
+✔ [4015/4023] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_320 (4.2s)
+✔ [4016/4023] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch400 (46s)
+✔ [4017/4027] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_384 (4.7s)
+✔ [4018/4027] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate3_256 (5.6s)
+✔ [4019/4027] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_400 (7.2s)
+✔ [4020/4027] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch416 (48s)
+✔ [4021/4027] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_384 (4.2s)
+✔ [4022/4029] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_416 (4.5s)
+✔ [4023/4032] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch432 (44s)
+✔ [4024/4032] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_432 (6.8s)
+✔ [4025/4034] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch448 (56s)
+✔ [4026/4034] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_416 (4.1s)
+✔ [4027/4034] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch464 (53s)
+✔ [4028/4041] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_448 (4.7s)
+✔ [4029/4041] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_384 (6.1s)
+✔ [4030/4041] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_464 (6.3s)
+✔ [4031/4041] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch480 (48s)
+✔ [4032/4041] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_448 (4.1s)
+✔ [4033/4043] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_480 (4.5s)
+✔ [4034/4046] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch496 (43s)
+✔ [4035/4046] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_496 (6.7s)
+✔ [4036/4046] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch512 (47s)
+✔ [4037/4046] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_480 (4.0s)
+✔ [4038/4048] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch528 (45s)
+✔ [4039/4048] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_512 (4.4s)
+✔ [4040/4048] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_448 (4.0s)
+✔ [4041/4052] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_528 (4.7s)
+✔ [4042/4052] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate3_384 (5.8s)
+✔ [4043/4052] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_512 (6.1s)
+✔ [4044/4052] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch544 (50s)
+✔ [4045/4052] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate4_256 (4.3s)
+✔ [4046/4054] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_544 (4.7s)
+✔ [4047/4054] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch560 (45s)
+✔ [4048/4057] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate5_0 (4.4s)
+✔ [4049/4057] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_560 (6.9s)
+✔ [4050/4059] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch576 (50s)
+✔ [4051/4059] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_544 (4.1s)
+✔ [4052/4059] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch592 (47s)
+✔ [4053/4064] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_576 (4.8s)
+✔ [4054/4064] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_512 (4.6s)
+✔ [4055/4064] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_592 (7.1s)
+✔ [4056/4064] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch608 (51s)
+✔ [4057/4064] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_576 (4.2s)
+✔ [4058/4066] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_608 (4.5s)
+✔ [4059/4069] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch624 (47s)
+✔ [4060/4069] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_624 (5.0s)
+✔ [4061/4069] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch640 (52s)
+✔ [4062/4071] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_608 (4.5s)
+✔ [4063/4071] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch656 (53s)
+✔ [4064/4071] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_640 (6.1s)
+✔ [4065/4075] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_576 (5.2s)
+✔ [4066/4075] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_656 (5.6s)
+✔ [4067/4075] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate3_512 (5.7s)
+✔ [4068/4080] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch672 (51s)
+✔ [4069/4081] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_640 (4.5s)
+✔ [4070/4081] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch688 (46s)
+✔ [4071/4081] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_672 (4.9s)
+✔ [4072/4081] Built Erdos302.Generated.PackingCertificateNat250ObjectiveScalar (7.5s)
+✔ [4074/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_688 (7.1s)
+✔ [4075/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate1_672 (6.0s)
+✔ [4077/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate2_640 (4.4s)
+✔ [4080/4085] Built Erdos302.Generated.PackingCertificateNat250VertexCapacityBatch704 (39s)
+✔ [4081/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate0_704 (4.5s)
+✔ [4082/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate3_640 (4.2s)
+✔ [4083/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate4_512 (4.1s)
+✔ [4084/4085] Built Erdos302.Generated.PackingCertificateNat250CapacityAggregate6_0 (4.3s)
+ℹ [4085/4085] Built Erdos302.Generated.PackingCertificateNat250 (6.4s)
+info: Erdos302/Generated/PackingCertificateNat250.lean:52:0: 'Erdos302.Generated.packingCertificateNat250_valid' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (4085 jobs).
