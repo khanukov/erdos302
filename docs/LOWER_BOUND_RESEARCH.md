@@ -381,6 +381,20 @@ the analogy with Della Pietra's mechanism suggests \(\tau(G_N)/N\) tends to a
 positive constant (edges between typical endpoints come from close pairs of
 \(k\), which both endpoints share).
 
+Degree structure (script `degstruct.py` in the session, distilled from
+`conflict_cover.py`): the number of *isolated* edges (both endpoints of degree
+1) is 825, 7 890, 76 948 at \(N=10^5,10^6,10^7\), i.e. \(0.0083N\),
+\(0.0079N\), \(0.0077N\), decreasing very slowly; each of them forces one
+cover vertex, so \(\tau(G_N)\ge0.0077N\) at \(N=10^7\) and
+\(\tau(G_N)=o(N)\) would require this count to tend to \(o(N)\). The share of
+edge-endpoint mass carried by vertices of degree \(\ge3\) grows
+(0.31, 0.42, 0.51), and the share of edges with both endpoints of degree
+\(\le2\) falls (0.53, 0.42, 0.34): the graph is slowly concentrating on hubs,
+which are highly composite numbers with \(v_2\in\{1,2\}\) (for example
+\(5\,001\,750\) has degree 16 at \(N=10^7\)). Edges with \(x+y\le100\) are
+54 %, 43 %, 35 % of all edges at the three sizes, so the bulk moves to larger
+scales as \(N\) grows, in line with the \(\sum_x1/x\) heuristic.
+
 Approaches. (a) Exhibit an explicit cover: for edges with \(k\le K\) delete
 the larger tail — those tails have a divisor in a window of ratio \(\sqrt2\)
 near \(\sqrt{N/k}\), so by Ford's theorem they number
