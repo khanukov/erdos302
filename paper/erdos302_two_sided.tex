@@ -10,6 +10,9 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{plain}
 \newcommand{\N}{\mathbb N}
 \newcommand{\Q}{\mathbb Q}
 
@@ -184,6 +187,20 @@ The replay kernel-checks the proof terms while structurally trusting the seriali
 in the standard formal sense, while remaining an unrefereed result with a
 qualitative, non-explicit constant.
 
+The formal and the mathematical status of this arrangement should not be
+conflated, and we state the distinction plainly.  Formally, no hypothesis
+about Problem 301 occurs in the lower theorem, and its transitive axiom
+report contains only \texttt{propext}, \texttt{Classical.choice}, and
+\texttt{Quot.sound}.  Mathematically, the lower bound is exactly as reliable
+as the external development it imports: a clean axiom report records that the
+Lean kernel accepted the pinned proof terms, not that the upstream
+mathematics has been reviewed by anyone.  If the pinned Problem 301
+development is wrong, the lower bound of Theorem~\ref{thm:main} falls with
+it.  The odd-quarter padding of Lemma~\ref{lem:padding}, which is the part
+original to this work, contributes $N/8-O(1)$ elements to a construction
+whose $(1/2+\rho_L/24)N$ bulk is entirely upstream, and does not survive on
+its own.  The upper bound of Theorem~\ref{thm:main} has no such dependency.
+
 Define the odd quarter
 \[
  O_N=\{n\in\{1,\ldots,N\}: n\text{ is odd and }4n\leq N\},
@@ -247,7 +264,20 @@ cardinalities of triple-free subsets of $\{1,\ldots,N\}$, proves that every
 such witness is bounded by this maximum, and derives the lower statement of
 Theorem~\ref{thm:main} in that conventional notation.  Separate examples
 verify that $\{2,3,6\}$ and every full interval with $N\geq6$ violate the
-literal predicate.
+literal predicate, so the formal statement is not vacuously true.
+
+Readers checking the formalization should go to a single declaration, namely
+\[
+ \texttt{Erdos302Lower.erdos302\_f302\_lower\_five\_eighths\_plus}
+\]
+in the file \texttt{lower-lean/Erdos302Lower/Maximum.lean}.  It states
+\[
+ \exists\,\delta>0\ \exists\,N_0\ \forall N\geq N_0:\quad
+ \left(\frac58+\delta\right)N\leq f_{302}(N),
+\]
+and unfolds to only two project definitions, \texttt{NoUnitFractionTriple}
+and \texttt{f302}, both reproduced in the repository README.  Everything else
+in the lower project exists to prove that one statement.
 
 \section{The hierarchical finite certificate}
 
@@ -260,44 +290,156 @@ The reciprocal-triple hypergraph $H$ has vertex set $D$ and one edge for each
 unordered all-distinct triple satisfying $bc=a(b+c)$.  The verifier
 regenerates $719$ vertices and $12675$ edges from these definitions.
 
-We use a family $\mathcal G$ of configurations.  Every edge is a
-configuration of demand one.  The remaining configurations are all $96$
-admissible exponent shifts of each of the $21$ exactly verified prefixes of
-the divisor tile
+Throughout, a \emph{vertex cover} of a hypergraph is a set of vertices
+meeting every edge.  A triple-free subset of $D$ is exactly the complement of
+a vertex cover of $H$, so lower bounds for cover numbers are what the upper
+bound needs.  Computing those numbers directly on $H$ is infeasible, so we
+bound them from below by a weighted family of subsets whose individual cover
+requirements are already known.  The next definition names that device; the
+two families we actually use are constructed in Lemmas~\ref{lem:edge}
+and~\ref{lem:scaling}.
+
+For $W\subseteq D$ let $H[W]$ denote the induced sub-hypergraph, whose edges
+are the edges of $H$ contained in $W$, and let $\tau(\cdot)$ denote the
+minimum size of a vertex cover.
+
+\begin{definition}[configuration, demand, support]\label{def:configuration}
+A \emph{configuration} is a pair $(S,r)$ consisting of a subset $S\subseteq
+D$, called its \emph{support}, and an integer $r\geq0$, called its
+\emph{demand}, such that
 \[
- Q_0=3360=2^5\cdot3\cdot5\cdot7.
+ \tau\bigl(H[S]\bigr)\geq r .
 \]
-Thus there are $96\cdot21=2016$ hierarchical gadgets and $14691$
-configurations in total.  A gadget's demand is its exact base-prefix cover
-number.
+\end{definition}
+
+The demand is therefore a proved property of the pair, not a label attached
+to it: exhibiting a configuration requires proving the displayed inequality.
+The point of the definition is that a demand established once remains valid
+inside every larger vertex set, which is what lets a single family serve all
+the prefixes used below.
 
 \begin{lemma}[configuration packing]\label{lem:packing}
-Let $H=(V,E)$ be a finite hypergraph.  Suppose each $G\in\mathcal G$ has an
-integer demand $r(G)\geq0$ such that every vertex cover $C$ satisfies
-$|C\cap G|\geq r(G)$.  If nonnegative rational weights $y_G$ satisfy
+Let $W\subseteq D$, let $\mathcal G$ be a finite family of configurations
+with $S\subseteq W$ for every $(S,r)\in\mathcal G$, and let
+$y_{(S,r)}\geq0$ be rational weights satisfying the load condition
 \[
- \sum_{G\ni v}y_G\leq1\qquad(v\in V),
+ \sum_{(S,r)\in\mathcal G:\,v\in S}y_{(S,r)}\leq1\qquad(v\in W).
 \]
-then every vertex cover satisfies
+Then every vertex cover $C$ of $H[W]$ satisfies
 \[
- |C|\geq\sum_{G\in\mathcal G}r(G)y_G.
+ |C|\geq\sum_{(S,r)\in\mathcal G}r\,y_{(S,r)}.
 \]
 \end{lemma}
 \begin{proof}
-Exact double counting gives
+Fix $(S,r)\in\mathcal G$.  Every edge of $H[S]$ is an edge of $H[W]$ and is
+contained in $S$, so it is met by $C$ inside $S$; hence $C\cap S$ is a vertex
+cover of $H[S]$ and $|C\cap S|\geq\tau(H[S])\geq r$.  Exact double counting
+now gives
 \[
- \sum_G r(G)y_G
- \leq\sum_G|C\cap G|y_G
- =\sum_{v\in C}\sum_{G\ni v}y_G
- \leq|C|.
+ \sum_{(S,r)}r\,y_{(S,r)}
+ \leq\sum_{(S,r)}|C\cap S|\,y_{(S,r)}
+ =\sum_{v\in C}\ \sum_{(S,r):\,v\in S}y_{(S,r)}
+ \leq|C|.\qedhere
 \]
 \end{proof}
 
-In particular, an objective strictly greater than $k-1$ certifies integral
-cover number at least $k$.  For $x\geq1$, write
+The first family of configurations is immediate.
+
+\begin{lemma}[edge configurations]\label{lem:edge}
+For every edge $e$ of $H$, the pair $(e,1)$ is a configuration.
+\end{lemma}
+\begin{proof}
+The hypergraph $H[e]$ has $e$ among its edges, so a vertex cover of $H[e]$ is
+nonempty and $\tau(H[e])\geq1$.
+\end{proof}
+
+The second family transports exactly computed cover numbers from a smaller
+divisor set.  Put
+\[
+ Q_0=3360=2^5\cdot3\cdot5\cdot7,
+ \qquad D_0=\operatorname{Div}(Q_0)\setminus\{1\},
+\]
+so that $|D_0|=47$, and let $H_0$ denote the reciprocal-triple hypergraph on
+$D_0$, defined by the same relation $bc=a(b+c)$.  For $x\geq1$ write
+\[
+ D_{0,\leq x}=\{d\in D_0:d\leq x\}.
+\]
+Because $D_0$ is small, the exact vertex-cover number
+$\tau\bigl(H_0[D_{0,\leq x}]\bigr)$ of every such prefix is computed by
+exhaustive search; a separate verifier performs this computation
+independently of the main certificate.  These exact numbers rise from $0$ to
+$21$, and for $1\leq k\leq21$ we define
+\[
+ s_k=\min\bigl\{t\in D_0:\tau\bigl(H_0[D_{0,\leq t}]\bigr)\geq k\bigr\},
+\]
+which yields
+\[
+ \begin{aligned}
+ (s_1,\ldots,s_{21})=(
+ &6,12,24,30,40,42,56,84,96,105,120,\\
+ &140,210,224,240,336,420,560,1120,1680,3360).
+ \end{aligned}
+\]
+We call $D_{0,\leq s_k}$ the \emph{$k$-th certified base prefix}; its exact
+cover number is $k$ by construction.  This replaces an infeasible computation
+on $H$ by $21$ feasible ones on $H_0$.
+
+\begin{lemma}[scaled base prefixes]\label{lem:scaling}
+Let $m$ divide $Q/Q_0$ and let $1\leq k\leq21$.  Then
+\[
+ \bigl(m\cdot D_{0,\leq s_k},\ k\bigr)
+\]
+is a configuration of $H$.
+\end{lemma}
+\begin{proof}
+Write $S=m\cdot D_{0,\leq s_k}$.  If $d\mid Q_0$ and $m\mid Q/Q_0$, then
+$md\mid Q$ and $md\neq1$, so $S\subseteq D$, and $d\mapsto md$ is injective.
+It also preserves the defining relation in both directions, since
+\[
+ \frac1a=\frac1b+\frac1c
+ \iff
+ \frac1{ma}=\frac1{mb}+\frac1{mc},
+\]
+so it maps every edge of $H_0[D_{0,\leq s_k}]$ to an edge of $H$ contained in
+$S$, that is, to an edge of $H[S]$.  Now let $C$ be a vertex cover of $H[S]$
+and put
+\[
+ C_0=\{d\in D_{0,\leq s_k}:md\in C\}.
+\]
+Given an edge $e_0$ of $H_0[D_{0,\leq s_k}]$, its image $me_0$ is an edge of
+$H[S]$, so $C$ contains some $md\in me_0$, whence $d\in C_0\cap e_0$.  Thus
+$C_0$ is a vertex cover of $H_0[D_{0,\leq s_k}]$, and injectivity gives
+\[
+ |C|\geq|C_0|\geq\tau\bigl(H_0[D_{0,\leq s_k}]\bigr)=k,
+\]
+so $\tau(H[S])\geq k$.
+\end{proof}
+
+The verifier does not take the edge correspondence used in this proof on
+trust: for every multiplier $m$ and every certified base prefix, it checks
+that each mapped triple actually occurs in the independently regenerated edge
+set of $H$.
+
+Since
+\[
+ \frac{Q}{Q_0}=41580=2^2\cdot3^3\cdot5\cdot7\cdot11
+\]
+has $3\cdot4\cdot2\cdot2\cdot2=96$ divisors, Lemma~\ref{lem:scaling} supplies
+$96\cdot21=2016$ configurations, which we call \emph{hierarchical gadgets}.
+Together with the $12675$ edge configurations of Lemma~\ref{lem:edge}, they
+form the family $\mathcal G$ used below, of size
+\[
+ 12675+2016=14691.
+\]
+
+For $x\geq1$ write
 \[
  D_{\leq x}=\{d\in D:d\leq x\}.
 \]
+We apply Lemma~\ref{lem:packing} with $W=D_{\leq x}$, using those
+configurations of $\mathcal G$ whose support lies in $D_{\leq x}$.  Since
+cover numbers are integers, a packing whose objective is strictly greater
+than $k-1$ certifies $\tau(H[D_{\leq x}])\geq k$.
 The committed JSON contains exact rational packings at $271$ prefixes,
 producing a nondecreasing sequence of possibly repeated thresholds
 \[

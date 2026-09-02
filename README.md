@@ -197,6 +197,61 @@ The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
 algorithmically separate cross-check of the 21 base demands used by the new
 hierarchical certificate.
 
+## What the Lean files prove
+
+The single statement to read is
+`Erdos302Lower.erdos302_f302_lower_five_eighths_plus`, in
+[`lower-lean/Erdos302Lower/Maximum.lean`](lower-lean/Erdos302Lower/Maximum.lean).
+Everything else in the lower project exists to prove it. Fully unfolded, it
+says
+
+```lean
+∃ δ : ℝ, 0 < δ ∧ ∃ N₀ : ℕ, ∀ N ≥ N₀, ((5 : ℝ) / 8 + δ) * N ≤ (f302 N : ℝ)
+```
+
+where `f302 N` is the largest cardinality of a subset of `Finset.Icc 1 N`
+containing no three distinct `a, b, c` with `1/a = 1/b + 1/c`, taken over
+rationals. The two definitions it depends on are the whole vocabulary needed
+to read it:
+
+```lean
+def NoUnitFractionTriple (A : Finset ℕ) : Prop :=
+  ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, a ≠ b → a ≠ c → b ≠ c →
+    (1 : ℚ) / a ≠ (1 : ℚ) / b + (1 : ℚ) / c
+
+noncomputable def admissibleSubsets (N : ℕ) : Finset (Finset ℕ) :=
+  (Finset.Icc 1 N).powerset.filter NoUnitFractionTriple
+
+noncomputable def f302 (N : ℕ) : ℕ :=
+  (admissibleSubsets N).sup Finset.card
+```
+
+(`admissibleSubsets` is written with `classical` in the source; it is shown
+here without that wrapper for readability.)
+
+To build it and print its axiom dependencies:
+
+```bash
+cd lower-lean
+lake exe cache get && lake build
+lake env lean Erdos302Lower/Axioms.lean
+```
+
+The last command reports the transitive axioms of that theorem, and of the
+six supporting results, as `[propext, Classical.choice, Quot.sound]`; CI
+diffs its output against the committed `AXIOMS.txt`.
+
+Two independent checks guard against the statement being vacuously true:
+`not_noUnitFractionTriple_236` and `full_interval_not_triple_free` prove that
+`{2,3,6}` and every full interval with `N ≥ 6` are *not* triple-free, so
+`NoUnitFractionTriple` is not accidentally an empty or trivial predicate.
+
+**What this does not establish.** The proof imports Della Pietra's Problem 301
+development as checked proof terms rather than as hypotheses, so its axiom
+report is clean; but its mathematical content rests entirely on that
+unrefereed external work. See [dependence on Problem 301](#dependence-on-problem-301)
+below. The upper bound is not part of the Lean development at all.
+
 ## Verify the lower bound
 
 The lower source is deliberately isolated from the root Lean 4.27 project.
@@ -235,6 +290,40 @@ See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 route. At the pinned revisions, the upstream repositories provide no license
 file; this repository pins them as external dependencies and does not vendor
 their source.
+
+## Dependence on Problem 301
+
+The lower bound is not self-contained, and the distinction between its formal
+and its mathematical status matters.
+
+*Formally*, it is unconditional: Della Pietra's Problem 301 result is imported
+as a checked proof term, not assumed as a hypothesis, so no project-local
+hypothesis appears in the statement and the transitive axiom report contains
+only `propext`, `Classical.choice`, and `Quot.sound`.
+
+*Mathematically*, it is exactly as reliable as that external work. The chain is
+
+```
+this repository's 5/8 + δ
+  └── donalddellapietra/erdos-301-proof   (unrefereed)
+        └── donalddellapietra/erdos-327-proof   (unrefereed)
+              └── standard analytic estimates in the literature
+```
+
+A clean axiom report means the Lean kernel accepted the proof terms at the
+pinned revisions. It does not mean the upstream mathematics has been reviewed
+by anyone. **If the pinned Problem 301 development is wrong, the lower bound in
+this repository falls with it**, and the padding argument on top of it — the
+part of the lower bound original to this work — would not survive on its own. The
+padding step contributes `N/8 - O(1)` elements to a construction whose
+`(1/2 + ρ_L/24)N` bulk comes entirely from upstream.
+
+The upper bound has no such dependency: it rests on the exact certificate and
+the asymptotic argument in the manuscript, both self-contained.
+
+As of 15 August 2026 the pinned Problem 327 base carries an open upstream pull
+request, which corrects manuscript and finite-certificate exposition only and
+changes no Lean file; see [trust boundary](docs/TRUST_BOUNDARY.md).
 
 ## Licensing
 
