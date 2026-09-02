@@ -202,17 +202,19 @@ hierarchical certificate.
 The single statement to read is
 `Erdos302Lower.erdos302_f302_lower_five_eighths_plus`, in
 [`lower-lean/Erdos302Lower/Maximum.lean`](lower-lean/Erdos302Lower/Maximum.lean).
-Everything else in the lower project exists to prove it. Fully unfolded, it
-says
+The proof modules `Defs.lean`, `FromErdos301.lean`, and `Maximum.lean`
+culminate in it; `Validate.lean` and `Axioms.lean` are not among its
+dependencies and provide independent anti-vacuity and axiom-audit checks.
+
+Its type is the wrapper `Erdos302MaximumLowerConclusion`, which unfolds to
 
 ```lean
 ∃ δ : ℝ, 0 < δ ∧ ∃ N₀ : ℕ, ∀ N ≥ N₀, ((5 : ℝ) / 8 + δ) * N ≤ (f302 N : ℝ)
 ```
 
-where `f302 N` is the largest cardinality of a subset of `Finset.Icc 1 N`
-containing no three distinct `a, b, c` with `1/a = 1/b + 1/c`, taken over
-rationals. The two definitions it depends on are the whole vocabulary needed
-to read it:
+The unfolded statement mentions one project definition, `f302`. Reading that
+one in turn requires `admissibleSubsets` and `NoUnitFractionTriple`, so three
+project definitions in total make up the whole vocabulary:
 
 ```lean
 def NoUnitFractionTriple (A : Finset ℕ) : Prop :=
@@ -250,7 +252,14 @@ Two independent checks guard against the statement being vacuously true:
 development as checked proof terms rather than as hypotheses, so its axiom
 report is clean; but its mathematical content rests entirely on that
 unrefereed external work. See [dependence on Problem 301](#dependence-on-problem-301)
-below. The upper bound is not part of the Lean development at all.
+below.
+
+The upper-bound theorem is not formalized end to end in Lean. The root Lean
+project checks only reusable arithmetic components of it: the implication
+`b * c = a * (b + c) → 1/a = 1/b + 1/c`, invariance of a reciprocal relation
+under scaling, the two final rational identities, and the numerical chain
+comparing the certified bound with its predecessors. None of these establish
+the finite certificate or the asymptotic passage.
 
 ## Verify the lower bound
 
@@ -312,11 +321,18 @@ this repository's 5/8 + δ
 
 A clean axiom report means the Lean kernel accepted the proof terms at the
 pinned revisions. It does not mean the upstream mathematics has been reviewed
-by anyone. **If the pinned Problem 301 development is wrong, the lower bound in
-this repository falls with it**, and the padding argument on top of it — the
-part of the lower bound original to this work — would not survive on its own. The
-padding step contributes `N/8 - O(1)` elements to a construction whose
-`(1/2 + ρ_L/24)N` bulk comes entirely from upstream.
+by anyone. **Any defect in the upstream formal statement, in its
+correspondence to the intended Problem 301 claim, or in the trusted pinned
+toolchain and serialized inputs would propagate directly to the lower bound
+in this repository.**
+
+The odd-quarter padding argument, which is the part of the lower bound
+original to this work, remains valid on its own terms: it is the implication
+that adding the odd quarter to a structured carrier creates no new triple.
+What it cannot do without the upstream construction is deliver the
+\(5/8+\delta\) conclusion, because the padding contributes only
+`N/8 - O(1)` elements to a set whose `(1/2 + ρ_L/24)N` bulk comes entirely
+from upstream.
 
 The upper bound has no such dependency: it rests on the exact certificate and
 the asymptotic argument in the manuscript, both self-contained.

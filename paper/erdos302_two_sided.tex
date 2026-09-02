@@ -194,12 +194,15 @@ report contains only \texttt{propext}, \texttt{Classical.choice}, and
 \texttt{Quot.sound}.  Mathematically, the lower bound is exactly as reliable
 as the external development it imports: a clean axiom report records that the
 Lean kernel accepted the pinned proof terms, not that the upstream
-mathematics has been reviewed by anyone.  If the pinned Problem 301
-development is wrong, the lower bound of Theorem~\ref{thm:main} falls with
-it.  The odd-quarter padding of Lemma~\ref{lem:padding}, which is the part
-original to this work, contributes $N/8-O(1)$ elements to a construction
-whose $(1/2+\rho_L/24)N$ bulk is entirely upstream, and does not survive on
-its own.  The upper bound of Theorem~\ref{thm:main} has no such dependency.
+mathematics has been reviewed by anyone.  Any defect in the upstream formal
+statement, in its correspondence to the intended Problem 301 claim, or in the
+trusted pinned toolchain and serialized inputs would propagate directly to
+the lower bound of Theorem~\ref{thm:main}.  The odd-quarter padding of
+Lemma~\ref{lem:padding}, which is the part original to this work, remains
+valid on its own terms as an implication; what it cannot supply without
+Proposition~\ref{prop:structured} is the conclusion, since it contributes
+$N/8-O(1)$ elements to a set whose $(1/2+\rho_L/24)N$ bulk is entirely
+upstream.  The upper bound of Theorem~\ref{thm:main} has no such dependency.
 
 Define the odd quarter
 \[
@@ -270,14 +273,22 @@ Readers checking the formalization should go to a single declaration, namely
 \[
  \texttt{Erdos302Lower.erdos302\_f302\_lower\_five\_eighths\_plus}
 \]
-in the file \texttt{lower-lean/Erdos302Lower/Maximum.lean}.  It states
+in the file \texttt{lower-lean/Erdos302Lower/Maximum.lean}.  Unfolding its
+type
+\[
+ \texttt{Erdos302MaximumLowerConclusion}
+\]
+gives
 \[
  \exists\,\delta>0\ \exists\,N_0\ \forall N\geq N_0:\quad
- \left(\frac58+\delta\right)N\leq f_{302}(N),
+ \left(\frac58+\delta\right)N\leq f_{302}(N).
 \]
-and unfolds to only two project definitions, \texttt{NoUnitFractionTriple}
-and \texttt{f302}, both reproduced in the repository README.  Everything else
-in the lower project exists to prove that one statement.
+The unfolded statement mentions the single project definition \texttt{f302},
+whose own definition uses \texttt{admissibleSubsets} and
+\texttt{NoUnitFractionTriple}; those three are reproduced in the repository
+README and are the entire vocabulary required.  The proof modules culminate
+in this declaration, while the validation and axiom-audit modules are
+independent of it.
 
 \section{The hierarchical finite certificate}
 
@@ -380,9 +391,17 @@ which yields
  &140,210,224,240,336,420,560,1120,1680,3360).
  \end{aligned}
 \]
-We call $D_{0,\leq s_k}$ the \emph{$k$-th certified base prefix}; its exact
-cover number is $k$ by construction.  This replaces an infeasible computation
-on $H$ by $21$ feasible ones on $H_0$.
+We call $D_{0,\leq s_k}$ the \emph{$k$-th certified base prefix}.  Its exact
+cover number is $k$, not merely at least $k$.  Indeed, consecutive prefixes
+of $D_0$ differ by a single vertex, and adjoining one vertex $v$ raises the
+cover number by at most one, since if $C$ covers a prefix $W$ then
+$C\cup\{v\}$ covers $W\cup\{v\}$: every edge of $H_0[W\cup\{v\}]$ either lies
+in $W$, and is met by $C$, or contains $v$.  By minimality of $s_k$ the
+preceding prefix has cover number at most $k-1$, so the prefix
+$D_{0,\leq s_k}$ has cover number at most $k$, hence exactly $k$.  The
+exhaustive verifier computes these numbers directly and checks the equality.
+This replaces an infeasible computation on $H$ by $21$ feasible ones on
+$H_0$.
 
 \begin{lemma}[scaled base prefixes]\label{lem:scaling}
 Let $m$ divide $Q/Q_0$ and let $1\leq k\leq21$.  Then
