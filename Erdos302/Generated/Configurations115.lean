@@ -1,4 +1,4 @@
-import Erdos302.Certificate
+import Erdos302.CertificateSchema
 
 set_option maxRecDepth 100000
 

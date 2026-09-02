@@ -123,4 +123,16 @@ def denominatorCount : ℕ := denominatorChunk0.length + denominatorChunk1.lengt
 
 theorem denominator_count : denominatorCount = 719 := by decide
 
+/-- Total lookup used by certificate checks; validity separately proves the index is in range. -/
+def denominatorAt (id : ℕ) : ℕ := match id / 100 with
+  | 0 => denominatorChunk0[id % 100]?.getD 0
+  | 1 => denominatorChunk1[id % 100]?.getD 0
+  | 2 => denominatorChunk2[id % 100]?.getD 0
+  | 3 => denominatorChunk3[id % 100]?.getD 0
+  | 4 => denominatorChunk4[id % 100]?.getD 0
+  | 5 => denominatorChunk5[id % 100]?.getD 0
+  | 6 => denominatorChunk6[id % 100]?.getD 0
+  | 7 => denominatorChunk7[id % 100]?.getD 0
+  | _ => 0
+
 end Erdos302.Generated

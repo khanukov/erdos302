@@ -598,4 +598,377 @@ theorem all_configuration_chunks_valid : configurationChunk0.toList.all Erdos302
     configurationChunk293.toList.all Erdos302.RawConfiguration.valid = true := by
   exact ⟨configurationChunk0_valid, configurationChunk1_valid, configurationChunk2_valid, configurationChunk3_valid, configurationChunk4_valid, configurationChunk5_valid, configurationChunk6_valid, configurationChunk7_valid, configurationChunk8_valid, configurationChunk9_valid, configurationChunk10_valid, configurationChunk11_valid, configurationChunk12_valid, configurationChunk13_valid, configurationChunk14_valid, configurationChunk15_valid, configurationChunk16_valid, configurationChunk17_valid, configurationChunk18_valid, configurationChunk19_valid, configurationChunk20_valid, configurationChunk21_valid, configurationChunk22_valid, configurationChunk23_valid, configurationChunk24_valid, configurationChunk25_valid, configurationChunk26_valid, configurationChunk27_valid, configurationChunk28_valid, configurationChunk29_valid, configurationChunk30_valid, configurationChunk31_valid, configurationChunk32_valid, configurationChunk33_valid, configurationChunk34_valid, configurationChunk35_valid, configurationChunk36_valid, configurationChunk37_valid, configurationChunk38_valid, configurationChunk39_valid, configurationChunk40_valid, configurationChunk41_valid, configurationChunk42_valid, configurationChunk43_valid, configurationChunk44_valid, configurationChunk45_valid, configurationChunk46_valid, configurationChunk47_valid, configurationChunk48_valid, configurationChunk49_valid, configurationChunk50_valid, configurationChunk51_valid, configurationChunk52_valid, configurationChunk53_valid, configurationChunk54_valid, configurationChunk55_valid, configurationChunk56_valid, configurationChunk57_valid, configurationChunk58_valid, configurationChunk59_valid, configurationChunk60_valid, configurationChunk61_valid, configurationChunk62_valid, configurationChunk63_valid, configurationChunk64_valid, configurationChunk65_valid, configurationChunk66_valid, configurationChunk67_valid, configurationChunk68_valid, configurationChunk69_valid, configurationChunk70_valid, configurationChunk71_valid, configurationChunk72_valid, configurationChunk73_valid, configurationChunk74_valid, configurationChunk75_valid, configurationChunk76_valid, configurationChunk77_valid, configurationChunk78_valid, configurationChunk79_valid, configurationChunk80_valid, configurationChunk81_valid, configurationChunk82_valid, configurationChunk83_valid, configurationChunk84_valid, configurationChunk85_valid, configurationChunk86_valid, configurationChunk87_valid, configurationChunk88_valid, configurationChunk89_valid, configurationChunk90_valid, configurationChunk91_valid, configurationChunk92_valid, configurationChunk93_valid, configurationChunk94_valid, configurationChunk95_valid, configurationChunk96_valid, configurationChunk97_valid, configurationChunk98_valid, configurationChunk99_valid, configurationChunk100_valid, configurationChunk101_valid, configurationChunk102_valid, configurationChunk103_valid, configurationChunk104_valid, configurationChunk105_valid, configurationChunk106_valid, configurationChunk107_valid, configurationChunk108_valid, configurationChunk109_valid, configurationChunk110_valid, configurationChunk111_valid, configurationChunk112_valid, configurationChunk113_valid, configurationChunk114_valid, configurationChunk115_valid, configurationChunk116_valid, configurationChunk117_valid, configurationChunk118_valid, configurationChunk119_valid, configurationChunk120_valid, configurationChunk121_valid, configurationChunk122_valid, configurationChunk123_valid, configurationChunk124_valid, configurationChunk125_valid, configurationChunk126_valid, configurationChunk127_valid, configurationChunk128_valid, configurationChunk129_valid, configurationChunk130_valid, configurationChunk131_valid, configurationChunk132_valid, configurationChunk133_valid, configurationChunk134_valid, configurationChunk135_valid, configurationChunk136_valid, configurationChunk137_valid, configurationChunk138_valid, configurationChunk139_valid, configurationChunk140_valid, configurationChunk141_valid, configurationChunk142_valid, configurationChunk143_valid, configurationChunk144_valid, configurationChunk145_valid, configurationChunk146_valid, configurationChunk147_valid, configurationChunk148_valid, configurationChunk149_valid, configurationChunk150_valid, configurationChunk151_valid, configurationChunk152_valid, configurationChunk153_valid, configurationChunk154_valid, configurationChunk155_valid, configurationChunk156_valid, configurationChunk157_valid, configurationChunk158_valid, configurationChunk159_valid, configurationChunk160_valid, configurationChunk161_valid, configurationChunk162_valid, configurationChunk163_valid, configurationChunk164_valid, configurationChunk165_valid, configurationChunk166_valid, configurationChunk167_valid, configurationChunk168_valid, configurationChunk169_valid, configurationChunk170_valid, configurationChunk171_valid, configurationChunk172_valid, configurationChunk173_valid, configurationChunk174_valid, configurationChunk175_valid, configurationChunk176_valid, configurationChunk177_valid, configurationChunk178_valid, configurationChunk179_valid, configurationChunk180_valid, configurationChunk181_valid, configurationChunk182_valid, configurationChunk183_valid, configurationChunk184_valid, configurationChunk185_valid, configurationChunk186_valid, configurationChunk187_valid, configurationChunk188_valid, configurationChunk189_valid, configurationChunk190_valid, configurationChunk191_valid, configurationChunk192_valid, configurationChunk193_valid, configurationChunk194_valid, configurationChunk195_valid, configurationChunk196_valid, configurationChunk197_valid, configurationChunk198_valid, configurationChunk199_valid, configurationChunk200_valid, configurationChunk201_valid, configurationChunk202_valid, configurationChunk203_valid, configurationChunk204_valid, configurationChunk205_valid, configurationChunk206_valid, configurationChunk207_valid, configurationChunk208_valid, configurationChunk209_valid, configurationChunk210_valid, configurationChunk211_valid, configurationChunk212_valid, configurationChunk213_valid, configurationChunk214_valid, configurationChunk215_valid, configurationChunk216_valid, configurationChunk217_valid, configurationChunk218_valid, configurationChunk219_valid, configurationChunk220_valid, configurationChunk221_valid, configurationChunk222_valid, configurationChunk223_valid, configurationChunk224_valid, configurationChunk225_valid, configurationChunk226_valid, configurationChunk227_valid, configurationChunk228_valid, configurationChunk229_valid, configurationChunk230_valid, configurationChunk231_valid, configurationChunk232_valid, configurationChunk233_valid, configurationChunk234_valid, configurationChunk235_valid, configurationChunk236_valid, configurationChunk237_valid, configurationChunk238_valid, configurationChunk239_valid, configurationChunk240_valid, configurationChunk241_valid, configurationChunk242_valid, configurationChunk243_valid, configurationChunk244_valid, configurationChunk245_valid, configurationChunk246_valid, configurationChunk247_valid, configurationChunk248_valid, configurationChunk249_valid, configurationChunk250_valid, configurationChunk251_valid, configurationChunk252_valid, configurationChunk253_valid, configurationChunk254_valid, configurationChunk255_valid, configurationChunk256_valid, configurationChunk257_valid, configurationChunk258_valid, configurationChunk259_valid, configurationChunk260_valid, configurationChunk261_valid, configurationChunk262_valid, configurationChunk263_valid, configurationChunk264_valid, configurationChunk265_valid, configurationChunk266_valid, configurationChunk267_valid, configurationChunk268_valid, configurationChunk269_valid, configurationChunk270_valid, configurationChunk271_valid, configurationChunk272_valid, configurationChunk273_valid, configurationChunk274_valid, configurationChunk275_valid, configurationChunk276_valid, configurationChunk277_valid, configurationChunk278_valid, configurationChunk279_valid, configurationChunk280_valid, configurationChunk281_valid, configurationChunk282_valid, configurationChunk283_valid, configurationChunk284_valid, configurationChunk285_valid, configurationChunk286_valid, configurationChunk287_valid, configurationChunk288_valid, configurationChunk289_valid, configurationChunk290_valid, configurationChunk291_valid, configurationChunk292_valid, configurationChunk293_valid⟩
 
+/-- Shallow group dispatch keeps certificate reduction bounded. -/
+def concreteConfigurationGroup0 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk0[id % 50]?.getD default
+  | 1 => configurationChunk1[id % 50]?.getD default
+  | 2 => configurationChunk2[id % 50]?.getD default
+  | 3 => configurationChunk3[id % 50]?.getD default
+  | 4 => configurationChunk4[id % 50]?.getD default
+  | 5 => configurationChunk5[id % 50]?.getD default
+  | 6 => configurationChunk6[id % 50]?.getD default
+  | 7 => configurationChunk7[id % 50]?.getD default
+  | 8 => configurationChunk8[id % 50]?.getD default
+  | 9 => configurationChunk9[id % 50]?.getD default
+  | 10 => configurationChunk10[id % 50]?.getD default
+  | 11 => configurationChunk11[id % 50]?.getD default
+  | 12 => configurationChunk12[id % 50]?.getD default
+  | 13 => configurationChunk13[id % 50]?.getD default
+  | 14 => configurationChunk14[id % 50]?.getD default
+  | 15 => configurationChunk15[id % 50]?.getD default
+  | 16 => configurationChunk16[id % 50]?.getD default
+  | 17 => configurationChunk17[id % 50]?.getD default
+  | 18 => configurationChunk18[id % 50]?.getD default
+  | 19 => configurationChunk19[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup1 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk20[id % 50]?.getD default
+  | 1 => configurationChunk21[id % 50]?.getD default
+  | 2 => configurationChunk22[id % 50]?.getD default
+  | 3 => configurationChunk23[id % 50]?.getD default
+  | 4 => configurationChunk24[id % 50]?.getD default
+  | 5 => configurationChunk25[id % 50]?.getD default
+  | 6 => configurationChunk26[id % 50]?.getD default
+  | 7 => configurationChunk27[id % 50]?.getD default
+  | 8 => configurationChunk28[id % 50]?.getD default
+  | 9 => configurationChunk29[id % 50]?.getD default
+  | 10 => configurationChunk30[id % 50]?.getD default
+  | 11 => configurationChunk31[id % 50]?.getD default
+  | 12 => configurationChunk32[id % 50]?.getD default
+  | 13 => configurationChunk33[id % 50]?.getD default
+  | 14 => configurationChunk34[id % 50]?.getD default
+  | 15 => configurationChunk35[id % 50]?.getD default
+  | 16 => configurationChunk36[id % 50]?.getD default
+  | 17 => configurationChunk37[id % 50]?.getD default
+  | 18 => configurationChunk38[id % 50]?.getD default
+  | 19 => configurationChunk39[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup2 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk40[id % 50]?.getD default
+  | 1 => configurationChunk41[id % 50]?.getD default
+  | 2 => configurationChunk42[id % 50]?.getD default
+  | 3 => configurationChunk43[id % 50]?.getD default
+  | 4 => configurationChunk44[id % 50]?.getD default
+  | 5 => configurationChunk45[id % 50]?.getD default
+  | 6 => configurationChunk46[id % 50]?.getD default
+  | 7 => configurationChunk47[id % 50]?.getD default
+  | 8 => configurationChunk48[id % 50]?.getD default
+  | 9 => configurationChunk49[id % 50]?.getD default
+  | 10 => configurationChunk50[id % 50]?.getD default
+  | 11 => configurationChunk51[id % 50]?.getD default
+  | 12 => configurationChunk52[id % 50]?.getD default
+  | 13 => configurationChunk53[id % 50]?.getD default
+  | 14 => configurationChunk54[id % 50]?.getD default
+  | 15 => configurationChunk55[id % 50]?.getD default
+  | 16 => configurationChunk56[id % 50]?.getD default
+  | 17 => configurationChunk57[id % 50]?.getD default
+  | 18 => configurationChunk58[id % 50]?.getD default
+  | 19 => configurationChunk59[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup3 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk60[id % 50]?.getD default
+  | 1 => configurationChunk61[id % 50]?.getD default
+  | 2 => configurationChunk62[id % 50]?.getD default
+  | 3 => configurationChunk63[id % 50]?.getD default
+  | 4 => configurationChunk64[id % 50]?.getD default
+  | 5 => configurationChunk65[id % 50]?.getD default
+  | 6 => configurationChunk66[id % 50]?.getD default
+  | 7 => configurationChunk67[id % 50]?.getD default
+  | 8 => configurationChunk68[id % 50]?.getD default
+  | 9 => configurationChunk69[id % 50]?.getD default
+  | 10 => configurationChunk70[id % 50]?.getD default
+  | 11 => configurationChunk71[id % 50]?.getD default
+  | 12 => configurationChunk72[id % 50]?.getD default
+  | 13 => configurationChunk73[id % 50]?.getD default
+  | 14 => configurationChunk74[id % 50]?.getD default
+  | 15 => configurationChunk75[id % 50]?.getD default
+  | 16 => configurationChunk76[id % 50]?.getD default
+  | 17 => configurationChunk77[id % 50]?.getD default
+  | 18 => configurationChunk78[id % 50]?.getD default
+  | 19 => configurationChunk79[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup4 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk80[id % 50]?.getD default
+  | 1 => configurationChunk81[id % 50]?.getD default
+  | 2 => configurationChunk82[id % 50]?.getD default
+  | 3 => configurationChunk83[id % 50]?.getD default
+  | 4 => configurationChunk84[id % 50]?.getD default
+  | 5 => configurationChunk85[id % 50]?.getD default
+  | 6 => configurationChunk86[id % 50]?.getD default
+  | 7 => configurationChunk87[id % 50]?.getD default
+  | 8 => configurationChunk88[id % 50]?.getD default
+  | 9 => configurationChunk89[id % 50]?.getD default
+  | 10 => configurationChunk90[id % 50]?.getD default
+  | 11 => configurationChunk91[id % 50]?.getD default
+  | 12 => configurationChunk92[id % 50]?.getD default
+  | 13 => configurationChunk93[id % 50]?.getD default
+  | 14 => configurationChunk94[id % 50]?.getD default
+  | 15 => configurationChunk95[id % 50]?.getD default
+  | 16 => configurationChunk96[id % 50]?.getD default
+  | 17 => configurationChunk97[id % 50]?.getD default
+  | 18 => configurationChunk98[id % 50]?.getD default
+  | 19 => configurationChunk99[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup5 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk100[id % 50]?.getD default
+  | 1 => configurationChunk101[id % 50]?.getD default
+  | 2 => configurationChunk102[id % 50]?.getD default
+  | 3 => configurationChunk103[id % 50]?.getD default
+  | 4 => configurationChunk104[id % 50]?.getD default
+  | 5 => configurationChunk105[id % 50]?.getD default
+  | 6 => configurationChunk106[id % 50]?.getD default
+  | 7 => configurationChunk107[id % 50]?.getD default
+  | 8 => configurationChunk108[id % 50]?.getD default
+  | 9 => configurationChunk109[id % 50]?.getD default
+  | 10 => configurationChunk110[id % 50]?.getD default
+  | 11 => configurationChunk111[id % 50]?.getD default
+  | 12 => configurationChunk112[id % 50]?.getD default
+  | 13 => configurationChunk113[id % 50]?.getD default
+  | 14 => configurationChunk114[id % 50]?.getD default
+  | 15 => configurationChunk115[id % 50]?.getD default
+  | 16 => configurationChunk116[id % 50]?.getD default
+  | 17 => configurationChunk117[id % 50]?.getD default
+  | 18 => configurationChunk118[id % 50]?.getD default
+  | 19 => configurationChunk119[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup6 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk120[id % 50]?.getD default
+  | 1 => configurationChunk121[id % 50]?.getD default
+  | 2 => configurationChunk122[id % 50]?.getD default
+  | 3 => configurationChunk123[id % 50]?.getD default
+  | 4 => configurationChunk124[id % 50]?.getD default
+  | 5 => configurationChunk125[id % 50]?.getD default
+  | 6 => configurationChunk126[id % 50]?.getD default
+  | 7 => configurationChunk127[id % 50]?.getD default
+  | 8 => configurationChunk128[id % 50]?.getD default
+  | 9 => configurationChunk129[id % 50]?.getD default
+  | 10 => configurationChunk130[id % 50]?.getD default
+  | 11 => configurationChunk131[id % 50]?.getD default
+  | 12 => configurationChunk132[id % 50]?.getD default
+  | 13 => configurationChunk133[id % 50]?.getD default
+  | 14 => configurationChunk134[id % 50]?.getD default
+  | 15 => configurationChunk135[id % 50]?.getD default
+  | 16 => configurationChunk136[id % 50]?.getD default
+  | 17 => configurationChunk137[id % 50]?.getD default
+  | 18 => configurationChunk138[id % 50]?.getD default
+  | 19 => configurationChunk139[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup7 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk140[id % 50]?.getD default
+  | 1 => configurationChunk141[id % 50]?.getD default
+  | 2 => configurationChunk142[id % 50]?.getD default
+  | 3 => configurationChunk143[id % 50]?.getD default
+  | 4 => configurationChunk144[id % 50]?.getD default
+  | 5 => configurationChunk145[id % 50]?.getD default
+  | 6 => configurationChunk146[id % 50]?.getD default
+  | 7 => configurationChunk147[id % 50]?.getD default
+  | 8 => configurationChunk148[id % 50]?.getD default
+  | 9 => configurationChunk149[id % 50]?.getD default
+  | 10 => configurationChunk150[id % 50]?.getD default
+  | 11 => configurationChunk151[id % 50]?.getD default
+  | 12 => configurationChunk152[id % 50]?.getD default
+  | 13 => configurationChunk153[id % 50]?.getD default
+  | 14 => configurationChunk154[id % 50]?.getD default
+  | 15 => configurationChunk155[id % 50]?.getD default
+  | 16 => configurationChunk156[id % 50]?.getD default
+  | 17 => configurationChunk157[id % 50]?.getD default
+  | 18 => configurationChunk158[id % 50]?.getD default
+  | 19 => configurationChunk159[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup8 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk160[id % 50]?.getD default
+  | 1 => configurationChunk161[id % 50]?.getD default
+  | 2 => configurationChunk162[id % 50]?.getD default
+  | 3 => configurationChunk163[id % 50]?.getD default
+  | 4 => configurationChunk164[id % 50]?.getD default
+  | 5 => configurationChunk165[id % 50]?.getD default
+  | 6 => configurationChunk166[id % 50]?.getD default
+  | 7 => configurationChunk167[id % 50]?.getD default
+  | 8 => configurationChunk168[id % 50]?.getD default
+  | 9 => configurationChunk169[id % 50]?.getD default
+  | 10 => configurationChunk170[id % 50]?.getD default
+  | 11 => configurationChunk171[id % 50]?.getD default
+  | 12 => configurationChunk172[id % 50]?.getD default
+  | 13 => configurationChunk173[id % 50]?.getD default
+  | 14 => configurationChunk174[id % 50]?.getD default
+  | 15 => configurationChunk175[id % 50]?.getD default
+  | 16 => configurationChunk176[id % 50]?.getD default
+  | 17 => configurationChunk177[id % 50]?.getD default
+  | 18 => configurationChunk178[id % 50]?.getD default
+  | 19 => configurationChunk179[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup9 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk180[id % 50]?.getD default
+  | 1 => configurationChunk181[id % 50]?.getD default
+  | 2 => configurationChunk182[id % 50]?.getD default
+  | 3 => configurationChunk183[id % 50]?.getD default
+  | 4 => configurationChunk184[id % 50]?.getD default
+  | 5 => configurationChunk185[id % 50]?.getD default
+  | 6 => configurationChunk186[id % 50]?.getD default
+  | 7 => configurationChunk187[id % 50]?.getD default
+  | 8 => configurationChunk188[id % 50]?.getD default
+  | 9 => configurationChunk189[id % 50]?.getD default
+  | 10 => configurationChunk190[id % 50]?.getD default
+  | 11 => configurationChunk191[id % 50]?.getD default
+  | 12 => configurationChunk192[id % 50]?.getD default
+  | 13 => configurationChunk193[id % 50]?.getD default
+  | 14 => configurationChunk194[id % 50]?.getD default
+  | 15 => configurationChunk195[id % 50]?.getD default
+  | 16 => configurationChunk196[id % 50]?.getD default
+  | 17 => configurationChunk197[id % 50]?.getD default
+  | 18 => configurationChunk198[id % 50]?.getD default
+  | 19 => configurationChunk199[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup10 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk200[id % 50]?.getD default
+  | 1 => configurationChunk201[id % 50]?.getD default
+  | 2 => configurationChunk202[id % 50]?.getD default
+  | 3 => configurationChunk203[id % 50]?.getD default
+  | 4 => configurationChunk204[id % 50]?.getD default
+  | 5 => configurationChunk205[id % 50]?.getD default
+  | 6 => configurationChunk206[id % 50]?.getD default
+  | 7 => configurationChunk207[id % 50]?.getD default
+  | 8 => configurationChunk208[id % 50]?.getD default
+  | 9 => configurationChunk209[id % 50]?.getD default
+  | 10 => configurationChunk210[id % 50]?.getD default
+  | 11 => configurationChunk211[id % 50]?.getD default
+  | 12 => configurationChunk212[id % 50]?.getD default
+  | 13 => configurationChunk213[id % 50]?.getD default
+  | 14 => configurationChunk214[id % 50]?.getD default
+  | 15 => configurationChunk215[id % 50]?.getD default
+  | 16 => configurationChunk216[id % 50]?.getD default
+  | 17 => configurationChunk217[id % 50]?.getD default
+  | 18 => configurationChunk218[id % 50]?.getD default
+  | 19 => configurationChunk219[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup11 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk220[id % 50]?.getD default
+  | 1 => configurationChunk221[id % 50]?.getD default
+  | 2 => configurationChunk222[id % 50]?.getD default
+  | 3 => configurationChunk223[id % 50]?.getD default
+  | 4 => configurationChunk224[id % 50]?.getD default
+  | 5 => configurationChunk225[id % 50]?.getD default
+  | 6 => configurationChunk226[id % 50]?.getD default
+  | 7 => configurationChunk227[id % 50]?.getD default
+  | 8 => configurationChunk228[id % 50]?.getD default
+  | 9 => configurationChunk229[id % 50]?.getD default
+  | 10 => configurationChunk230[id % 50]?.getD default
+  | 11 => configurationChunk231[id % 50]?.getD default
+  | 12 => configurationChunk232[id % 50]?.getD default
+  | 13 => configurationChunk233[id % 50]?.getD default
+  | 14 => configurationChunk234[id % 50]?.getD default
+  | 15 => configurationChunk235[id % 50]?.getD default
+  | 16 => configurationChunk236[id % 50]?.getD default
+  | 17 => configurationChunk237[id % 50]?.getD default
+  | 18 => configurationChunk238[id % 50]?.getD default
+  | 19 => configurationChunk239[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup12 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk240[id % 50]?.getD default
+  | 1 => configurationChunk241[id % 50]?.getD default
+  | 2 => configurationChunk242[id % 50]?.getD default
+  | 3 => configurationChunk243[id % 50]?.getD default
+  | 4 => configurationChunk244[id % 50]?.getD default
+  | 5 => configurationChunk245[id % 50]?.getD default
+  | 6 => configurationChunk246[id % 50]?.getD default
+  | 7 => configurationChunk247[id % 50]?.getD default
+  | 8 => configurationChunk248[id % 50]?.getD default
+  | 9 => configurationChunk249[id % 50]?.getD default
+  | 10 => configurationChunk250[id % 50]?.getD default
+  | 11 => configurationChunk251[id % 50]?.getD default
+  | 12 => configurationChunk252[id % 50]?.getD default
+  | 13 => configurationChunk253[id % 50]?.getD default
+  | 14 => configurationChunk254[id % 50]?.getD default
+  | 15 => configurationChunk255[id % 50]?.getD default
+  | 16 => configurationChunk256[id % 50]?.getD default
+  | 17 => configurationChunk257[id % 50]?.getD default
+  | 18 => configurationChunk258[id % 50]?.getD default
+  | 19 => configurationChunk259[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup13 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk260[id % 50]?.getD default
+  | 1 => configurationChunk261[id % 50]?.getD default
+  | 2 => configurationChunk262[id % 50]?.getD default
+  | 3 => configurationChunk263[id % 50]?.getD default
+  | 4 => configurationChunk264[id % 50]?.getD default
+  | 5 => configurationChunk265[id % 50]?.getD default
+  | 6 => configurationChunk266[id % 50]?.getD default
+  | 7 => configurationChunk267[id % 50]?.getD default
+  | 8 => configurationChunk268[id % 50]?.getD default
+  | 9 => configurationChunk269[id % 50]?.getD default
+  | 10 => configurationChunk270[id % 50]?.getD default
+  | 11 => configurationChunk271[id % 50]?.getD default
+  | 12 => configurationChunk272[id % 50]?.getD default
+  | 13 => configurationChunk273[id % 50]?.getD default
+  | 14 => configurationChunk274[id % 50]?.getD default
+  | 15 => configurationChunk275[id % 50]?.getD default
+  | 16 => configurationChunk276[id % 50]?.getD default
+  | 17 => configurationChunk277[id % 50]?.getD default
+  | 18 => configurationChunk278[id % 50]?.getD default
+  | 19 => configurationChunk279[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationGroup14 (id : ℕ) : Erdos302.RawConfiguration :=
+  match (id % 1000) / 50 with
+  | 0 => configurationChunk280[id % 50]?.getD default
+  | 1 => configurationChunk281[id % 50]?.getD default
+  | 2 => configurationChunk282[id % 50]?.getD default
+  | 3 => configurationChunk283[id % 50]?.getD default
+  | 4 => configurationChunk284[id % 50]?.getD default
+  | 5 => configurationChunk285[id % 50]?.getD default
+  | 6 => configurationChunk286[id % 50]?.getD default
+  | 7 => configurationChunk287[id % 50]?.getD default
+  | 8 => configurationChunk288[id % 50]?.getD default
+  | 9 => configurationChunk289[id % 50]?.getD default
+  | 10 => configurationChunk290[id % 50]?.getD default
+  | 11 => configurationChunk291[id % 50]?.getD default
+  | 12 => configurationChunk292[id % 50]?.getD default
+  | 13 => configurationChunk293[id % 50]?.getD default
+  | _ => default
+
+def concreteConfigurationAt (id : ℕ) : Erdos302.RawConfiguration := match id / 1000 with
+  | 0 => concreteConfigurationGroup0 id
+  | 1 => concreteConfigurationGroup1 id
+  | 2 => concreteConfigurationGroup2 id
+  | 3 => concreteConfigurationGroup3 id
+  | 4 => concreteConfigurationGroup4 id
+  | 5 => concreteConfigurationGroup5 id
+  | 6 => concreteConfigurationGroup6 id
+  | 7 => concreteConfigurationGroup7 id
+  | 8 => concreteConfigurationGroup8 id
+  | 9 => concreteConfigurationGroup9 id
+  | 10 => concreteConfigurationGroup10 id
+  | 11 => concreteConfigurationGroup11 id
+  | 12 => concreteConfigurationGroup12 id
+  | 13 => concreteConfigurationGroup13 id
+  | 14 => concreteConfigurationGroup14 id
+  | _ => default
+
 end Erdos302.Generated

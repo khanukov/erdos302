@@ -13,9 +13,13 @@ theorem packingCertificateNat270_metadata :
     denominatorAt (packingCertificateNat270.prefixSize - 1) = packingCertificateNat270.threshold ∧
     0 < packingCertificateNat270.requiredCoverSize := by decide
 
-theorem packingCertificateNat270_termsOK :
-    packingCertificateNat270.termChunks.all (fun c => c.all (fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ t.LinkOK concreteConfigurationAt ∧ 0 < t.numerator ∧ 0 < t.denominator))) = true := by
-  change packingCertificateNat270LinkSegment5_0.all (fun c => c.all (fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ t.LinkOK concreteConfigurationAt ∧ 0 < t.numerator ∧ 0 < t.denominator))) = true
+theorem packingCertificateNat270_baseTermsOK :
+    packingCertificateNat270.termChunks.all (fun c => c.all (fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ 0 < t.numerator ∧ 0 < t.denominator))) = true := by decide
+
+theorem packingCertificateNat270_linksOK :
+    packingCertificateNat270.termChunks.all (fun c => c.all (fun t => decide
+      (t.LinkOK concreteConfigurationAt))) = true := by
+  change packingCertificateNat270LinkSegment5_0.all (fun c => c.all (fun t => decide (t.LinkOK concreteConfigurationAt))) = true
   exact packingCertificateNat270LinkSegment5_0_ok
 
 theorem packingCertificateNat270_capacityChecks (v : Fin 719) :
@@ -29,7 +33,9 @@ theorem packingCertificateNat270_valid :
       t.LinkOK concreteConfigurationAt ∧ 0 < t.numerator ∧ 0 < t.denominator := by
     intro t ht
     rcases List.mem_flatten.mp ht with ⟨c, hc, ht⟩
-    exact of_decide_eq_true (List.all_eq_true.mp (List.all_eq_true.mp packingCertificateNat270_termsOK c hc) t ht)
+    have hb := of_decide_eq_true (List.all_eq_true.mp (List.all_eq_true.mp packingCertificateNat270_baseTermsOK c hc) t ht)
+    have hl := of_decide_eq_true (List.all_eq_true.mp (List.all_eq_true.mp packingCertificateNat270_linksOK c hc) t ht)
+    exact ⟨hb.1, hb.2.1, hl, hb.2.2.1, hb.2.2.2⟩
   apply Erdos302.PackingCertificateNat.valid_of_vertex_checks 719 14691 denominatorAt concreteConfigurationAt packingCertificateNat270
   · exact packingCertificateNat270_metadata.1
   · exact packingCertificateNat270_metadata.2.1

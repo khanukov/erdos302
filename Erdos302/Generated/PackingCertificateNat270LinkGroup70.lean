@@ -1,5 +1,6 @@
 import Erdos302.Generated.PackingCertificateNat270VertexData17
-import Erdos302.Generated.Configurations
+import Erdos302.Generated.PackingConfigurationLinkCatalogue21
+import Erdos302.Generated.PackingConfigurationLinkCatalogue22
 
 set_option maxRecDepth 1000
 set_option maxHeartbeats 0
@@ -7,6 +8,8 @@ set_option maxHeartbeats 0
 namespace Erdos302.Generated
 
 theorem packingCertificateNat270_linkGroup70 :
-    packingCertificateNat270VertexGroup70.all (fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ t.LinkOK concreteConfigurationAt ∧ 0 < t.numerator ∧ 0 < t.denominator)) = true := by decide
+    packingCertificateNat270VertexGroup70.all (fun t => decide
+      (t.LinkOK concreteConfigurationAt)) = true := by
+  simp [packingCertificateNat270VertexGroup70, Erdos302.PackingTermNat.LinkOK, packingConfigurationLink_7393_96960e9523d7, packingConfigurationLink_7428_5b82f882c618, packingConfigurationLink_7439_516575fd98f2, packingConfigurationLink_7452_e623cd00006d, packingConfigurationLink_7488_3b4b1592bd61]
 
 end Erdos302.Generated

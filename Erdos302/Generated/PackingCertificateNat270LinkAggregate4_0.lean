@@ -8,7 +8,8 @@ namespace Erdos302.Generated
 
 def packingCertificateNat270LinkSegment4_0 := packingCertificateNat270LinkSegment3_0 ++ packingCertificateNat270LinkSegment3_8
 
-theorem packingCertificateNat270LinkSegment4_0_ok : packingCertificateNat270LinkSegment4_0.all (fun c => c.all (fun t => decide (t.configurationId < 14691 ∧ t.snapshot.maximum.val < 719 ∧ t.LinkOK concreteConfigurationAt ∧ 0 < t.numerator ∧ 0 < t.denominator))) = true := by
+theorem packingCertificateNat270LinkSegment4_0_ok : packingCertificateNat270LinkSegment4_0.all (fun c => c.all (fun t => decide
+    (t.LinkOK concreteConfigurationAt))) = true := by
   simp only [packingCertificateNat270LinkSegment4_0, List.all_append, packingCertificateNat270LinkSegment3_0_ok, packingCertificateNat270LinkSegment3_8_ok, Bool.true_and]
 
 end Erdos302.Generated
