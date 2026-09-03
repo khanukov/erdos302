@@ -5,7 +5,9 @@ changes the released claims of the repository. Every numerical statement is a
 finite computation reproducible with the scripts in
 [`scripts/explore/`](../scripts/explore/README.md); every asymptotic statement is
 either a cited theorem, a short proof given here, or explicitly marked as a
-heuristic or conjecture.
+heuristic or conjecture. The raw reports of the AI research agents behind
+these notes are kept in
+[`docs/research/agent-reports/`](research/agent-reports/README.md).
 
 Notation. \(f(N)\) is the largest size of a subset of \(\{1,\ldots,N\}\) with
 no distinct \(a,b,c\) satisfying \(1/a=1/b+1/c\). Every solution with
@@ -64,6 +66,17 @@ with \(4n\le N\); Cambie's set is \(T\cup O\), of size \(5N/8+O(1)\).
    bound is still \(0.800\) at \(N=3\cdot10^6\). No published construction
    uses even numbers below \(N/2\); this is where the real density lives (§4.1,
    §6.3).
+6. **Simple rules for the even numbers recover almost all of it at finite
+   \(N\).** Adding to "all odd numbers plus the top half" every even
+   \(e<N/2\) that is not the head of a triple with both tails in the top half,
+   and then deleting a greedy hitting set of the remaining triples, gives
+   verified triple-free sets of density \(0.8120\), \(0.8052\), \(0.8005\) at
+   \(N=10^4,10^5,10^6\) — the same as greedy on all of \([1,N]\). The variant
+   "and \(3\nmid e\)" reaches \(0.7937\) at \(N=10^7\) with four times fewer
+   triples to repair. A family that is triple-free by construction (delete
+   only conflicting odd heads) reaches \(0.7695\) at \(N=10^6\). All of these
+   lose about \(0.004\) per decade and rest on divisor-in-window counts, so
+   none of them yields an asymptotic constant by itself (§4.4).
 
 ## 2. What is known (sources)
 
@@ -107,6 +120,15 @@ claim), [forum], [site].
   c_1\log N+c_0)+O(N^{1/2}\log^5N)\), i.e. the total number of
   representations \(1/n=1/x+1/y\), \(n\le N\), without the constraint
   \(x,y\le N\).
+* Solution counts derived in this session (elementary, checked numerically
+  to \(N=10^7\)): the number of solutions \(a<b<c\le N\) is
+  \(S(N)=\sum_{x<y,\gcd(x,y)=1}\lfloor N/(y(x+y))\rfloor\sim(3\ln2/\pi^2)N\ln N\approx0.2107\,N\ln N\)
+  (\(S(10^6)=2\,524\,207\), \(S(10^7)=30\,093\,331\)); the number of conflicts
+  of §3.3 is \(\sim((5\ln2-3\ln3)/(4\pi^2))N\ln N=(\ln(32/27)/(4\pi^2))N\ln N
+  \approx0.0043036\,N\ln N\), with the band \((N/3,N/2)\) contributing exactly
+  twice the band \((N/4,N/3]\) (observed ratio 2.03–2.08). Any dilation-closed
+  family of positive density contains \(\asymp N\ln N\) solutions; only
+  "interval × residue class" sets such as Cambie's contain none.
 * [claim] D. Della Pietra, Erdős 301 (July 2026, paper and Lean):
   \(f_{301}(N)\ge(1/2+\rho_L/24)N\) for some fixed large \(L\), by regular
   \(L\)-rough odd heads in \((N/3,N/2)\) added to the regular top half and
@@ -228,7 +250,14 @@ of 250); even numbers below \(N/2\) included: 112 of 249 (61 of the 125 with
 984, 986, 990. Band densities: \([1,N/8)\): 0.718; \([N/8,N/4)\): 0.576;
 \([N/4,N/2)\): 0.744; \([N/2,N]\): 0.958. Restricting to "all odd numbers plus
 an optimal even set" costs only about \(0.003N\) at \(N\le2000\)
-(\(0.8240\) at \(N=1000\)).
+(\(0.8240\) at \(N=1000\)). Optimal sets are far from unique: five distinct
+optima of size 827 were found at \(N=1000\); the top-half deletions 594, 600,
+660, 684, 714, 780, 798, 840, 870, 918, 930, 990 occur in every one of them.
+With the top half *fixed* the program becomes easy and was solved to proven
+optimality: \(0.8190\), \(0.8173\), \(0.8175\), \(0.8173\), \(0.8175\),
+\(0.8147\), \(0.8143\), \(0.8129\) at \(N=1000,1500,2000,3000,4000,6000,8000,
+10\,000\), and \([0.8095,0.8107]\) at \(N=20\,000\); deleting from the top half
+is worth about 1 % of \(N\) at \(N=2000\).
 
 ### 4.2 The conflict graph and its covers
 
@@ -244,7 +273,37 @@ hyperedges of \(H_N\).
 | \(3\cdot10^5\) | 12408 | 0.00328 | — | 6515 | 0.0217 | 0.7283 | — | — |
 | \(10^6\) | 46525 | 0.00337 | 23273 | 23006 | 0.0230 | 0.7270 | 19831 | 0.7302 |
 | \(3\cdot10^6\) | 153798 | 0.00344 | 72805 | 71693 | 0.0239 | 0.7261 | — | — |
-| \(10^7\) | 564573 | 0.00350 | 252271 | 248393 | 0.0248 | 0.7252 | — | — |
+| \(10^7\) | 564573 | 0.00350 | 252271 | 248387 | 0.0248 | 0.7252 | ≤248387 | ≥0.7252 |
+| \(3\cdot10^7\) | 1835466 | 0.00355 | 779958 | — | — | — | — | — |
+| \(10^8\) | 6636163 | 0.00360 | 2679491 | — | — | — | — | — |
+
+(At \(N=10^7\) two independent MILP runs exhibited covers of sizes 248 393 and
+248 387, so \(\tau(G_N)\le248\,387\); the hypergraph program did not close its
+gap within 25 minutes, and the \(N=10^8\) cover program exhausted the 15 GB of
+memory available in the session. The conflict counts and conflicting-head
+counts at \(3\cdot10^7\) and \(10^8\) are exact enumerations.)
+
+Exact hypergraph covers \(\tau(H_N)\) (heads deletable; all proven optimal,
+LP relaxation within 1 of the integer optimum in every case):
+
+| \(N\) | \(10^3\) | \(2\cdot10^3\) | \(4\cdot10^3\) | \(8\cdot10^3\) | \(1.6\cdot10^4\) | \(3.2\cdot10^4\) | \(5\cdot10^4\) | \(10^5\) | \(2\cdot10^5\) | \(5\cdot10^5\) | \(10^6\) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| \(\tau(H_N)\) | 12 | 27 | 52 | 122 | 259 | 542 | 872 | 1792 | 3691 | 9653 | 19831 |
+| \(\tau(H_N)/N\) | 0.0120 | 0.0135 | 0.0130 | 0.0153 | 0.0162 | 0.0169 | 0.0174 | 0.0179 | 0.0185 | 0.0193 | 0.0198 |
+| bound | 0.7390 | 0.7370 | 0.7373 | 0.7349 | 0.7339 | 0.7331 | 0.7326 | 0.7321 | 0.7316 | 0.7307 | 0.7302 |
+
+The optimal hypergraph cover deletes about 30 % heads and 70 % tails (at
+\(N=10^6\): 5 729 heads, 14 102 tails), never a head with a single conflict,
+and mostly tails of degree 1–2; deleting the 1 % most-used tails kills only
+about 30 % of the conflicts (28.6 % at \(10^4\), 34.0 % at \(10^8\)). A fit over
+\(N\ge10^5\) gives \(\tau(H_N)/N\approx0.000865\ln N+0.0079\) (maximum
+residual \(4\cdot10^{-5}\)), against \(0.0012\ln N+0.0041\) over all \(N\): the
+slope is decreasing. Extrapolated, the bound would stay above \(0.70\) up to
+\(N\approx10^{18}\) and reach \(5/8\) only near \(\ln N\approx135\), if the
+logarithmic growth persisted at all. The least-squares fit of the conflict
+count over \(10^4\le N\le10^8\) is \(C(N)\approx0.004307\,N\ln N-0.0130\,N\)
+(all eleven data points within 0.15 %), matching the constant
+\(0.0043036\) of §2.
 
 Observations. (i) Tails are almost never shared at these sizes: the cover is
 \(0.44\)–\(0.47\) of the edge count, and \(\tau(G_N)\) is within 1–2 % of the
@@ -274,7 +333,17 @@ below.
 For fixed \(L\) the mean number of conflicts per head grows linearly in
 \(\ln N\) (slope \(0.035\) for \(L=3\)) and the fraction with a conflict grows
 by 1.5–2 percentage points per decade. Bands \((N/4,N/3]\) and \((N/3,N/2)\)
-behave identically. At \(N=10^6\), \(L=7\), band \((N/3,N/2)\) the numbers
+behave identically. For \(L=3\) (all odd heads) the conflict-free fraction
+continues \(0.806\), \(0.798\), \(0.792\), \(0.786\) at
+\(N=3\cdot10^6,10^7,3\cdot10^7,10^8\); a fit \(c(\ln N)^{-\delta}\) over
+\(10^3\le N\le10^8\) gives \(\delta\approx0.13\) (residuals below 0.3 %), which
+is also consistent with a slow \(c_0-c_1\ln\ln N\) and says nothing about the
+true asymptotics. Conflicts are strongly over-dispersed: 60 % of conflicting
+heads have exactly one conflict, while heads such as
+\(135\,135=3^3\cdot5\cdot7\cdot11\cdot13\) carry dozens. Heads with
+\(\Omega(a)\le3\) have a flat conflict rate (\(0.08\) per head across
+\(N=2.5\cdot10^5\)–\(1.6\cdot10^7\)) but density tending to 0. At \(N=10^6\),
+\(L=7\), band \((N/3,N/2)\) the numbers
 44 445 heads and 4 240 conflicting heads reproduce Della Pietra's reported
 verifier output (44 445 / 4 242) up to his slightly different band convention.
 
@@ -283,6 +352,68 @@ these sizes: at \(N=10^7\), deleting all \(b\in T\) with \(\Omega(b)\ge8\)
 (4.1 % of \(T\)) frees only 3.7 % more heads; the resulting density
 \(0.709\) is below the \(0.725\) obtained without deletions. The asymptotic
 mechanism of §5 is invisible below \(N\approx\exp(\exp(K))\).
+
+### 4.4 Even numbers below \(N/2\): rule families
+
+Write \(B=T\cup O\cup H\) with \(H\) all odd numbers in \((N/4,N/2)\). For an
+even \(e<N/2\) say HT\((e)\) if \(e\) heads a triple with both tails in \(T\)
+(such an \(e\) can never coexist with the whole top half), and HA\((e)\) if
+\(e\) heads any triple inside \([1,N]\). Families \(B\cup E\) were repaired by
+greedily deleting a hitting set of the triples inside them; every repaired set
+for \(N\le10^6\) was re-verified triple-free by an independent divisor-based
+check, and the exact hitting number is within 0–4 % of the greedy one where
+the exact program was solvable (report `C2`). Densities after repair:
+
+| \(E\subseteq\{\text{even }e<N/2\}\) | \(10^4\) | \(10^5\) | \(10^6\) | \(10^7\) |
+|---|---|---|---|---|
+| none (odd paradigm \(B\)) | 0.7341 | 0.7313 | 0.7293 | 0.7277 |
+| all \(e\) with ¬HT | 0.8120 | 0.8052 | 0.8005 | — |
+| ¬HT and \(3\nmid e\) | 0.8085 | 0.8018 | 0.7973 | 0.7937 |
+| ¬HT and \(3\nmid e\), \(5\nmid e\) | 0.8018 | 0.7962 | 0.7918 | — |
+| \(e\in(N/4,N/2)\) with ¬HT | — | — | — | — |
+| ¬HA (heads no triple at all) | 0.7870 | 0.7805 | 0.7754 | 0.7721 |
+| all \(e\equiv2\pmod4\) | 0.7850 | 0.7775 | 0.7719 | 0.7688 |
+| all \(e\in(3N/8,N/2)\) | 0.7830 | 0.7738 | 0.7699 | 0.7667 |
+| all \(e\le N/4\) | 0.7760 | 0.7678 | 0.7637 | — |
+| \(e\le N/4\), \(e\equiv2\pmod4\) (a scaled copy of Cambie's odd set) | 0.7620 | 0.7536 | 0.7502 | — |
+| reference: greedy on all of \([1,N]\) | 0.8142 | 0.8069 | 0.8019 | — |
+
+Findings. (i) The single hard rule is ¬HT; the ¬HT family is as good as
+greedy on the whole interval and within 0.1 % of the fixed-top optimum at
+\(N=10^4\). (ii) The second strongest signal is \(3\nmid e\): in the fixed-top
+optima the inclusion rate of ¬HT-evens is 0.19 for multiples of 3 against about
+0.6 otherwise; multiples of 3 sit in many more triples. (iii) Position matters
+through ¬HT: 94 % of the ¬HT-evens in \((3N/8,N/2)\) are in the optimum, about
+55 % in \((N/4,3N/8)\), about 38 % below \(N/4\). (iv) Valuation rules are weak,
+because the classes \(\{v_2=j\}\) interact through triples such as
+\((15,18,90)k\), \((2,3,6)k\), \((5,6,30)k\). (v) The rule "no divisor of
+\(e^2\) in \((e/3,e)\)" is vacuous for even \(e\) since \(d=e/2\) always
+qualifies; the intended rule is ¬HA, which forces \(e>N/3\). (vi) All families
+lose \(0.004\)–\(0.007\) per decade, decelerating; their repair cost behaves
+like \(c_1N+c_2N\ln N\) with small \(c_2\), as for the odd paradigm.
+
+A family that is **triple-free by construction** (no hitting-set search):
+with \(E'=\{e<N/2\ \text{even}: e^2\ \text{has no divisor }d\ \text{with}\
+e^2/(N-e)\le d<e\}\) (so \(E'\subset(N/3,N/2)\)), every triple inside
+\(T\cup O\cup E'\cup H\) has its head in \(H\), and
+\(A'=T\cup O\cup E'\cup(H\setminus\{\text{heads of such triples}\})\) is
+triple-free. Its density is \(0.7789\), \(0.7731\), \(0.7695\) at
+\(N=10^4,10^5,10^6\) (\(|E'|/N=0.0486,0.0466,0.0451\)), against \(0.7324\),
+\(0.7290\), \(0.7267\) for head deletion without \(E'\). Both \(|E'|\) and the
+free-head count are "integers without a divisor of \(n^2\) in a window of
+bounded multiplicative width", so this family also tends to \(5/8\) by the
+theorem of §5.1; it is the even analogue of the rough-odd-heads construction
+and is formalisable in the same way.
+
+### 4.5 Interval × residue-class sets
+
+A cell program (bands of width \(N/24\) times residue classes modulo 4, 6 or
+12; forbid every cell triple containing a solution with \(c\le10^5\); maximise
+size; validate at \(N=10^6\)) returns Cambie's set as the unique optimum, with
+density exactly \(5/8\) and no solution inside at \(N=10^6\). Apparent
+improvements at coarser data (\(0.646\) from \(N=6000\) constraints) were
+artefacts that fail at \(10^5\). So every set beyond \(5/8\) must use
+divisor-structure information, in line with §5.
 
 ## 5. The obstruction and how the existing proof evades it
 
@@ -399,7 +530,8 @@ Approaches. (a) Exhibit an explicit cover: for edges with \(k\le K\) delete
 the larger tail — those tails have a divisor in a window of ratio \(\sqrt2\)
 near \(\sqrt{N/k}\), so by Ford's theorem they number
 \(o(N)\); the edges with \(k>K\) are the bulk and need a different device.
-(b) Fractional covers: weights \(w_v\) with \(w_u+w_v\ge1\) on every edge and
+(b) Fractional covers (the LP relaxation is within 1 of the integer optimum
+at every solved size, so an explicit fractional cover would suffice): weights \(w_v\) with \(w_u+w_v\ge1\) on every edge and
 \(\sum w\le\eta N/2\) give \(\tau\le\eta N\); a weight proportional to the
 number of admissible factorisations \(v=k\,y\,(x+y)\) is the natural
 candidate and its total is the edge count, so a saving requires exploiting
@@ -436,7 +568,12 @@ cross-level triples are not covered by them. A first target is a positive
 density of \(2\times\)(regular rough odd numbers in \((N/8,N/4)\)), i.e. even
 numbers with \(v_2=1\) in \((N/4,N/2)\), on top of the reformulation of §3.4.
 Expected outcome: another qualitative \(\delta\), but from a source not capped
-by the odd numbers.
+by the odd numbers. The numerical side is now clear (§4.4): the ¬HT rule
+recovers essentially the whole finite-\(N\) optimum, and the family \(A'\) with
+\(E'\) is the provable-by-construction version; the missing piece is again a
+hitting-set or regularity theorem for the triples among the added evens
+(patterns even–even–top, even–even–even, even–odd–even), whose count is
+\(\asymp N\ln N\) with constants 0.026–0.10 for the families of §4.4.
 
 ### 6.4 Certified finite-\(N\) statements
 
@@ -459,9 +596,11 @@ rigorous but finite-range statement (it beats \(5/8\) for
 
 ## 7. Suggested plan
 
-1. Compute \(\tau(G_N)\) and \(\tau(H_N)\) to \(N=10^8\)–\(10^9\) and record
-   the trend; analyse the degree distribution of the cover vertices (which
-   \(v=2^jw\) have many admissible factorisations).
+1. Compute \(\tau(G_N)\) and \(\tau(H_N)\) to \(N=10^8\)–\(10^9\) (the exact
+   MILP needs more than 15 GB at \(10^8\); use the LP relaxation, which is
+   within 1 of the optimum at every solved size, or decompose by connected
+   components) and record the trend; analyse the degree distribution of the
+   cover vertices (which \(v=2^jw\) have many admissible factorisations).
 2. Attempt a proof that \(\tau(G_N)\le\eta N\) for an explicit \(\eta<1/8\),
    starting from approaches (a)–(b) of §6.1; a negative result
    (\(\liminf\tau(G_N)/N\ge c>0\) with an explicit \(c\)) would also be
