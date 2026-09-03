@@ -370,7 +370,7 @@ the exact program was solvable (report `C2`). Densities after repair:
 | all \(e\) with ¬HT | 0.8120 | 0.8052 | 0.8005 | — |
 | ¬HT and \(3\nmid e\) | 0.8085 | 0.8018 | 0.7973 | 0.7937 |
 | ¬HT and \(3\nmid e\), \(5\nmid e\) | 0.8018 | 0.7962 | 0.7918 | — |
-| \(e\in(N/4,N/2)\) with ¬HT | — | — | — | — |
+| \(e\in(N/4,N/2)\) with ¬HT | 0.7890 | 0.7830 | 0.7777 | 0.7744 |
 | ¬HA (heads no triple at all) | 0.7870 | 0.7805 | 0.7754 | 0.7721 |
 | all \(e\equiv2\pmod4\) | 0.7850 | 0.7775 | 0.7719 | 0.7688 |
 | all \(e\in(3N/8,N/2)\) | 0.7830 | 0.7738 | 0.7699 | 0.7667 |
