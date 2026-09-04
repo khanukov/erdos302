@@ -1,4 +1,4 @@
-name: Packing Lean CI canary
+name: Packing Lean CI shards
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: packing-ci-canary-${{ github.ref }}
+  group: packing-ci-shards-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,8 +23,43 @@ jobs:
     timeout-minutes: 180
     strategy:
       fail-fast: false
+      max-parallel: 16
       matrix:
-        certificate: [269]
+        certificate:
+          - 234
+          - 235
+          - 236
+          - 237
+          - 238
+          - 239
+          - 240
+          - 241
+          - 242
+          - 243
+          - 244
+          - 245
+          - 246
+          - 247
+          - 248
+          - 249
+          - 251
+          - 252
+          - 253
+          - 254
+          - 255
+          - 256
+          - 257
+          - 258
+          - 259
+          - 260
+          - 261
+          - 262
+          - 263
+          - 264
+          - 265
+          - 266
+          - 267
+          - 268
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
