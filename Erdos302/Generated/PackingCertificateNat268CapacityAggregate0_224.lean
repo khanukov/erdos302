@@ -1,0 +1,44 @@
+import Erdos302.Generated.PackingCertificateNat268VertexCapacityBatch224
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat268CapacityRange0_224 (v : Fin 719) (hlo : 224 ≤ v.val) (hhi : v.val < 240) :
+    ∃ scale, Erdos302.checkVertexCapacityChunks packingCertificateNat268VertexChunks v scale = true := by
+  by_cases h224 : v = 224
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex224⟩
+  by_cases h225 : v = 225
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex225⟩
+  by_cases h226 : v = 226
+  · subst v; exact ⟨498424157812, packingCertificateNat268_vertex226⟩
+  by_cases h227 : v = 227
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex227⟩
+  by_cases h228 : v = 228
+  · subst v; exact ⟨1855907976659303056, packingCertificateNat268_vertex228⟩
+  by_cases h229 : v = 229
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex229⟩
+  by_cases h230 : v = 230
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex230⟩
+  by_cases h231 : v = 231
+  · subst v; exact ⟨3300479738693760, packingCertificateNat268_vertex231⟩
+  by_cases h232 : v = 232
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex232⟩
+  by_cases h233 : v = 233
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex233⟩
+  by_cases h234 : v = 234
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex234⟩
+  by_cases h235 : v = 235
+  · subst v; exact ⟨512255044, packingCertificateNat268_vertex235⟩
+  by_cases h236 : v = 236
+  · subst v; exact ⟨41552397747231280, packingCertificateNat268_vertex236⟩
+  by_cases h237 : v = 237
+  · subst v; exact ⟨6062026190696, packingCertificateNat268_vertex237⟩
+  by_cases h238 : v = 238
+  · subst v; exact ⟨47639719092, packingCertificateNat268_vertex238⟩
+  by_cases h239 : v = 239
+  · subst v; exact ⟨1606431817984, packingCertificateNat268_vertex239⟩
+  omega
+
+end Erdos302.Generated

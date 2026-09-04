@@ -1,0 +1,18 @@
+import Erdos302.Generated.PackingCertificateNat225VertexData25
+import Erdos302.Generated.PackingConfigurationLinkCatalogue474
+import Erdos302.Generated.PackingConfigurationLinkCatalogue475
+import Erdos302.Generated.PackingConfigurationLinkCatalogue477
+import Erdos302.Generated.PackingConfigurationLinkCatalogue478
+import Erdos302.Generated.PackingConfigurationLinkCatalogue480
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat225_linkGroup103 :
+    packingCertificateNat225VertexGroup103.all (fun t => decide
+      (t.LinkOK concreteConfigurationAt)) = true := by
+  simp [packingCertificateNat225VertexGroup103, Erdos302.PackingTermNat.LinkOK, packingConfigurationLink_12758_726f8c84d00d, packingConfigurationLink_12800_19a934bb1f04, packingConfigurationLink_13026_9b750f078f98, packingConfigurationLink_13052_758daac1e492, packingConfigurationLink_13115_babb1acf8e7c]
+
+end Erdos302.Generated

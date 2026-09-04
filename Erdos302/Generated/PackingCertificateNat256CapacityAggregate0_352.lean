@@ -1,0 +1,44 @@
+import Erdos302.Generated.PackingCertificateNat256VertexCapacityBatch352
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat256CapacityRange0_352 (v : Fin 719) (hlo : 352 ≤ v.val) (hhi : v.val < 368) :
+    ∃ scale, Erdos302.checkVertexCapacityChunks packingCertificateNat256VertexChunks v scale = true := by
+  by_cases h352 : v = 352
+  · subst v; exact ⟨362918602696455543, packingCertificateNat256_vertex352⟩
+  by_cases h353 : v = 353
+  · subst v; exact ⟨136841114026394907, packingCertificateNat256_vertex353⟩
+  by_cases h354 : v = 354
+  · subst v; exact ⟨10005199533991, packingCertificateNat256_vertex354⟩
+  by_cases h355 : v = 355
+  · subst v; exact ⟨9517736207495424489, packingCertificateNat256_vertex355⟩
+  by_cases h356 : v = 356
+  · subst v; exact ⟨10005199533991, packingCertificateNat256_vertex356⟩
+  by_cases h357 : v = 357
+  · subst v; exact ⟨119892306015814153, packingCertificateNat256_vertex357⟩
+  by_cases h358 : v = 358
+  · subst v; exact ⟨10005199533991, packingCertificateNat256_vertex358⟩
+  by_cases h359 : v = 359
+  · subst v; exact ⟨10005199533991, packingCertificateNat256_vertex359⟩
+  by_cases h360 : v = 360
+  · subst v; exact ⟨31406031186411263261, packingCertificateNat256_vertex360⟩
+  by_cases h361 : v = 361
+  · subst v; exact ⟨10005199533991, packingCertificateNat256_vertex361⟩
+  by_cases h362 : v = 362
+  · subst v; exact ⟨42309711715870399386337, packingCertificateNat256_vertex362⟩
+  by_cases h363 : v = 363
+  · subst v; exact ⟨10005199533991, packingCertificateNat256_vertex363⟩
+  by_cases h364 : v = 364
+  · subst v; exact ⟨737865860412699842698463, packingCertificateNat256_vertex364⟩
+  by_cases h365 : v = 365
+  · subst v; exact ⟨603129066035849107933, packingCertificateNat256_vertex365⟩
+  by_cases h366 : v = 366
+  · subst v; exact ⟨49222330017387172925, packingCertificateNat256_vertex366⟩
+  by_cases h367 : v = 367
+  · subst v; exact ⟨18064898023796984041, packingCertificateNat256_vertex367⟩
+  omega
+
+end Erdos302.Generated

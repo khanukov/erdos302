@@ -1,0 +1,93 @@
+import Erdos302.Generated.PackingCertificate270Transition0
+import Erdos302.Generated.PackingCertificate270Transition1
+import Erdos302.Generated.PackingCertificate270Transition2
+import Erdos302.Generated.PackingCertificate270Transition3
+import Erdos302.Generated.PackingCertificate270Transition4
+import Erdos302.Generated.PackingCertificate270Transition5
+import Erdos302.Generated.PackingCertificate270Transition6
+import Erdos302.Generated.PackingCertificate270Transition7
+import Erdos302.Generated.PackingCertificate270Transition8
+import Erdos302.Generated.PackingCertificate270Transition9
+import Erdos302.Generated.PackingCertificate270Transition10
+import Erdos302.Generated.PackingCertificate270Transition11
+import Erdos302.Generated.PackingCertificate270Transition12
+import Erdos302.Generated.PackingCertificate270LoadBlock0
+import Erdos302.Generated.PackingCertificate270LoadBlock1
+import Erdos302.Generated.PackingCertificate270LoadBlock2
+import Erdos302.Generated.PackingCertificate270LoadBlock3
+import Erdos302.Generated.PackingCertificate270LoadBlock4
+import Erdos302.Generated.PackingCertificate270LoadBlock5
+import Erdos302.Generated.PackingCertificate270LoadBlock6
+import Erdos302.Generated.PackingCertificate270LoadBlock7
+import Erdos302.Generated.PackingCertificate270LoadBlock8
+import Erdos302.Generated.PackingCertificate270LoadBlock9
+import Erdos302.Generated.PackingCertificate270LoadBlock10
+import Erdos302.Generated.PackingCertificate270LoadBlock11
+import Erdos302.Generated.PackingCertificate270LoadBlock12
+import Erdos302.Generated.PackingCertificate270LoadBlock13
+import Erdos302.Generated.PackingCertificate270LoadBlock14
+import Erdos302.Generated.PackingCertificate270LoadBlock15
+import Erdos302.Generated.PackingCertificate270LoadBlock16
+import Erdos302.Generated.PackingCertificate270LoadBlock17
+import Erdos302.Generated.PackingCertificate270LoadBlock18
+import Erdos302.Generated.PackingCertificate270LoadBlock19
+import Erdos302.Generated.PackingCertificate270LoadBlock20
+import Erdos302.Generated.PackingCertificate270LoadBlock21
+import Erdos302.Generated.PackingCertificate270LoadBlock22
+import Erdos302.Generated.PackingCertificate270LoadBlock23
+import Erdos302.Generated.PackingCertificate270LoadBlock24
+import Erdos302.Generated.PackingCertificate270LoadBlock25
+import Erdos302.Generated.PackingCertificate270LoadBlock26
+import Erdos302.Generated.PackingCertificate270LoadBlock27
+import Erdos302.Generated.PackingCertificate270LoadBlock28
+import Erdos302.Generated.PackingCertificate270LoadBlock29
+import Erdos302.Generated.PackingCertificate270LoadBlock30
+import Erdos302.Generated.PackingCertificate270LoadBlock31
+import Erdos302.Generated.PackingCertificate270LoadBlock32
+import Erdos302.Generated.PackingCertificate270LoadBlock33
+import Erdos302.Generated.PackingCertificate270LoadBlock34
+import Erdos302.Generated.PackingCertificate270LoadBlock35
+import Erdos302.Generated.PackingCertificate270LoadBlock36
+import Erdos302.Generated.PackingCertificate270LoadBlock37
+import Erdos302.Generated.PackingCertificate270LoadBlock38
+import Erdos302.Generated.PackingCertificate270LoadBlock39
+import Erdos302.Generated.PackingCertificate270LoadBlock40
+import Erdos302.Generated.PackingCertificate270LoadBlock41
+import Erdos302.Generated.PackingCertificate270LoadBlock42
+import Erdos302.Generated.PackingCertificate270LoadBlock43
+import Erdos302.Generated.PackingCertificate270LoadBlock44
+import Erdos302.Generated.PackingCertificate270LoadBlock45
+import Erdos302.Generated.PackingCertificate270LoadBlock46
+import Erdos302.Generated.PackingCertificate270LoadBlock47
+import Erdos302.Generated.PackingCertificate270LoadBlock48
+import Erdos302.Generated.PackingCertificate270LoadBlock49
+import Erdos302.Generated.PackingCertificate270LoadBlock50
+import Erdos302.Generated.PackingCertificate270LoadBlock51
+import Erdos302.Generated.PackingCertificate270LoadBlock52
+import Erdos302.Generated.PackingCertificate270LoadBlock53
+import Erdos302.Generated.PackingCertificate270LoadBlock54
+import Erdos302.Generated.PackingCertificate270LoadBlock55
+import Erdos302.Generated.PackingCertificate270LoadBlock56
+import Erdos302.Generated.PackingCertificate270LoadBlock57
+import Erdos302.Generated.PackingCertificate270LoadBlock58
+import Erdos302.Generated.PackingCertificate270LoadBlock59
+
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificate270_trace :
+    Erdos302.loadTrace concreteConfigurationAt (Array.replicate 719 0)
+      packingCertificate270.termChunks packingCertificate270.loadStages := by
+  simp only [packingCertificate270, Erdos302.loadTrace]
+  exact ⟨packingCertificate270_transition0, packingCertificate270_transition1, packingCertificate270_transition2, packingCertificate270_transition3, packingCertificate270_transition4, packingCertificate270_transition5, packingCertificate270_transition6, packingCertificate270_transition7, packingCertificate270_transition8, packingCertificate270_transition9, packingCertificate270_transition10, packingCertificate270_transition11, packingCertificate270_transition12, True.intro⟩
+
+theorem packingCertificate270_loadCheck :
+    packingCertificate270.finalStage.toList.all
+      (fun q => decide (q ≤ 1)) = true := by
+  apply Erdos302.Array.all_toList_eq_true_of_cell_blocks _ _ 12 (by decide)
+  intro block hblock
+  interval_cases block <;> assumption
+
+end Erdos302.Generated

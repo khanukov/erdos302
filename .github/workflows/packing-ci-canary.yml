@@ -1,0 +1,55 @@
+name: Packing Lean CI canary
+
+on:
+  push:
+    branches: [agent/packing-ci-shards]
+    paths:
+      - ".github/workflows/packing-ci-canary.yml"
+      - "Erdos302/**"
+      - "lakefile.toml"
+      - "lake-manifest.json"
+      - "lean-toolchain"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: packing-ci-canary-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certificate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        certificate: [269]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Report runner resources
+        run: |
+          nproc
+          free -h
+          df -h .
+      - name: Fetch pinned Mathlib cache
+        run: lake exe cache get
+      - name: Build one kernel-checked packing certificate
+        run: |
+          /usr/bin/time -v lake build \
+            "+Erdos302.Generated.PackingCertificateNat${{ matrix.certificate }}:olean"
+      - name: Pack portable Lean artifacts
+        run: |
+          python3 scripts/pack_packing_ci_artifacts.py \
+            --certificate "${{ matrix.certificate }}" \
+            --output "packing-${{ matrix.certificate }}.tar.zst"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: packing-${{ matrix.certificate }}-${{ github.sha }}
+          path: packing-${{ matrix.certificate }}.tar.zst
+          if-no-files-found: error
+          retention-days: 3

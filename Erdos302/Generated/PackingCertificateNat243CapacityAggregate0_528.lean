@@ -1,0 +1,44 @@
+import Erdos302.Generated.PackingCertificateNat243VertexCapacityBatch528
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat243CapacityRange0_528 (v : Fin 719) (hlo : 528 ≤ v.val) (hhi : v.val < 544) :
+    ∃ scale, Erdos302.checkVertexCapacityChunks packingCertificateNat243VertexChunks v scale = true := by
+  by_cases h528 : v = 528
+  · subst v; exact ⟨4019250145625, packingCertificateNat243_vertex528⟩
+  by_cases h529 : v = 529
+  · subst v; exact ⟨1397115809375, packingCertificateNat243_vertex529⟩
+  by_cases h530 : v = 530
+  · subst v; exact ⟨1108073745625, packingCertificateNat243_vertex530⟩
+  by_cases h531 : v = 531
+  · subst v; exact ⟨126109328125, packingCertificateNat243_vertex531⟩
+  by_cases h532 : v = 532
+  · subst v; exact ⟨91515280553125, packingCertificateNat243_vertex532⟩
+  by_cases h533 : v = 533
+  · subst v; exact ⟨349156328125, packingCertificateNat243_vertex533⟩
+  by_cases h534 : v = 534
+  · subst v; exact ⟨5163125, packingCertificateNat243_vertex534⟩
+  by_cases h535 : v = 535
+  · subst v; exact ⟨236782828019375, packingCertificateNat243_vertex535⟩
+  by_cases h536 : v = 536
+  · subst v; exact ⟨5163125, packingCertificateNat243_vertex536⟩
+  by_cases h537 : v = 537
+  · subst v; exact ⟨5163125, packingCertificateNat243_vertex537⟩
+  by_cases h538 : v = 538
+  · subst v; exact ⟨36361465798961875, packingCertificateNat243_vertex538⟩
+  by_cases h539 : v = 539
+  · subst v; exact ⟨2115698350827015625, packingCertificateNat243_vertex539⟩
+  by_cases h540 : v = 540
+  · subst v; exact ⟨5163125, packingCertificateNat243_vertex540⟩
+  by_cases h541 : v = 541
+  · subst v; exact ⟨382225653253125, packingCertificateNat243_vertex541⟩
+  by_cases h542 : v = 542
+  · subst v; exact ⟨222014375, packingCertificateNat243_vertex542⟩
+  by_cases h543 : v = 543
+  · subst v; exact ⟨7751528640625, packingCertificateNat243_vertex543⟩
+  omega
+
+end Erdos302.Generated

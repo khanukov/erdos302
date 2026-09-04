@@ -1,0 +1,111 @@
+import Erdos302.Generated.Configurations
+import Erdos302.Generated.Divisors
+import Erdos302.Certificate
+
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+def packingCertificate37 : Erdos302.PackingCertificate := {
+  prefixSize := 116
+  requiredCoverSize := 38
+  threshold := 440
+  termChunks := [
+    [
+      { configurationId := 0, weight := Rat.normalize 11600 17439, numerator := 11600, denominator := 17439 },
+      { configurationId := 2, weight := Rat.normalize 11600 17439, numerator := 11600, denominator := 17439 },
+      { configurationId := 9, weight := Rat.normalize 11600 17439, numerator := 11600, denominator := 17439 },
+      { configurationId := 12, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+      { configurationId := 17, weight := Rat.normalize 150800 284837, numerator := 150800, denominator := 284837 },
+      { configurationId := 18, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+      { configurationId := 25, weight := Rat.normalize 11600 17439, numerator := 11600, denominator := 17439 },
+      { configurationId := 34, weight := Rat.normalize 63800 470853, numerator := 63800, denominator := 470853 },
+      { configurationId := 35, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+      { configurationId := 38, weight := Rat.normalize 8845 11626, numerator := 8845, denominator := 11626 },
+      { configurationId := 49, weight := Rat.normalize 81200 342967, numerator := 81200, denominator := 342967 },
+      { configurationId := 50, weight := Rat.normalize 31175 69756, numerator := 31175, denominator := 69756 },
+      { configurationId := 60, weight := Rat.normalize 104400 563861, numerator := 104400, denominator := 563861 },
+      { configurationId := 63, weight := Rat.normalize 2600 17439, numerator := 2600, denominator := 17439 },
+      { configurationId := 65, weight := Rat.normalize 2755 11626, numerator := 2755, denominator := 11626 },
+      { configurationId := 66, weight := Rat.normalize 3800 17439, numerator := 3800, denominator := 17439 },
+      { configurationId := 76, weight := Rat.normalize 150800 331341, numerator := 150800, denominator := 331341 },
+      { configurationId := 77, weight := Rat.normalize 179800 331341, numerator := 179800, denominator := 331341 },
+      { configurationId := 82, weight := Rat.normalize 72500 249959, numerator := 72500, denominator := 249959 },
+      { configurationId := 91, weight := Rat.normalize 214600 563861, numerator := 214600, denominator := 563861 },
+      { configurationId := 96, weight := Rat.normalize 220400 459227, numerator := 220400, denominator := 459227 },
+      { configurationId := 102, weight := Rat.normalize 14500 238333, numerator := 14500, denominator := 238333 },
+      { configurationId := 108, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+      { configurationId := 111, weight := Rat.normalize 203000 540609, numerator := 203000, denominator := 540609 },
+      { configurationId := 117, weight := Rat.normalize 290 17439, numerator := 290, denominator := 17439 },
+      { configurationId := 121, weight := Rat.normalize 348000 563861, numerator := 348000, denominator := 563861 },
+      { configurationId := 127, weight := Rat.normalize 11600 17439, numerator := 11600, denominator := 17439 },
+      { configurationId := 130, weight := Rat.normalize 17400 412723, numerator := 17400, denominator := 412723 },
+      { configurationId := 135, weight := Rat.normalize 2900 5813, numerator := 2900, denominator := 5813 },
+      { configurationId := 143, weight := Rat.normalize 249400 459227, numerator := 249400, denominator := 459227 },
+      { configurationId := 146, weight := Rat.normalize 249400 412723, numerator := 249400, denominator := 412723 },
+      { configurationId := 153, weight := Rat.normalize 214600 563861, numerator := 214600, denominator := 563861 },
+      { configurationId := 159, weight := Rat.normalize 1856 5813, numerator := 1856, denominator := 5813 },
+      { configurationId := 174, weight := Rat.normalize 40600 133699, numerator := 40600, denominator := 133699 },
+      { configurationId := 184, weight := Rat.normalize 162400 412723, numerator := 162400, denominator := 412723 },
+      { configurationId := 188, weight := Rat.normalize 116000 575487, numerator := 116000, denominator := 575487 },
+      { configurationId := 194, weight := Rat.normalize 14500 52317, numerator := 14500, denominator := 52317 },
+      { configurationId := 203, weight := Rat.normalize 81200 563861, numerator := 81200, denominator := 563861 },
+      { configurationId := 204, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+      { configurationId := 210, weight := Rat.normalize 4640 110447, numerator := 4640, denominator := 110447 },
+    ],
+    [
+      { configurationId := 225, weight := Rat.normalize 6032 17439, numerator := 6032, denominator := 17439 },
+      { configurationId := 228, weight := Rat.normalize 2755 11626, numerator := 2755, denominator := 11626 },
+      { configurationId := 234, weight := Rat.normalize 29000 238333, numerator := 29000, denominator := 238333 },
+      { configurationId := 235, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+      { configurationId := 236, weight := Rat.normalize 36250 133699, numerator := 36250, denominator := 133699 },
+      { configurationId := 253, weight := Rat.normalize 458200 575487, numerator := 458200, denominator := 575487 },
+      { configurationId := 268, weight := Rat.normalize 8700 63943, numerator := 8700, denominator := 63943 },
+      { configurationId := 278, weight := Rat.normalize 145000 401097, numerator := 145000, denominator := 401097 },
+      { configurationId := 281, weight := Rat.normalize 40600 133699, numerator := 40600, denominator := 133699 },
+      { configurationId := 290, weight := Rat.normalize 2755 5813, numerator := 2755, denominator := 5813 },
+      { configurationId := 299, weight := Rat.normalize 249400 412723, numerator := 249400, denominator := 412723 },
+      { configurationId := 338, weight := Rat.normalize 6032 17439, numerator := 6032, denominator := 17439 },
+      { configurationId := 339, weight := Rat.normalize 11368 17439, numerator := 11368, denominator := 17439 },
+      { configurationId := 345, weight := Rat.normalize 78300 273211, numerator := 78300, denominator := 273211 },
+      { configurationId := 353, weight := Rat.normalize 52200 284837, numerator := 52200, denominator := 284837 },
+      { configurationId := 360, weight := Rat.normalize 159500 249959, numerator := 159500, denominator := 249959 },
+      { configurationId := 373, weight := Rat.normalize 81200 563861, numerator := 81200, denominator := 563861 },
+      { configurationId := 383, weight := Rat.normalize 203000 540609, numerator := 203000, denominator := 540609 },
+      { configurationId := 400, weight := Rat.normalize 150800 284837, numerator := 150800, denominator := 284837 },
+      { configurationId := 409, weight := Rat.normalize 36250 133699, numerator := 36250, denominator := 133699 },
+      { configurationId := 425, weight := Rat.normalize 116000 575487, numerator := 116000, denominator := 575487 },
+      { configurationId := 426, weight := Rat.normalize 58 5813, numerator := 58, denominator := 5813 },
+      { configurationId := 432, weight := Rat.normalize 162400 412723, numerator := 162400, denominator := 412723 },
+      { configurationId := 464, weight := Rat.normalize 17400 98821, numerator := 17400, denominator := 98821 },
+      { configurationId := 468, weight := Rat.normalize 31175 69756, numerator := 31175, denominator := 69756 },
+      { configurationId := 483, weight := Rat.normalize 38425 69756, numerator := 38425, denominator := 69756 },
+      { configurationId := 495, weight := Rat.normalize 214600 563861, numerator := 214600, denominator := 563861 },
+      { configurationId := 503, weight := Rat.normalize 3000 5813, numerator := 3000, denominator := 5813 },
+      { configurationId := 512, weight := Rat.normalize 97150 133699, numerator := 97150, denominator := 133699 },
+      { configurationId := 521, weight := Rat.normalize 133400 284837, numerator := 133400, denominator := 284837 },
+      { configurationId := 548, weight := Rat.normalize 11600 40691, numerator := 11600, denominator := 40691 },
+      { configurationId := 549, weight := Rat.normalize 8700 63943, numerator := 8700, denominator := 63943 },
+      { configurationId := 550, weight := Rat.normalize 52200 528983, numerator := 52200, denominator := 528983 },
+      { configurationId := 563, weight := Rat.normalize 481400 563861, numerator := 481400, denominator := 563861 },
+      { configurationId := 574, weight := Rat.normalize 458200 575487, numerator := 458200, denominator := 575487 },
+      { configurationId := 585, weight := Rat.normalize 78300 273211, numerator := 78300, denominator := 273211 },
+      { configurationId := 586, weight := Rat.normalize 194300 273211, numerator := 194300, denominator := 273211 },
+      { configurationId := 603, weight := Rat.normalize 464 17439, numerator := 464, denominator := 17439 },
+      { configurationId := 613, weight := Rat.normalize 232 17439, numerator := 232, denominator := 17439 },
+      { configurationId := 621, weight := Rat.normalize 133400 284837, numerator := 133400, denominator := 284837 },
+    ],
+    [
+      { configurationId := 628, weight := Rat.normalize 11600 17439, numerator := 11600, denominator := 17439 },
+      { configurationId := 653, weight := Rat.normalize 14500 52317, numerator := 14500, denominator := 52317 },
+      { configurationId := 672, weight := Rat.normalize 116000 575487, numerator := 116000, denominator := 575487 },
+      { configurationId := 682, weight := Rat.normalize 2320 98821, numerator := 2320, denominator := 98821 },
+      { configurationId := 698, weight := Rat.normalize 150800 284837, numerator := 150800, denominator := 284837 },
+      { configurationId := 731, weight := Rat.normalize 81200 563861, numerator := 81200, denominator := 563861 },
+      { configurationId := 12691, weight := Rat.normalize 5800 17439, numerator := 5800, denominator := 17439 },
+    ],
+  ]
+}
+
+end Erdos302.Generated

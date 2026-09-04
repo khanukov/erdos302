@@ -1,0 +1,44 @@
+import Erdos302.Generated.PackingCertificateNat102VertexCapacityBatch176
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat102CapacityRange0_176 (v : Fin 719) (hlo : 176 ≤ v.val) (hhi : v.val < 192) :
+    ∃ scale, Erdos302.checkVertexCapacityChunks packingCertificateNat102VertexChunks v scale = true := by
+  by_cases h176 : v = 176
+  · subst v; exact ⟨3396523966188062853984048, packingCertificateNat102_vertex176⟩
+  by_cases h177 : v = 177
+  · subst v; exact ⟨23294329655067015024222, packingCertificateNat102_vertex177⟩
+  by_cases h178 : v = 178
+  · subst v; exact ⟨221191888696650362666074188565089, packingCertificateNat102_vertex178⟩
+  by_cases h179 : v = 179
+  · subst v; exact ⟨175585399410052877067, packingCertificateNat102_vertex179⟩
+  by_cases h180 : v = 180
+  · subst v; exact ⟨24295342017103726476380967, packingCertificateNat102_vertex180⟩
+  by_cases h181 : v = 181
+  · subst v; exact ⟨8437054027052450795946417, packingCertificateNat102_vertex181⟩
+  by_cases h182 : v = 182
+  · subst v; exact ⟨754910754182718409326971709, packingCertificateNat102_vertex182⟩
+  by_cases h183 : v = 183
+  · subst v; exact ⟨35885383061362496785819503, packingCertificateNat102_vertex183⟩
+  by_cases h184 : v = 184
+  · subst v; exact ⟨27580778953931695876807293, packingCertificateNat102_vertex184⟩
+  by_cases h185 : v = 185
+  · subst v; exact ⟨2418805933806418416849303, packingCertificateNat102_vertex185⟩
+  by_cases h186 : v = 186
+  · subst v; exact ⟨659099771628232496109330087, packingCertificateNat102_vertex186⟩
+  by_cases h187 : v = 187
+  · subst v; exact ⟨5617203025344403139552195014383, packingCertificateNat102_vertex187⟩
+  by_cases h188 : v = 188
+  · subst v; exact ⟨11757725100695370807037521, packingCertificateNat102_vertex188⟩
+  by_cases h189 : v = 189
+  · subst v; exact ⟨2165553259390652150493, packingCertificateNat102_vertex189⟩
+  by_cases h190 : v = 190
+  · subst v; exact ⟨16446499078074952818609, packingCertificateNat102_vertex190⟩
+  by_cases h191 : v = 191
+  · subst v; exact ⟨77609794257321651449131458789, packingCertificateNat102_vertex191⟩
+  omega
+
+end Erdos302.Generated

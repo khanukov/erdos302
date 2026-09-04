@@ -1,0 +1,35 @@
+import Erdos302.Generated.PackingCertificateNat103VertexData0
+import Erdos302.Generated.PackingCertificateNat103VertexData1
+import Erdos302.Generated.PackingCertificateNat103VertexData2
+import Erdos302.Generated.PackingCertificateNat103VertexData3
+import Erdos302.Generated.PackingCertificateNat103VertexData4
+import Erdos302.Generated.PackingCertificateNat103VertexData5
+import Erdos302.Generated.PackingCertificateNat103VertexData6
+import Erdos302.Generated.PackingCertificateNat103VertexData7
+import Erdos302.Generated.PackingCertificateNat103VertexData8
+import Erdos302.Generated.PackingCertificateNat103VertexData9
+import Erdos302.Generated.PackingCertificateNat103VertexData10
+import Erdos302.Generated.PackingCertificateNat103VertexData11
+import Erdos302.Generated.PackingCertificateNat103VertexData12
+import Erdos302.Generated.PackingCertificateNat103VertexData13
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+def packingCertificateNat103VertexChunks : List (List Erdos302.PackingTermNat) :=
+  [packingCertificateNat103VertexChunk0, packingCertificateNat103VertexChunk1, packingCertificateNat103VertexChunk2, packingCertificateNat103VertexChunk3, packingCertificateNat103VertexChunk4, packingCertificateNat103VertexChunk5, packingCertificateNat103VertexChunk6, packingCertificateNat103VertexChunk7, packingCertificateNat103VertexChunk8, packingCertificateNat103VertexChunk9, packingCertificateNat103VertexChunk10, packingCertificateNat103VertexChunk11, packingCertificateNat103VertexChunk12, packingCertificateNat103VertexChunk13]
+
+def packingCertificateNat103VertexTerms := packingCertificateNat103VertexChunks.flatten
+
+def packingCertificateNat103 : Erdos302.PackingCertificateNat := {
+  prefixSize := 282
+  requiredCoverSize := 104
+  threshold := 4704
+  scale := 1
+  termChunks := packingCertificateNat103VertexChunks
+  unitStages := []
+}
+
+end Erdos302.Generated

@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Tactic
 
 /-!
 # Kernel-checked combinatorial core of the upper-bound argument

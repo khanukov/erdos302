@@ -17,9 +17,11 @@ m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 denominators, _ = m.build_configurations(); edges = m.reciprocal_edges(denominators)
 assert len(denominators) == 719 and len(edges) == 12675
 OUT.mkdir(parents=True, exist_ok=True)
-for old in OUT.glob("Edges*.lean"): old.unlink()
 
-def write(path: Path, lines: list[str]): path.write_text("\n".join(lines)+"\n")
+def write(path: Path, lines: list[str]):
+    content = "\n".join(lines) + "\n"
+    if not path.exists() or path.read_text() != content:
+        path.write_text(content)
 
 d = ["import Erdos302.Problem", "", "set_option maxRecDepth 100000", "", "namespace Erdos302.Generated", "", "def Q : ℕ := 139708800", ""]
 dchunks=[denominators[i:i+100] for i in range(0,len(denominators),100)]
@@ -30,7 +32,12 @@ for n, chunk in enumerate(dchunks):
     d += ["]", "", f"theorem denominatorChunk{n}_valid : denominatorChunk{n}.all",
           "    (fun d => decide (1 < d ∧ d ∣ Q)) = true := by decide", ""]
 d += ["def denominatorCount : ℕ := " + " + ".join(f"denominatorChunk{n}.length" for n in range(len(dchunks))),
-      "", "theorem denominator_count : denominatorCount = 719 := by decide", "", "end Erdos302.Generated"]
+      "", "theorem denominator_count : denominatorCount = 719 := by decide", "",
+      "/-- Total lookup used by certificate checks; validity separately proves the index is in range. -/",
+      "def denominatorAt (id : ℕ) : ℕ := match id / 100 with"]
+for n in range(len(dchunks)):
+    d.append(f"  | {n} => denominatorChunk{n}[id % 100]?.getD 0")
+d += ["  | _ => 0", "", "end Erdos302.Generated"]
 write(OUT/"Divisors.lean", d)
 
 chunk_size=500
@@ -136,10 +143,8 @@ configurations = m.build_configurations()[1]
 config_chunk_size = 50
 config_chunks = [configurations[i:i+config_chunk_size]
                  for i in range(0, len(configurations), config_chunk_size)]
-for old in OUT.glob("Configurations*.lean"):
-    old.unlink()
 for n, chunk in enumerate(config_chunks):
-    lines = ["import Erdos302.Certificate", "", "set_option maxRecDepth 100000", "",
+    lines = ["import Erdos302.CertificateSchema", "", "set_option maxRecDepth 100000", "",
              "namespace Erdos302.Generated", "",
              f"def configurationChunk{n} : Array Erdos302.RawConfiguration := #["]
     for maximum, demand, support in chunk:
@@ -160,6 +165,20 @@ aggregate += ["", "set_option maxRecDepth 100000", "", "namespace Erdos302.Gener
                   f"configurationChunk{n}.toList.all Erdos302.RawConfiguration.valid = true"
                   for n in range(len(config_chunks))) + " := by",
               "  exact ⟨" + ", ".join(f"configurationChunk{n}_valid" for n in range(len(config_chunks))) + "⟩",
-              "", "end Erdos302.Generated"]
+              "", "/-- Shallow group dispatch keeps certificate reduction bounded. -/"]
+group_size = 20
+config_groups = [config_chunks[i:i+group_size]
+                 for i in range(0, len(config_chunks), group_size)]
+for group, chunks_in_group in enumerate(config_groups):
+    aggregate.append(f"def concreteConfigurationGroup{group} (id : ℕ) : Erdos302.RawConfiguration :=")
+    aggregate.append("  match (id % 1000) / 50 with")
+    for local in range(len(chunks_in_group)):
+        n = group * group_size + local
+        aggregate.append(f"  | {local} => configurationChunk{n}[id % 50]?.getD default")
+    aggregate += ["  | _ => default", ""]
+aggregate += ["def concreteConfigurationAt (id : ℕ) : Erdos302.RawConfiguration := match id / 1000 with"]
+for group in range(len(config_groups)):
+    aggregate.append(f"  | {group} => concreteConfigurationGroup{group} id")
+aggregate += ["  | _ => default", "", "end Erdos302.Generated"]
 write(OUT / "Configurations.lean", aggregate)
 print(f"wrote {len(configurations)} configurations in {len(config_chunks)} checked chunks")

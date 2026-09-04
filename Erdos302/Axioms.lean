@@ -29,3 +29,6 @@ only after its proof term exists. -/
 #print axioms Erdos302.dilatedDivisors_disjoint
 #print axioms Erdos302.Generated.concrete_configuration_count
 #print axioms Erdos302.Generated.all_configuration_chunks_valid
+#print axioms Erdos302.PackingCertificate.coverCard_ge
+#print axioms Erdos302.Generated.allPackingCertificatesSound
+#print axioms Erdos302.Generated.certifiedPrefixCoverLowerBound

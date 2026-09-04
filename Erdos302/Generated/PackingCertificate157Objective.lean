@@ -1,0 +1,12 @@
+import Erdos302.Generated.PackingCertificateData157
+
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificate157_objectiveCheck :
+    ((packingCertificate157.requiredCoverSize - 1 : ℕ) : ℚ) <
+      packingCertificate157.objectiveValue concreteConfigurationAt := by decide
+
+end Erdos302.Generated

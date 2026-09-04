@@ -1,0 +1,21 @@
+import Erdos302.Generated.PackingCertificateNat270Transition0
+import Erdos302.Generated.PackingCertificateNat270Transition1
+import Erdos302.Generated.PackingCertificateNat270Transition2
+import Erdos302.Generated.PackingCertificateNat270Transition3
+import Erdos302.Generated.PackingCertificateNat270Transition4
+import Erdos302.Generated.PackingCertificateNat270Transition5
+import Erdos302.Generated.PackingCertificateNat270Transition6
+import Erdos302.Generated.PackingCertificateNat270Transition7
+
+set_option maxRecDepth 10000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat270_traceBatch0 :
+    Erdos302.unitTraceNat (Array.replicate 719 0)
+      [packingCertificateNat270Chunk0, packingCertificateNat270Chunk1, packingCertificateNat270Chunk2, packingCertificateNat270Chunk3, packingCertificateNat270Chunk4, packingCertificateNat270Chunk5, packingCertificateNat270Chunk6, packingCertificateNat270Chunk7] [packingCertificateNat270Stage0, packingCertificateNat270Stage1, packingCertificateNat270Stage2, packingCertificateNat270Stage3, packingCertificateNat270Stage4, packingCertificateNat270Stage5, packingCertificateNat270Stage6, packingCertificateNat270Stage7] := by
+  simp only [Erdos302.unitTraceNat]
+  exact ⟨packingCertificateNat270_transition0, ⟨packingCertificateNat270_transition1, ⟨packingCertificateNat270_transition2, ⟨packingCertificateNat270_transition3, ⟨packingCertificateNat270_transition4, ⟨packingCertificateNat270_transition5, ⟨packingCertificateNat270_transition6, ⟨packingCertificateNat270_transition7, True.intro⟩⟩⟩⟩⟩⟩⟩⟩
+
+end Erdos302.Generated

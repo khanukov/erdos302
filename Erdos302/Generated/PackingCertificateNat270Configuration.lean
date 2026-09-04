@@ -1,0 +1,39 @@
+import Erdos302.Generated.PackingCertificateNatData270
+import Erdos302.Generated.PackingCertificateNat270Link0
+import Erdos302.Generated.PackingCertificateNat270Link1
+import Erdos302.Generated.PackingCertificateNat270Link2
+import Erdos302.Generated.PackingCertificateNat270Link3
+import Erdos302.Generated.PackingCertificateNat270Link4
+import Erdos302.Generated.PackingCertificateNat270Link5
+import Erdos302.Generated.PackingCertificateNat270Link6
+import Erdos302.Generated.PackingCertificateNat270Link7
+import Erdos302.Generated.PackingCertificateNat270Link8
+import Erdos302.Generated.PackingCertificateNat270Link9
+import Erdos302.Generated.PackingCertificateNat270Link10
+import Erdos302.Generated.PackingCertificateNat270Link11
+import Erdos302.Generated.PackingCertificateNat270Link12
+import Erdos302.Generated.PackingCertificateNat270Link13
+import Erdos302.Generated.PackingCertificateNat270Link14
+import Erdos302.Generated.PackingCertificateNat270Link15
+import Erdos302.Generated.PackingCertificateNat270Link16
+import Erdos302.Generated.PackingCertificateNat270Link17
+import Erdos302.Generated.PackingCertificateNat270Link18
+import Erdos302.Generated.PackingCertificateNat270Link19
+import Erdos302.Generated.PackingCertificateNat270Link20
+import Erdos302.Generated.PackingCertificateNat270Link21
+import Erdos302.Generated.PackingCertificateNat270Link22
+import Erdos302.Generated.PackingCertificateNat270Link23
+import Erdos302.Generated.PackingCertificateNat270Link24
+
+set_option maxRecDepth 10000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat270_configuration :
+    packingCertificateNat270.termChunks.all (fun c => c.all (fun t => decide
+    (t.configurationId < 14691 ∧ t.snapshot.maximum.val < packingCertificateNat270.prefixSize ∧
+    t.LinkOK concreteConfigurationAt))) = true
+    := by simp [packingCertificateNat270, packingCertificateNat270_link0, packingCertificateNat270_link1, packingCertificateNat270_link2, packingCertificateNat270_link3, packingCertificateNat270_link4, packingCertificateNat270_link5, packingCertificateNat270_link6, packingCertificateNat270_link7, packingCertificateNat270_link8, packingCertificateNat270_link9, packingCertificateNat270_link10, packingCertificateNat270_link11, packingCertificateNat270_link12, packingCertificateNat270_link13, packingCertificateNat270_link14, packingCertificateNat270_link15, packingCertificateNat270_link16, packingCertificateNat270_link17, packingCertificateNat270_link18, packingCertificateNat270_link19, packingCertificateNat270_link20, packingCertificateNat270_link21, packingCertificateNat270_link22, packingCertificateNat270_link23, packingCertificateNat270_link24]
+
+end Erdos302.Generated

@@ -1,0 +1,11 @@
+import Erdos302.CertificateSchema
+#check Array.mem_toList_iff
+#check Array.getElem_mem
+#check Array.getElem_toList
+#check List.all_eq_true
+#check Array.toList_getElem
+#check Array.getElem?_eq_getElem
+#check Array.mem_def
+#check Array.getElem?_eq_some_iff
+#check List.get_of_mem
+#check List.getElem_of_mem
