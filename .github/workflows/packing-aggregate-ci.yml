@@ -1,0 +1,86 @@
+name: Packing aggregate on high-memory CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      staging_tag:
+        description: Draft release tag containing packing-build.part-*
+        required: true
+        type: string
+      proof_commit:
+        description: Commit that produced the staged Lean artifacts
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Report resources
+        run: |
+          nproc
+          free -h
+          df -h .
+          lean --version
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Download staged verified build inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STAGING_TAG: ${{ inputs.staging_tag }}
+        run: |
+          mkdir -p staging-parts
+          gh release download "$STAGING_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'packing-build.part-*' --dir staging-parts
+          python3 - <<'PY'
+          from pathlib import Path
+          parts=sorted(Path('staging-parts').glob('packing-build.part-*'))
+          if not parts: raise SystemExit('no staging parts')
+          with open('packing-build.tar.zst','wb') as out:
+              for p in parts: out.write(p.read_bytes())
+          print({'parts':len(parts),'bytes':Path('packing-build.tar.zst').stat().st_size})
+          PY
+          zstd -d -q -c packing-build.tar.zst | tar -xf -
+      - name: Verify every staged file
+        run: |
+          python3 scripts/verify_aggregate_staging.py \
+            --root . --manifest MANIFEST.json \
+            --proof-commit '${{ inputs.proof_commit }}' \
+            --lean "$(lean --version | sed -n '1p')"
+          test ! -e .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean
+      - name: Compile aggregate with Lean kernel
+        run: |
+          mkdir -p .lake/build/lib/lean/Erdos302/Generated
+          /usr/bin/time -v lake env lean -s 1048576 \
+            Erdos302/Generated/PackingCertificatesNat.lean \
+            -o .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean \
+            -i .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.ilean \
+            2>&1 | tee aggregate.log
+          test -s .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean
+          test -s .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.ilean
+          python3 - <<'PY'
+          import hashlib,json,subprocess
+          from pathlib import Path
+          files=[Path('.lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean'),Path('.lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.ilean')]
+          def h(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+          m={'schema':1,'workflow_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'proof_commit':'${{ inputs.proof_commit }}','lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files]}
+          Path('AGGREGATE-MANIFEST.json').write_text(json.dumps(m,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: packing-aggregate-${{ github.sha }}
+          path: |
+            .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean
+            .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.ilean
+            AGGREGATE-MANIFEST.json
+            aggregate.log
+          if-no-files-found: error
+          retention-days: 3
