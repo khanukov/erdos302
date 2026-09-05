@@ -1,6 +1,10 @@
 name: Packing aggregate on high-memory CI
 
 on:
+  push:
+    branches: [agent/packing-ci-shards]
+    paths:
+      - ".github/workflows/packing-aggregate-ci.yml"
   workflow_dispatch:
     inputs:
       staging_tag:
@@ -36,7 +40,7 @@ jobs:
       - name: Download staged verified build inputs
         env:
           GH_TOKEN: ${{ github.token }}
-          STAGING_TAG: ${{ inputs.staging_tag }}
+          STAGING_TAG: ${{ inputs.staging_tag || 'packing-aggregate-staging-20260905' }}
         run: |
           mkdir -p staging-parts
           gh release download "$STAGING_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'packing-build.part-*' --dir staging-parts
@@ -53,7 +57,7 @@ jobs:
         run: |
           python3 scripts/verify_aggregate_staging.py \
             --root . --manifest MANIFEST.json \
-            --proof-commit '${{ inputs.proof_commit }}' \
+            --proof-commit '${{ inputs.proof_commit || 'b930d3763177091ab0c28aac8b1cd919f32b375a' }}' \
             --lean "$(lean --version | sed -n '1p')"
           test ! -e .lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean
       - name: Compile aggregate with Lean kernel
@@ -71,7 +75,7 @@ jobs:
           from pathlib import Path
           files=[Path('.lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.olean'),Path('.lake/build/lib/lean/Erdos302/Generated/PackingCertificatesNat.ilean')]
           def h(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-          m={'schema':1,'workflow_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'proof_commit':'${{ inputs.proof_commit }}','lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files]}
+          m={'schema':1,'workflow_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'proof_commit':'${{ inputs.proof_commit || 'b930d3763177091ab0c28aac8b1cd919f32b375a' }}','lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files]}
           Path('AGGREGATE-MANIFEST.json').write_text(json.dumps(m,indent=2)+'\n')
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
