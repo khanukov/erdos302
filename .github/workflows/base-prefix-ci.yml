@@ -1,0 +1,48 @@
+name: Base-prefix aggregate on high-memory CI
+
+on:
+  push:
+    branches: [agent/base-compact-kernel-proof]
+    paths:
+      - ".github/workflows/base-prefix-ci.yml"
+      - "scripts/pack_base_prefix_ci.py"
+      - "Erdos302/**"
+      - "lakefile.toml"
+      - "lake-manifest.json"
+      - "lean-toolchain"
+
+permissions:
+  contents: read
+
+jobs:
+  base-prefix:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Report resources
+        run: |
+          nproc
+          free -h
+          df -h .
+          lean --version
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build kernel-checked base-prefix aggregate
+        run: |
+          /usr/bin/time -v lake build "+Erdos302.Generated.BasePrefix.All:olean" 2>&1 | tee base-prefix-build.log
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.olean
+      - name: Pack hash-manifested artifacts
+        run: python3 scripts/pack_base_prefix_ci.py --output base-prefix-build.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: base-prefix-all-${{ github.sha }}
+          path: |
+            base-prefix-build.tar.gz
+            base-prefix-build.log
+          if-no-files-found: error
+          retention-days: 3
