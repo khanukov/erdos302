@@ -38,6 +38,9 @@ def main() -> int:
         with tarfile.open(fileobj=proc.stdin,mode="w|") as tf:
             tf.add(mp,arcname="MANIFEST.json")
             for p in files: tf.add(p,arcname=str(p.relative_to(ROOT)),recursive=False)
+        # tarfile does not own/close an externally supplied file object.  Close
+        # the pipe explicitly so zstd receives EOF instead of waiting forever.
+        proc.stdin.close()
         rc=proc.wait()
         if rc: raise SystemExit(f"zstd failed: {rc}")
     print(json.dumps({"output":str(args.output),"files":len(files),"input_bytes":sum(e["bytes"] for e in entries),"archive_bytes":args.output.stat().st_size}))
