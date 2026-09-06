@@ -31,27 +31,27 @@ def BasePrefixDemandsValid : Prop :=
 theorem basePrefixDemands_valid : BasePrefixDemandsValid := by
   intro i
   fin_cases i
-  · simpa [basePrefixThresholds] using Certificate00.demand_valid
-  · simpa [basePrefixThresholds] using Certificate01.demand_valid
-  · simpa [basePrefixThresholds] using Certificate02.demand_valid
-  · simpa [basePrefixThresholds] using Certificate03.demand_valid
-  · simpa [basePrefixThresholds] using Certificate04.demand_valid
-  · simpa [basePrefixThresholds] using Certificate05.demand_valid
-  · simpa [basePrefixThresholds] using Certificate06.demand_valid
-  · simpa [basePrefixThresholds] using Certificate07.demand_valid
-  · simpa [basePrefixThresholds] using Certificate08.demand_valid
-  · simpa [basePrefixThresholds] using Certificate09.demand_valid
-  · simpa [basePrefixThresholds] using Certificate10.demand_valid
-  · simpa [basePrefixThresholds] using Certificate11.demand_valid
-  · simpa [basePrefixThresholds] using Certificate12.demand_valid
-  · simpa [basePrefixThresholds] using Certificate13.demand_valid
-  · simpa [basePrefixThresholds] using Certificate14.demand_valid
-  · simpa [basePrefixThresholds] using Certificate15.demand_valid
-  · simpa [basePrefixThresholds] using Certificate16.demand_valid
-  · simpa [basePrefixThresholds] using Certificate17.demand_valid
-  · simpa [basePrefixThresholds] using Certificate18.demand_valid
-  · simpa [basePrefixThresholds] using Certificate19.demand_valid
-  · simpa [basePrefixThresholds] using Certificate20.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate00.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate01.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate02.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate03.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate04.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate05.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate06.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate07.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate08.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate09.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate10.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate11.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate12.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate13.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate14.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate15.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate16.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate17.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate18.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate19.demand_valid
+  · simpa [basePrefixThresholds] using BasePrefix.Certificate20.demand_valid
 
 /-- The public aggregate exposes the exact mathematical hypergraph bridge. -/
 theorem basePrefix_cover_semantics (threshold : Nat) (cover : Finset (Fin 47)) :
