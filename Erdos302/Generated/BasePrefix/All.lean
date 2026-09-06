@@ -31,29 +31,38 @@ def BasePrefixDemandsValid : Prop :=
 theorem basePrefixDemands_valid : BasePrefixDemandsValid := by
   intro i
   fin_cases i
-  | 0 => exact Certificate00.demand_valid
-  | 1 => exact Certificate01.demand_valid
-  | 2 => exact Certificate02.demand_valid
-  | 3 => exact Certificate03.demand_valid
-  | 4 => exact Certificate04.demand_valid
-  | 5 => exact Certificate05.demand_valid
-  | 6 => exact Certificate06.demand_valid
-  | 7 => exact Certificate07.demand_valid
-  | 8 => exact Certificate08.demand_valid
-  | 9 => exact Certificate09.demand_valid
-  | 10 => exact Certificate10.demand_valid
-  | 11 => exact Certificate11.demand_valid
-  | 12 => exact Certificate12.demand_valid
-  | 13 => exact Certificate13.demand_valid
-  | 14 => exact Certificate14.demand_valid
-  | 15 => exact Certificate15.demand_valid
-  | 16 => exact Certificate16.demand_valid
-  | 17 => exact Certificate17.demand_valid
-  | 18 => exact Certificate18.demand_valid
-  | 19 => exact Certificate19.demand_valid
-  | 20 => exact Certificate20.demand_valid
+  · simpa [basePrefixThresholds] using Certificate00.demand_valid
+  · simpa [basePrefixThresholds] using Certificate01.demand_valid
+  · simpa [basePrefixThresholds] using Certificate02.demand_valid
+  · simpa [basePrefixThresholds] using Certificate03.demand_valid
+  · simpa [basePrefixThresholds] using Certificate04.demand_valid
+  · simpa [basePrefixThresholds] using Certificate05.demand_valid
+  · simpa [basePrefixThresholds] using Certificate06.demand_valid
+  · simpa [basePrefixThresholds] using Certificate07.demand_valid
+  · simpa [basePrefixThresholds] using Certificate08.demand_valid
+  · simpa [basePrefixThresholds] using Certificate09.demand_valid
+  · simpa [basePrefixThresholds] using Certificate10.demand_valid
+  · simpa [basePrefixThresholds] using Certificate11.demand_valid
+  · simpa [basePrefixThresholds] using Certificate12.demand_valid
+  · simpa [basePrefixThresholds] using Certificate13.demand_valid
+  · simpa [basePrefixThresholds] using Certificate14.demand_valid
+  · simpa [basePrefixThresholds] using Certificate15.demand_valid
+  · simpa [basePrefixThresholds] using Certificate16.demand_valid
+  · simpa [basePrefixThresholds] using Certificate17.demand_valid
+  · simpa [basePrefixThresholds] using Certificate18.demand_valid
+  · simpa [basePrefixThresholds] using Certificate19.demand_valid
+  · simpa [basePrefixThresholds] using Certificate20.demand_valid
 
 /-- The public aggregate exposes the exact mathematical hypergraph bridge. -/
-theorem basePrefix_cover_semantics := BasePrefix.cover_iff_mathematical
+theorem basePrefix_cover_semantics (threshold : Nat) (cover : Finset (Fin 47)) :
+    Erdos302.BasePrefixCover.Covers BasePrefix.support (BasePrefix.prefixEdges threshold) cover ↔
+      ∀ i j k : Fin 47,
+        Erdos302.ReciprocalTripleInt BasePrefix.denominators[i]
+          BasePrefix.denominators[j] BasePrefix.denominators[k] →
+        BasePrefix.denominators[i] ≤ threshold →
+        BasePrefix.denominators[j] ≤ threshold →
+        BasePrefix.denominators[k] ≤ threshold →
+        ¬Disjoint {i, j, k} cover :=
+  BasePrefix.cover_iff_mathematical threshold cover
 
 end Erdos302.Generated
