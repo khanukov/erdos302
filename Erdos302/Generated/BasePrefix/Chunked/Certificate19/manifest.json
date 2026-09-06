@@ -1,0 +1,11 @@
+{
+  "batch_modules": 547,
+  "batch_size": 16,
+  "certificate": "Certificate19",
+  "chunk_size": 32,
+  "max_batch_claims": 16,
+  "max_batch_owner_fanin": 15,
+  "max_root_batch_fanin": 3,
+  "root_modules": 513,
+  "validity_modules": 513
+}

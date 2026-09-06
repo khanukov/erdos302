@@ -1,0 +1,50 @@
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Validity0070
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0028Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0035Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0037Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0038Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0039Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0065Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0067Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0068Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0069Root
+
+set_option maxHeartbeats 20000000
+
+namespace Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0070Batch000
+open Erdos302.BasePrefixCoverChunk
+open Erdos302.Generated.BasePrefix
+open Erdos302.Generated.BasePrefix.Chunked.Certificate14
+
+def sources : List (Claim 146) := [Validity0028.steps[24].claim, Validity0035.steps[13].claim, Validity0037.steps[17].claim, Validity0038.steps[11].claim, Validity0039.steps[2].claim, Validity0065.steps[4].claim, Validity0067.steps[17].claim, Validity0068.steps[17].claim, Validity0069.steps[16].claim, Validity0069.steps[17].claim, Validity0069.steps[31].claim]
+theorem sources_match : SliceEq Validity0070.imports sources 0 := by decide
+theorem sources_hold : ClaimsHold sources support := by
+  intro claim h
+  simp only [sources, List.mem_cons, List.not_mem_nil, or_false] at h
+  rcases h with rfl | h
+  exact Compose0028Root.all_holds ⟨24, by decide⟩
+  rcases h with rfl | h
+  exact Compose0035Root.all_holds ⟨13, by decide⟩
+  rcases h with rfl | h
+  exact Compose0037Root.all_holds ⟨17, by decide⟩
+  rcases h with rfl | h
+  exact Compose0038Root.all_holds ⟨11, by decide⟩
+  rcases h with rfl | h
+  exact Compose0039Root.all_holds ⟨2, by decide⟩
+  rcases h with rfl | h
+  exact Compose0065Root.all_holds ⟨4, by decide⟩
+  rcases h with rfl | h
+  exact Compose0067Root.all_holds ⟨17, by decide⟩
+  rcases h with rfl | h
+  exact Compose0068Root.all_holds ⟨17, by decide⟩
+  rcases h with rfl | h
+  exact Compose0069Root.all_holds ⟨16, by decide⟩
+  rcases h with rfl | h
+  exact Compose0069Root.all_holds ⟨17, by decide⟩
+  rcases h with rfl
+  exact Compose0069Root.all_holds ⟨31, by decide⟩
+def slots : List Nat := List.range' 0 sources.length
+theorem holds : ImportsHold Validity0070.imports support slots := by
+  exact ImportsHold.ofSliceEq sources_match sources_hold
+
+end Erdos302.Generated.BasePrefix.Chunked.Certificate14.Compose0070Batch000

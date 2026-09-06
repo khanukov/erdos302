@@ -1,0 +1,40 @@
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Validity0174
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0028Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0081Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0171Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0172Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0173Root
+
+set_option maxHeartbeats 20000000
+
+namespace Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0174Batch000
+open Erdos302.BasePrefixCoverChunk
+open Erdos302.Generated.BasePrefix
+open Erdos302.Generated.BasePrefix.Chunked.Certificate18
+
+def sources : List (Claim 146) := [Validity0028.steps[2].claim, Validity0081.steps[6].claim, Validity0081.steps[18].claim, Validity0171.steps[14].claim, Validity0172.steps[2].claim, Validity0173.steps[7].claim, Validity0173.steps[25].claim, Validity0173.steps[31].claim]
+theorem sources_match : SliceEq Validity0174.imports sources 0 := by decide
+theorem sources_hold : ClaimsHold sources support := by
+  intro claim h
+  simp only [sources, List.mem_cons, List.not_mem_nil, or_false] at h
+  rcases h with rfl | h
+  exact Compose0028Root.all_holds ⟨2, by decide⟩
+  rcases h with rfl | h
+  exact Compose0081Root.all_holds ⟨6, by decide⟩
+  rcases h with rfl | h
+  exact Compose0081Root.all_holds ⟨18, by decide⟩
+  rcases h with rfl | h
+  exact Compose0171Root.all_holds ⟨14, by decide⟩
+  rcases h with rfl | h
+  exact Compose0172Root.all_holds ⟨2, by decide⟩
+  rcases h with rfl | h
+  exact Compose0173Root.all_holds ⟨7, by decide⟩
+  rcases h with rfl | h
+  exact Compose0173Root.all_holds ⟨25, by decide⟩
+  rcases h with rfl
+  exact Compose0173Root.all_holds ⟨31, by decide⟩
+def slots : List Nat := List.range' 0 sources.length
+theorem holds : ImportsHold Validity0174.imports support slots := by
+  exact ImportsHold.ofSliceEq sources_match sources_hold
+
+end Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0174Batch000
