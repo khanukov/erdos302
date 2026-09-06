@@ -1,0 +1,149 @@
+name: Recover base-prefix aggregate from verified shards
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Run containing 21 certificate and 47 semantic artifacts
+        required: true
+        type: string
+      source_sha:
+        description: Exact proof-source commit recorded by shard manifests
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  gadgets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Confirm proof sources are unchanged from shard commit
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          git cat-file -e "${SOURCE_SHA}^{commit}"
+          git diff --exit-code "$SOURCE_SHA" HEAD -- Erdos302 lakefile.toml lake-manifest.json lean-toolchain
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build exact Gadgets import closure
+        run: |
+          /usr/bin/time -v lake build +Erdos302.Generated.Gadgets:olean 2>&1 | tee gadgets.log
+          test -s .lake/build/lib/lean/Erdos302/Generated/Gadgets.olean
+      - name: Pack hash-manifested Gadgets closure
+        run: python3 scripts/pack_base_prefix_ci.py --certificate gadgets --output gadgets.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: gadgets-${{ github.sha }}
+          path: |
+            gadgets.tar.gz
+            gadgets.log
+          if-no-files-found: error
+          retention-days: 3
+
+  aggregate:
+    needs: gadgets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Confirm proof sources are unchanged from shard commit
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          git cat-file -e "${SOURCE_SHA}^{commit}"
+          git diff --exit-code "$SOURCE_SHA" HEAD -- Erdos302 lakefile.toml lake-manifest.json lean-toolchain
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Download exact prior-run shards
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.source_run }}
+        run: gh run download "$SOURCE_RUN" --repo "${{ github.repository }}" --dir source-shards
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: gadgets-${{ github.sha }}
+          path: gadget-shard
+      - name: Verify and merge 69 closures fail-closed
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          WORKFLOW_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,tarfile
+          from pathlib import Path
+          root=Path('.')
+          source=list(Path('source-shards').rglob('*.tar.gz'))
+          gadgets=list(Path('gadget-shard').rglob('gadgets.tar.gz'))
+          if len(source)!=68: raise SystemExit(f'expected 68 source archives, got {len(source)}')
+          if len(gadgets)!=1: raise SystemExit(f'expected one Gadgets archive, got {len(gadgets)}')
+          owners={}
+          for archive in sorted(source+gadgets):
+            with tarfile.open(archive,'r:gz') as t:
+              m=json.load(t.extractfile('MANIFEST.json'))
+              expected=os.environ['WORKFLOW_SHA'] if m['certificate']=='gadgets' else os.environ['SOURCE_SHA']
+              if m['schema']!=1 or m['commit']!=expected or not m['lean'].startswith('Lean (version 4.27.0,'):
+                raise SystemExit(f'identity mismatch: {archive}')
+              for e in m['files']:
+                rel=Path(e['path'])
+                if rel.is_absolute() or '..' in rel.parts: raise SystemExit(f'unsafe path: {rel}')
+                member=t.extractfile(str(rel))
+                if member is None: raise SystemExit(f'missing member: {archive}:{rel}')
+                data=member.read()
+                digest=hashlib.sha256(data).hexdigest()
+                if len(data)!=e['bytes'] or digest!=e['sha256']:
+                  raise SystemExit(f'hash mismatch: {archive}:{rel}')
+                out=root/rel
+                if out.exists():
+                  if hashlib.sha256(out.read_bytes()).hexdigest()!=digest: raise SystemExit(f'conflict: {rel}')
+                else:
+                  out.parent.mkdir(parents=True,exist_ok=True); out.write_bytes(data)
+                owners.setdefault(str(rel),[]).append(m['certificate'])
+          receipt={'schema':1,'source_run':'${{ inputs.source_run }}','source_sha':os.environ['SOURCE_SHA'],'workflow_sha':os.environ['WORKFLOW_SHA'],'archives':69,'unique_files':len(owners)}
+          Path('BASE-RECOVERY-MERGE.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(receipt)
+          PY
+      - name: Compile semantic aggregate directly with Lean kernel
+        run: |
+          /usr/bin/time -v lake env lean -s 1048576 Erdos302/Generated/BasePrefix/Semantic.lean \
+            -o .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.olean \
+            -i .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.ilean \
+            2>&1 | tee base-prefix-semantic.log
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.olean
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.ilean
+      - name: Compile final aggregate directly with Lean kernel
+        run: |
+          /usr/bin/time -v lake env lean -s 1048576 Erdos302/Generated/BasePrefix/All.lean \
+            -o .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.olean \
+            -i .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.ilean \
+            2>&1 | tee base-prefix-all.log
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.olean
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.ilean
+      - name: Pack final verified closure
+        run: python3 scripts/pack_base_prefix_ci.py --certificate all --output base-prefix-all.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: base-prefix-all-recovered-${{ github.sha }}
+          path: |
+            base-prefix-all.tar.gz
+            base-prefix-all.log
+            base-prefix-semantic.log
+            BASE-RECOVERY-MERGE.json
+          if-no-files-found: error
+          retention-days: 3
