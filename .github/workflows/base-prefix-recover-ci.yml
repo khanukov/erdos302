@@ -1,6 +1,9 @@
 name: Recover base-prefix aggregate from verified shards
 
 on:
+  push:
+    branches: [agent/base-compact-kernel-proof]
+    paths: [".github/workflows/base-prefix-recover-ci.yml"]
   workflow_dispatch:
     inputs:
       source_run:
@@ -18,6 +21,7 @@ permissions:
 
 jobs:
   gadgets:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -52,6 +56,7 @@ jobs:
           retention-days: 3
 
   aggregate:
+    if: github.event_name == 'workflow_dispatch'
     needs: gadgets
     runs-on: ubuntu-24.04
     timeout-minutes: 360
