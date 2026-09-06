@@ -15,7 +15,42 @@ permissions:
   contents: read
 
 jobs:
-  base-prefix:
+  certificate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix:
+        certificate: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build one kernel-checked base-prefix certificate
+        run: |
+          id=$(printf '%02d' '${{ matrix.certificate }}')
+          /usr/bin/time -v lake build "+Erdos302.Generated.BasePrefix.Certificate${id}:olean" 2>&1 | tee "base-prefix-${id}.log"
+          test -s ".lake/build/lib/lean/Erdos302/Generated/BasePrefix/Certificate${id}.olean"
+      - name: Pack hash-manifested certificate closure
+        run: |
+          id=$(printf '%02d' '${{ matrix.certificate }}')
+          python3 scripts/pack_base_prefix_ci.py --certificate "$id" --output "base-prefix-${id}.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: base-prefix-${{ matrix.certificate }}-${{ github.sha }}
+          path: |
+            base-prefix-*.tar.gz
+            base-prefix-*.log
+          if-no-files-found: error
+          retention-days: 3
+
+  aggregate:
+    needs: certificate
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -24,25 +59,57 @@ jobs:
         with:
           build: false
           use-github-cache: false
-      - name: Report resources
-        run: |
-          nproc
-          free -h
-          df -h .
-          lean --version
       - name: Fetch Mathlib cache
         run: lake exe cache get
-      - name: Build kernel-checked base-prefix aggregate
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: base-prefix-*-${{ github.sha }}
+          path: shards
+      - name: Verify and merge all certificate artifacts
         run: |
-          /usr/bin/time -v lake build "+Erdos302.Generated.BasePrefix.All:olean" 2>&1 | tee base-prefix-build.log
+          python3 - <<'PY'
+          import hashlib,json,tarfile
+          from pathlib import Path
+          root=Path('.')
+          archives=sorted(Path('shards').rglob('base-prefix-*.tar.gz'))
+          if len(archives)!=21: raise SystemExit(f'expected 21 archives, got {len(archives)}')
+          owners={}
+          for archive in archives:
+            with tarfile.open(archive,'r:gz') as t:
+              m=json.load(t.extractfile('MANIFEST.json'))
+              if m['schema']!=1 or m['commit']!='${{ github.sha }}' or not m['lean'].startswith('Lean (version 4.27.0,'):
+                raise SystemExit(f'identity mismatch: {archive}')
+              for e in m['files']:
+                rel=Path(e['path'])
+                if rel.is_absolute() or '..' in rel.parts: raise SystemExit(f'unsafe path: {rel}')
+                data=t.extractfile(str(rel)).read()
+                if len(data)!=e['bytes'] or hashlib.sha256(data).hexdigest()!=e['sha256']:
+                  raise SystemExit(f'hash mismatch: {archive}:{rel}')
+                out=root/rel
+                if out.exists():
+                  if hashlib.sha256(out.read_bytes()).hexdigest()!=e['sha256']: raise SystemExit(f'conflict: {rel}')
+                else:
+                  out.parent.mkdir(parents=True,exist_ok=True); out.write_bytes(data)
+                owners.setdefault(str(rel),[]).append(m['certificate'])
+          Path('BASE-SHARD-MERGE.json').write_text(json.dumps({'schema':1,'archives':len(archives),'unique_files':len(owners),'commit':'${{ github.sha }}'},indent=2)+'\n')
+          print({'archives':len(archives),'unique_files':len(owners)})
+          PY
+      - name: Compile aggregate directly with Lean kernel
+        run: |
+          /usr/bin/time -v lake env lean -s 1048576 Erdos302/Generated/BasePrefix/All.lean \
+            -o .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.olean \
+            -i .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.ilean \
+            2>&1 | tee base-prefix-all.log
           test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.olean
-      - name: Pack hash-manifested artifacts
-        run: python3 scripts/pack_base_prefix_ci.py --output base-prefix-build.tar.gz
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/All.ilean
+      - name: Pack final verified closure
+        run: python3 scripts/pack_base_prefix_ci.py --certificate all --output base-prefix-all.tar.gz
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: base-prefix-all-${{ github.sha }}
           path: |
-            base-prefix-build.tar.gz
-            base-prefix-build.log
+            base-prefix-all.tar.gz
+            base-prefix-all.log
+            BASE-SHARD-MERGE.json
           if-no-files-found: error
           retention-days: 3

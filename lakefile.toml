@@ -3,6 +3,7 @@ defaultTargets = ["Erdos302"]
 
 [[lean_lib]]
 name = "Erdos302"
+moreLeanArgs = ["-s", "1048576"]
 
 [[require]]
 name = "mathlib"
