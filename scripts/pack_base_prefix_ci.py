@@ -14,9 +14,16 @@ def sha(path):
 
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('--certificate',required=True);ap.add_argument('--output',type=Path,required=True);a=ap.parse_args()
- if a.certificate!='all' and (len(a.certificate)!=2 or not a.certificate.isdigit() or not 0<=int(a.certificate)<=20): raise SystemExit('certificate must be 00..20 or all')
+ valid_certificate = (len(a.certificate)==2 and a.certificate.isdigit() and 0<=int(a.certificate)<=20)
+ valid_semantic = (a.certificate.startswith('semantic') and len(a.certificate)==10 and
+                   a.certificate[8:].isdigit() and 0<=int(a.certificate[8:])<=46)
+ if a.certificate not in {'all','semantic-all'} and not valid_certificate and not valid_semantic:
+  raise SystemExit('certificate must be 00..20, semantic00..semantic46, semantic-all, or all')
  files=sorted(p for p in LIB.rglob('*') if p.is_file() and p.suffix in {'.olean','.ilean'} and p.stat().st_size>0)
- final=LIB/('Generated/BasePrefix/All.olean' if a.certificate=='all' else f'Generated/BasePrefix/Certificate{a.certificate}.olean')
+ if a.certificate == 'all': final=LIB/'Generated/BasePrefix/All.olean'
+ elif a.certificate == 'semantic-all': final=LIB/'Generated/BasePrefix/Semantic.olean'
+ elif valid_semantic: final=LIB/f'Generated/BasePrefix/SemanticChunks/Complete{a.certificate[8:]}.olean'
+ else: final=LIB/f'Generated/BasePrefix/Certificate{a.certificate}.olean'
  if final not in files: raise SystemExit(f'missing final artifact: {final}')
  manifest={'schema':1,'commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'certificate':a.certificate,'files':[{'path':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in files]}
  with tempfile.TemporaryDirectory() as td:

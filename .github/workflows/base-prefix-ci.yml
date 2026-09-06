@@ -49,8 +49,42 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+  semantic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix:
+        chunk: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Build one kernel-checked semantic chunk
+        run: |
+          id=$(printf '%02d' '${{ matrix.chunk }}')
+          /usr/bin/time -v lake build "+Erdos302.Generated.BasePrefix.SemanticChunks.Complete${id}:olean" 2>&1 | tee "semantic-${id}.log"
+          test -s ".lake/build/lib/lean/Erdos302/Generated/BasePrefix/SemanticChunks/Complete${id}.olean"
+      - name: Pack hash-manifested semantic closure
+        run: |
+          id=$(printf '%02d' '${{ matrix.chunk }}')
+          python3 scripts/pack_base_prefix_ci.py --certificate "semantic${id}" --output "semantic-${id}.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: semantic-${{ matrix.chunk }}-${{ github.sha }}
+          path: |
+            semantic-*.tar.gz
+            semantic-*.log
+          if-no-files-found: error
+          retention-days: 3
+
   aggregate:
-    needs: certificate
+    needs: [certificate, semantic]
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -63,7 +97,7 @@ jobs:
         run: lake exe cache get
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          pattern: base-prefix-*-${{ github.sha }}
+          pattern: '*-${{ github.sha }}'
           path: shards
       - name: Verify and merge all certificate artifacts
         run: |
@@ -71,8 +105,8 @@ jobs:
           import hashlib,json,tarfile
           from pathlib import Path
           root=Path('.')
-          archives=sorted(Path('shards').rglob('base-prefix-*.tar.gz'))
-          if len(archives)!=21: raise SystemExit(f'expected 21 archives, got {len(archives)}')
+          archives=sorted(Path('shards').rglob('*.tar.gz'))
+          if len(archives)!=68: raise SystemExit(f'expected 68 archives, got {len(archives)}')
           owners={}
           for archive in archives:
             with tarfile.open(archive,'r:gz') as t:
@@ -94,6 +128,14 @@ jobs:
           Path('BASE-SHARD-MERGE.json').write_text(json.dumps({'schema':1,'archives':len(archives),'unique_files':len(owners),'commit':'${{ github.sha }}'},indent=2)+'\n')
           print({'archives':len(archives),'unique_files':len(owners)})
           PY
+      - name: Compile semantic aggregate directly with Lean kernel
+        run: |
+          /usr/bin/time -v lake env lean -s 1048576 Erdos302/Generated/BasePrefix/Semantic.lean \
+            -o .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.olean \
+            -i .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.ilean \
+            2>&1 | tee base-prefix-semantic.log
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.olean
+          test -s .lake/build/lib/lean/Erdos302/Generated/BasePrefix/Semantic.ilean
       - name: Compile aggregate directly with Lean kernel
         run: |
           /usr/bin/time -v lake env lean -s 1048576 Erdos302/Generated/BasePrefix/All.lean \
@@ -110,6 +152,7 @@ jobs:
           path: |
             base-prefix-all.tar.gz
             base-prefix-all.log
+            base-prefix-semantic.log
             BASE-SHARD-MERGE.json
           if-no-files-found: error
           retention-days: 3
