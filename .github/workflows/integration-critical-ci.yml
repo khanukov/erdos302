@@ -21,8 +21,11 @@ on:
 permissions:
   contents: read
 
+env:
+  STAGING_TAG: integration-overlay-20260907
+
 jobs:
-  critical-path:
+  semantic-stage:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -42,7 +45,6 @@ jobs:
       - name: Download verified integration overlay
         env:
           GH_TOKEN: ${{ github.token }}
-          STAGING_TAG: integration-overlay-20260907
         run: |
           set -euo pipefail
           mkdir -p staging-parts
@@ -69,7 +71,7 @@ jobs:
           semantic_after=$(sha256sum Erdos302/Generated/SemanticPackingChecks*.lean Erdos302/Generated/SemanticChecks.lean | sha256sum)
           test "$before" = "$after"
           test "$semantic_before" = "$semantic_after"
-      - name: Compile critical path with Lean kernel
+      - name: Compile semantic stage with Lean kernel
         run: |
           set -euo pipefail
           compile() {
@@ -97,6 +99,84 @@ jobs:
             compile "Erdos302/Generated/SemanticPackingChecksGroup${i}.lean"
           done
           compile Erdos302/Generated/SemanticChecks.lean
+      - name: Pack semantic stage outputs
+        run: |
+          set -euo pipefail
+          tar -cf semantic-stage.tar \
+            .lake/build/lib/lean/Erdos302/Generated/PackingCertificateLevelsNat.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Valuation.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Asymptotic/PeriodicCount.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Asymptotic/Multipliers.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Asymptotic/FiniteOmission.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Asymptotic/Thresholds.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Asymptotic/ShiftSum.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Asymptotic/Interface.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/SemanticBridge.{o,i}lean \
+            .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.olean \
+            .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.ilean \
+            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.{o,i}lean
+          zstd -T0 -10 semantic-stage.tar -o semantic-stage.tar.zst
+          zstd -t semantic-stage.tar.zst
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: semantic-stage-${{ github.sha }}
+          path: semantic-stage.tar.zst
+          if-no-files-found: error
+          retention-days: 3
+
+  downstream:
+    needs: semantic-stage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+      - name: Download verified integration overlay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p staging-parts
+          gh release download "$STAGING_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'integration-overlay.part-*' --dir staging-parts
+          python3 - <<'PY'
+          from pathlib import Path
+          parts=sorted(Path('staging-parts').glob('integration-overlay.part-*'))
+          if not parts: raise SystemExit('no staging parts')
+          with open('integration-overlay.tar.zst','wb') as out:
+              for p in parts: out.write(p.read_bytes())
+          PY
+          zstd -t integration-overlay.tar.zst
+          zstd -d -q -c integration-overlay.tar.zst | tar -xf -
+          python3 scripts/verify_integration_overlay.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: semantic-stage-${{ github.sha }}
+          path: semantic-stage-download
+      - name: Verify and restore semantic stage
+        run: |
+          set -euo pipefail
+          zstd -t semantic-stage-download/semantic-stage.tar.zst
+          zstd -d -q -c semantic-stage-download/semantic-stage.tar.zst | tar -xf -
+          test -s .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.olean
+      - name: Compile downstream critical path with Lean kernel
+        run: |
+          set -euo pipefail
+          compile() {
+            src="$1"
+            mod="${src%.lean}"
+            mkdir -p ".lake/build/lib/lean/$(dirname "$mod")"
+            /usr/bin/time -v lake env lean -s 1048576 "$src" \
+              -o ".lake/build/lib/lean/${mod}.olean" \
+              -i ".lake/build/lib/lean/${mod}.ilean" \
+              2>&1 | tee "$(basename "$mod").log"
+            test -s ".lake/build/lib/lean/${mod}.olean"
+            test -s ".lake/build/lib/lean/${mod}.ilean"
+          }
           compile Erdos302/Packing/PrefixTransport.lean
           compile Erdos302/Packing/PrefixOmission.lean
           compile Erdos302/Asymptotic/Endpoint.lean
