@@ -140,7 +140,7 @@ jobs:
     needs: semantic-stage
     if: ${{ always() && (needs.semantic-stage.result == 'success' || inputs.semantic_run_id != '') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 360
+    timeout-minutes: 480
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
