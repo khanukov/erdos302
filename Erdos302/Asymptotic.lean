@@ -10,26 +10,23 @@ import Erdos302.Asymptotic.Integration
 /-!
 # Analytic/asymptotic endpoint for the Erdős 302 upper bound
 
-**Draft.**  These modules have not been elaborated; see
-`docs/UPPER_ASYMPTOTIC_ENDPOINT.md` for what was and was not checked.  This
-root is deliberately not imported from `Erdos302.lean`.
+The complete chain is elaborated by the pinned `integration-critical-ci.yml`
+workflow with Lean 4.27.0.  The root remains separate from `Erdos302.lean`
+because replaying the generated finite certificates requires a high-memory
+build; importing this root is the explicit upper-bound verification target.
 
-Module map (each layer depends only on the layers above it):
+Module map:
 
-| module | content | elaborates today? |
-|---|---|---|
-| `Interface` | local `NoUnitFractionTriple` / `IsMaxNoTripleCard`, bridged to `TripleFree` and `f302` | unchecked, self-contained |
-| `PeriodicCount` | fixed-`R` residue-class counting; `R = 2310` reduced residues | unchecked, self-contained |
-| `Multipliers` | `shift x · u` parameterisation, `ValuationAdmissible`, injectivity, multiplier counts | unchecked, self-contained |
-| `FiniteOmission` | `Finset` dilates, their disjointness, the certificate `Prop`, the finite omission inequality, level-one anti-vacuity | unchecked, self-contained |
-| `ShiftSum` | five-fold geometric factorisation and the limiting density `23520/110143` | unchecked, self-contained |
-| `Thresholds` | the 274-level ledger as a `Finset.range`-indexed family with exact sum `3251333/4989600` | unchecked, self-contained |
-| `Endpoint` | the eventual-epsilon theorem, *conditional* on an explicit hypothesis | unchecked, self-contained |
-| `Integration` | expected imports; the **public hypothesis-free endpoint** | **no — two unresolved external names** |
-
-"Self-contained" means: every name the module mentions exists, in `Mathlib` or
-in a committed `Erdos302.*` module.  It does **not** mean the module compiles;
-nothing here has been elaborated.
+| module | content |
+|---|---|
+| `Interface` | local `NoUnitFractionTriple` / `IsMaxNoTripleCard`, bridged to `TripleFree` and `f302` |
+| `PeriodicCount` | fixed-`R` residue-class counting; `R = 2310` reduced residues |
+| `Multipliers` | `shift x · u` parameterisation, `ValuationAdmissible`, injectivity, multiplier counts |
+| `FiniteOmission` | `Finset` dilates, disjointness, the certificate `Prop`, and the finite omission inequality |
+| `ShiftSum` | five-fold geometric factorisation and limiting density `23520/110143` |
+| `Thresholds` | the 274-level ledger with exact sum `3251333/4989600` |
+| `Endpoint` | the eventual-epsilon theorem conditional on a finite omission certificate |
+| `Integration` | the closed finite certificate and public hypothesis-free endpoint |
 
 ## Where the finite packing input enters
 

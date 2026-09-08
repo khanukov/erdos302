@@ -3,6 +3,8 @@ import Erdos302.Packing.PrefixTransportCore
 
 namespace Erdos302.Packing
 
+open Erdos302.Asymptotic
+
 /-- Direct semantic-checker specialization. -/
 theorem certifiedPhysicalOmissionLowerBound_of_tripleFree
     (hbase : Semantic.BasePrefixDemands Generated.semanticContext)

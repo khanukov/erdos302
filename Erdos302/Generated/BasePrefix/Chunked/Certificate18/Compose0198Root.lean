@@ -1,0 +1,28 @@
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0198Batch000
+import Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0198Batch001
+
+set_option maxHeartbeats 20000000
+
+namespace Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0198Root
+open Erdos302.BasePrefixCoverChunk
+open Erdos302.Generated.BasePrefix
+open Erdos302.Generated.BasePrefix.Chunked.Certificate18
+
+def slots : List Nat := Compose0198Batch000.slots ++ Compose0198Batch001.slots
+theorem holds : ImportsHold Validity0198.imports support slots := by
+  exact ImportsHold.append (Compose0198Batch000.holds) (Compose0198Batch001.holds)
+
+theorem slots_cover : slots = List.range Validity0198.imports.size := by decide
+
+theorem all_imports : ∀ i : Fin Validity0198.imports.size,
+    (Validity0198.imports[i]).Holds support := by
+  intro i
+  apply holds i
+  rw [slots_cover]
+  exact List.mem_range.mpr i.isLt
+
+theorem all_holds (i : Fin Validity0198.steps.size) :
+    (Validity0198.steps[i].claim).Holds support :=
+  chunk_sound support Validity0198.chunk Validity0198.chunk_valid all_imports i
+
+end Erdos302.Generated.BasePrefix.Chunked.Certificate18.Compose0198Root

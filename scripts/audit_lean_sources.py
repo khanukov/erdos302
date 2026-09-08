@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 FORBIDDEN = re.compile(
     r"(?<![A-Za-z0-9_])"
-    r"(sorryAx|sorry|admit|axiom|opaque|unsafe|native_decide|Lean\.ofReduceBool)"
+    r"(sorryAx|sorry|admit|axiom|opaque|unsafe|external|native_decide|Lean\.ofReduceBool)"
     r"(?![A-Za-z0-9_])"
 )
 
@@ -67,10 +68,12 @@ def code_only(text: str) -> str:
 
 
 def main() -> None:
-    sources = sorted((ROOT / "Erdos302").rglob("*.lean"))
-    root_module = ROOT / "Erdos302.lean"
-    if root_module.is_file():
-        sources.insert(0, root_module)
+    names = subprocess.check_output(
+        ["git", "ls-files", "Erdos302.lean", "Erdos302/**/*.lean"],
+        cwd=ROOT,
+        text=True,
+    ).splitlines()
+    sources = [ROOT / name for name in names]
     findings: list[str] = []
     for path in sources:
         clean = code_only(path.read_text(encoding="utf-8"))

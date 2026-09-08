@@ -8,7 +8,12 @@ on:
       - "Erdos302/Generated/PackingCertificateLevelsNat*.lean"
       - "Erdos302/Generated/SemanticPackingChecks*.lean"
       - "Erdos302/Generated/SemanticChecks.lean"
+      - "Erdos302/Generated/SemanticContext.lean"
+      - "Erdos302/Generated/SemanticBaseAdapter.lean"
+      - "Erdos302/Generated/BasePrefix/**"
       - "Erdos302/SemanticBridge.lean"
+      - "Erdos302/SemanticConfig.lean"
+      - "Erdos302/BasePrefixCover*.lean"
       - "Erdos302/Packing/PrefixTransport.lean"
       - "Erdos302/Packing/PrefixTransportCore.lean"
       - "Erdos302/Packing/PrefixOmission.lean"
@@ -17,6 +22,8 @@ on:
       - "scripts/generate_packing_level_bridge.py"
       - "scripts/generate_semantic_packing_bridge.py"
       - "scripts/audit_lean_sources.py"
+      - "scripts/audit_project_imports.py"
+      - "scripts/assemble_integration_overlay.py"
       - "scripts/verify_integration_overlay.py"
   workflow_dispatch:
     inputs:
@@ -61,14 +68,7 @@ jobs:
           set -euo pipefail
           mkdir -p staging-parts
           gh release download "$STAGING_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'integration-overlay.part-*' --dir staging-parts
-          python3 - <<'PY'
-          from pathlib import Path
-          parts=sorted(Path('staging-parts').glob('integration-overlay.part-*'))
-          if not parts: raise SystemExit('no staging parts')
-          with open('integration-overlay.tar.zst','wb') as out:
-              for p in parts: out.write(p.read_bytes())
-          print({'parts':len(parts),'bytes':Path('integration-overlay.tar.zst').stat().st_size})
-          PY
+          python3 scripts/assemble_integration_overlay.py
           zstd -t integration-overlay.tar.zst
           zstd -d -q -c integration-overlay.tar.zst | tar -xf -
           python3 scripts/verify_integration_overlay.py
@@ -156,13 +156,7 @@ jobs:
           set -euo pipefail
           mkdir -p staging-parts
           gh release download "$STAGING_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'integration-overlay.part-*' --dir staging-parts
-          python3 - <<'PY'
-          from pathlib import Path
-          parts=sorted(Path('staging-parts').glob('integration-overlay.part-*'))
-          if not parts: raise SystemExit('no staging parts')
-          with open('integration-overlay.tar.zst','wb') as out:
-              for p in parts: out.write(p.read_bytes())
-          PY
+          python3 scripts/assemble_integration_overlay.py
           zstd -t integration-overlay.tar.zst
           zstd -d -q -c integration-overlay.tar.zst | tar -xf -
           python3 scripts/verify_integration_overlay.py
@@ -208,8 +202,10 @@ jobs:
           sudo mkswap /swapfile-extra
           sudo swapon /swapfile-extra
           free -h
-      - name: Reject project-local proof escapes
-        run: python3 scripts/audit_lean_sources.py
+      - name: Reject project-local proof escapes and unresolved imports
+        run: |
+          python3 scripts/audit_lean_sources.py
+          python3 scripts/audit_project_imports.py
       - name: Compile downstream critical path with Lean kernel
         run: |
           set -euo pipefail
@@ -235,9 +231,11 @@ jobs:
           set -euo pipefail
           cat > AxiomAudit.lean <<'EOF'
           import Erdos302.Asymptotic
+          #print axioms Erdos302.Generated.repeatedThresholdLevelAt
           #print axioms Erdos302.Packing.prefix_omission_certificate
           #print axioms Erdos302.Asymptotic.erdos302Certificate_holds
           #print axioms Erdos302.Asymptotic.erdos_302_upper_140803024_163562355
+          #print axioms Erdos302.Asymptotic.f302_upper_140803024_163562355
           EOF
           lake env lean -s 1048576 AxiomAudit.lean 2>&1 | tee AxiomAudit.log
           python3 - <<'PY'
@@ -246,9 +244,9 @@ jobs:
           text = Path('AxiomAudit.log').read_text()
           found = re.findall(r"depends on axioms: (\[[^\n]*\])", text)
           expected = '[propext, Classical.choice, Quot.sound]'
-          if found != [expected, expected, expected]:
+          if found != [expected] * 5:
               raise SystemExit(f'unexpected axiom audit: {found!r}')
-          print('axiom_audit_green declarations=3 trusted=' + expected)
+          print('axiom_audit_green declarations=5 trusted=' + expected)
           PY
       - name: Build output manifest
         run: |
@@ -277,7 +275,17 @@ jobs:
           ]
           files=[Path('.lake/build/lib/lean')/(s+ext) for s in stems for ext in ('.olean','.ilean')]
           def h(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-          m={'schema':1,'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'axiom_audit_sha256':h(Path('AxiomAudit.log')),'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files]}
+          metadata=[Path('lean-toolchain'),Path('lakefile.toml'),Path('lake-manifest.json'),Path('.github/workflows/integration-critical-ci.yml')]
+          m={
+            'schema':2,
+            'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+            'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip(),
+            'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],
+            'overlay':{'bytes':2972900109,'sha256':'c0dfb31167c18787dd3352f728cd1aa44776697ce9263a8294c3ff72d186c05b'},
+            'axiom_audit_sha256':h(Path('AxiomAudit.log')),
+            'metadata':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in metadata],
+            'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files],
+          }
           Path('INTEGRATION-MANIFEST.json').write_text(json.dumps(m,indent=2)+'\n')
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -309,4 +317,34 @@ jobs:
             *.log
           if-no-files-found: error
           include-hidden-files: true
-          retention-days: 3
+          retention-days: 90
+
+  verify-artifact:
+    needs: downstream
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: integration-critical-${{ github.sha }}
+          path: verified-download
+      - name: Verify complete published artifact
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('verified-download')
+          manifest=json.loads((root/'INTEGRATION-MANIFEST.json').read_text())
+          if manifest.get('schema') != 2:
+              raise SystemExit('unexpected manifest schema')
+          def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+          for entry in manifest['files']:
+              path=root/entry['path']
+              if not path.is_file(): raise SystemExit(f'missing artifact member: {entry["path"]}')
+              if path.stat().st_size != entry['bytes'] or digest(path) != entry['sha256']:
+                  raise SystemExit(f'bad artifact member: {entry["path"]}')
+          audit=root/'AxiomAudit.log'
+          if digest(audit) != manifest['axiom_audit_sha256']:
+              raise SystemExit('axiom audit digest mismatch')
+          print(f"artifact_verification_green files={len(manifest['files'])} commit={manifest['commit']}")
+          PY

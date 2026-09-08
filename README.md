@@ -117,15 +117,16 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 | \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
 | Derived \(D(720)\) finite two-tail data and arithmetic | exact exhaustive standard-library verifier |
 | Derived \(D(720)\) multiplier/disjoint-prefix transfer | human comparison argument in the manuscript |
-| Upper asymptotic disjoint-block argument | human proof in the manuscript |
-| Upper end-to-end Lean formalization | not complete |
+| Upper asymptotic disjoint-block argument | Lean-kernel checked |
+| Upper end-to-end Lean formalization | complete for the stated `140803024/163562355` eventual upper bound; high-memory CI target |
 | Lower analytic input | pinned cached `.olean` closure; full Lean-kernel replay runs on `main`, tag, and manual Verify events but is skipped on pull requests; the automated publisher accepts only a successful push-to-`main` run for the exact commit; serialization trusted; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
 
-Generated-data work toward the upper Lean proof must satisfy the
-[upper-formalization gate](docs/UPPER_LEAN_FORMALIZATION_GATE.md). Compiling
-shape-checked tables is a WIP milestone, not an end-to-end certificate proof.
+Generated proof data for the upper theorem is guarded by deterministic
+regeneration, mutation tests, a comment-aware proof-escape scan, exact
+artifact hashes, and a final `#print axioms` allowlist in the dedicated
+high-memory integration workflow.
 
 The lower theorem establishes
 
