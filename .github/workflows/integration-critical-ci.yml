@@ -6,11 +6,14 @@ on:
     paths:
       - ".github/workflows/integration-critical-ci.yml"
       - "Erdos302/Generated/PackingCertificateLevelsNat*.lean"
+      - "Erdos302/Generated/SemanticPackingChecks*.lean"
+      - "Erdos302/Generated/SemanticChecks.lean"
       - "Erdos302/Packing/PrefixTransport.lean"
       - "Erdos302/Packing/PrefixOmission.lean"
       - "Erdos302/Asymptotic.lean"
       - "Erdos302/Asymptotic/Integration.lean"
       - "scripts/generate_packing_level_bridge.py"
+      - "scripts/generate_semantic_packing_bridge.py"
       - "scripts/verify_integration_overlay.py"
   workflow_dispatch:
 
@@ -58,9 +61,13 @@ jobs:
         run: |
           set -euo pipefail
           before=$(sha256sum Erdos302/Generated/PackingCertificateLevelsNat*.lean | sha256sum)
+          semantic_before=$(sha256sum Erdos302/Generated/SemanticPackingChecks*.lean Erdos302/Generated/SemanticChecks.lean | sha256sum)
           python3 scripts/generate_packing_level_bridge.py
+          python3 scripts/generate_semantic_packing_bridge.py
           after=$(sha256sum Erdos302/Generated/PackingCertificateLevelsNat*.lean | sha256sum)
+          semantic_after=$(sha256sum Erdos302/Generated/SemanticPackingChecks*.lean Erdos302/Generated/SemanticChecks.lean | sha256sum)
           test "$before" = "$after"
+          test "$semantic_before" = "$semantic_after"
       - name: Compile critical path with Lean kernel
         run: |
           set -euo pipefail
@@ -83,6 +90,12 @@ jobs:
           compile Erdos302/Asymptotic/Thresholds.lean
           compile Erdos302/Asymptotic/ShiftSum.lean
           compile Erdos302/Asymptotic/Interface.lean
+          compile Erdos302/SemanticBridge.lean
+          compile Erdos302/Generated/SemanticPackingChecksCore.lean
+          for i in $(seq 0 13); do
+            compile "Erdos302/Generated/SemanticPackingChecksGroup${i}.lean"
+          done
+          compile Erdos302/Generated/SemanticChecks.lean
           compile Erdos302/Packing/PrefixTransport.lean
           compile Erdos302/Packing/PrefixOmission.lean
           compile Erdos302/Asymptotic/Endpoint.lean
@@ -102,6 +115,10 @@ jobs:
             'Erdos302/Asymptotic/Thresholds',
             'Erdos302/Asymptotic/ShiftSum',
             'Erdos302/Asymptotic/Interface',
+            'Erdos302/SemanticBridge',
+            'Erdos302/Generated/SemanticPackingChecksCore',
+            *[f'Erdos302/Generated/SemanticPackingChecksGroup{i}' for i in range(14)],
+            'Erdos302/Generated/SemanticChecks',
             'Erdos302/Packing/PrefixTransport',
             'Erdos302/Packing/PrefixOmission',
             'Erdos302/Asymptotic/Endpoint',
@@ -121,6 +138,12 @@ jobs:
             .lake/build/lib/lean/Erdos302/Generated/PackingCertificateLevelsNat.ilean
             .lake/build/lib/lean/Erdos302/Valuation.olean
             .lake/build/lib/lean/Erdos302/Valuation.ilean
+            .lake/build/lib/lean/Erdos302/SemanticBridge.olean
+            .lake/build/lib/lean/Erdos302/SemanticBridge.ilean
+            .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.olean
+            .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.ilean
+            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.olean
+            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.ilean
             .lake/build/lib/lean/Erdos302/Asymptotic/*.olean
             .lake/build/lib/lean/Erdos302/Asymptotic/*.ilean
             .lake/build/lib/lean/Erdos302/Packing/PrefixTransport.olean
