@@ -10,11 +10,13 @@ on:
       - "Erdos302/Generated/SemanticChecks.lean"
       - "Erdos302/SemanticBridge.lean"
       - "Erdos302/Packing/PrefixTransport.lean"
+      - "Erdos302/Packing/PrefixTransportCore.lean"
       - "Erdos302/Packing/PrefixOmission.lean"
       - "Erdos302/Asymptotic.lean"
       - "Erdos302/Asymptotic/Integration.lean"
       - "scripts/generate_packing_level_bridge.py"
       - "scripts/generate_semantic_packing_bridge.py"
+      - "scripts/audit_lean_sources.py"
       - "scripts/verify_integration_overlay.py"
   workflow_dispatch:
     inputs:
@@ -178,7 +180,20 @@ jobs:
           set -euo pipefail
           test -n "$ARTIFACT_SHA"
           git fetch origin "$ARTIFACT_SHA" --depth=1
-          git diff --quiet "$ARTIFACT_SHA" HEAD -- Erdos302 scripts/generate_packing_level_bridge.py scripts/generate_semantic_packing_bridge.py
+          git diff --quiet "$ARTIFACT_SHA" HEAD -- \
+            Erdos302/Generated/PackingCertificateLevelsNat*.lean \
+            Erdos302/Generated/SemanticPackingChecks*.lean \
+            Erdos302/Generated/SemanticChecks.lean \
+            Erdos302/SemanticBridge.lean \
+            Erdos302/Valuation.lean \
+            Erdos302/Asymptotic/PeriodicCount.lean \
+            Erdos302/Asymptotic/Multipliers.lean \
+            Erdos302/Asymptotic/FiniteOmission.lean \
+            Erdos302/Asymptotic/Thresholds.lean \
+            Erdos302/Asymptotic/ShiftSum.lean \
+            Erdos302/Asymptotic/Interface.lean \
+            scripts/generate_packing_level_bridge.py \
+            scripts/generate_semantic_packing_bridge.py
       - name: Verify and restore semantic stage
         run: |
           set -euo pipefail
@@ -193,6 +208,8 @@ jobs:
           sudo mkswap /swapfile-extra
           sudo swapon /swapfile-extra
           free -h
+      - name: Reject project-local proof escapes
+        run: python3 scripts/audit_lean_sources.py
       - name: Compile downstream critical path with Lean kernel
         run: |
           set -euo pipefail
@@ -207,11 +224,32 @@ jobs:
             test -s ".lake/build/lib/lean/${mod}.olean"
             test -s ".lake/build/lib/lean/${mod}.ilean"
           }
+          compile Erdos302/Packing/PrefixTransportCore.lean
           compile Erdos302/Packing/PrefixTransport.lean
           compile Erdos302/Packing/PrefixOmission.lean
           compile Erdos302/Asymptotic/Endpoint.lean
           compile Erdos302/Asymptotic/Integration.lean
           compile Erdos302/Asymptotic.lean
+      - name: Audit final theorem axioms
+        run: |
+          set -euo pipefail
+          cat > AxiomAudit.lean <<'EOF'
+          import Erdos302.Asymptotic
+          #print axioms Erdos302.Packing.prefix_omission_certificate
+          #print axioms Erdos302.Asymptotic.erdos302Certificate_holds
+          #print axioms Erdos302.Asymptotic.erdos_302_upper_140803024_163562355
+          EOF
+          lake env lean -s 1048576 AxiomAudit.lean 2>&1 | tee AxiomAudit.log
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path('AxiomAudit.log').read_text()
+          found = re.findall(r"depends on axioms: (\[[^\n]*\])", text)
+          expected = '[propext, Classical.choice, Quot.sound]'
+          if found != [expected, expected, expected]:
+              raise SystemExit(f'unexpected axiom audit: {found!r}')
+          print('axiom_audit_green declarations=3 trusted=' + expected)
+          PY
       - name: Build output manifest
         run: |
           python3 - <<'PY'
@@ -230,6 +268,7 @@ jobs:
             'Erdos302/Generated/SemanticPackingChecksCore',
             *[f'Erdos302/Generated/SemanticPackingChecksGroup{i}' for i in range(14)],
             'Erdos302/Generated/SemanticChecks',
+            'Erdos302/Packing/PrefixTransportCore',
             'Erdos302/Packing/PrefixTransport',
             'Erdos302/Packing/PrefixOmission',
             'Erdos302/Asymptotic/Endpoint',
@@ -238,7 +277,7 @@ jobs:
           ]
           files=[Path('.lake/build/lib/lean')/(s+ext) for s in stems for ext in ('.olean','.ilean')]
           def h(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-          m={'schema':1,'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files]}
+          m={'schema':1,'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],'axiom_audit_sha256':h(Path('AxiomAudit.log')),'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files]}
           Path('INTEGRATION-MANIFEST.json').write_text(json.dumps(m,indent=2)+'\n')
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -259,11 +298,15 @@ jobs:
             .lake/build/lib/lean/Erdos302/Asymptotic/*.ilean
             .lake/build/lib/lean/Erdos302/Packing/PrefixTransport.olean
             .lake/build/lib/lean/Erdos302/Packing/PrefixTransport.ilean
+            .lake/build/lib/lean/Erdos302/Packing/PrefixTransportCore.olean
+            .lake/build/lib/lean/Erdos302/Packing/PrefixTransportCore.ilean
             .lake/build/lib/lean/Erdos302/Asymptotic.olean
             .lake/build/lib/lean/Erdos302/Asymptotic.ilean
             .lake/build/lib/lean/Erdos302/Packing/PrefixOmission.olean
             .lake/build/lib/lean/Erdos302/Packing/PrefixOmission.ilean
             INTEGRATION-MANIFEST.json
+            AxiomAudit.log
             *.log
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 3
