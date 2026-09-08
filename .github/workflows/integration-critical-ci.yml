@@ -8,6 +8,7 @@ on:
       - "Erdos302/Generated/PackingCertificateLevelsNat*.lean"
       - "Erdos302/Generated/SemanticPackingChecks*.lean"
       - "Erdos302/Generated/SemanticChecks.lean"
+      - "Erdos302/SemanticBridge.lean"
       - "Erdos302/Packing/PrefixTransport.lean"
       - "Erdos302/Packing/PrefixOmission.lean"
       - "Erdos302/Asymptotic.lean"
