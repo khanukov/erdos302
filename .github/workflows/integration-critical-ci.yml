@@ -288,35 +288,26 @@ jobs:
           }
           Path('INTEGRATION-MANIFEST.json').write_text(json.dumps(m,indent=2)+'\n')
           PY
+      - name: Pack publication artifact
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=json.loads(Path('INTEGRATION-MANIFEST.json').read_text())
+          paths=[entry['path'] for entry in manifest['files']]
+          paths += ['INTEGRATION-MANIFEST.json', 'AxiomAudit.log']
+          paths += sorted(str(p) for p in Path('.').glob('*.log'))
+          Path('publication-files.txt').write_text('\n'.join(dict.fromkeys(paths))+'\n')
+          PY
+          tar -cf integration-critical.tar -T publication-files.txt
+          zstd -T0 -10 integration-critical.tar -o integration-critical.tar.zst
+          zstd -t integration-critical.tar.zst
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: integration-critical-${{ github.sha }}
-          path: |
-            .lake/build/lib/lean/Erdos302/Generated/PackingCertificateLevelsNat.olean
-            .lake/build/lib/lean/Erdos302/Generated/PackingCertificateLevelsNat.ilean
-            .lake/build/lib/lean/Erdos302/Valuation.olean
-            .lake/build/lib/lean/Erdos302/Valuation.ilean
-            .lake/build/lib/lean/Erdos302/SemanticBridge.olean
-            .lake/build/lib/lean/Erdos302/SemanticBridge.ilean
-            .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.olean
-            .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.ilean
-            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.olean
-            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.ilean
-            .lake/build/lib/lean/Erdos302/Asymptotic/*.olean
-            .lake/build/lib/lean/Erdos302/Asymptotic/*.ilean
-            .lake/build/lib/lean/Erdos302/Packing/PrefixTransport.olean
-            .lake/build/lib/lean/Erdos302/Packing/PrefixTransport.ilean
-            .lake/build/lib/lean/Erdos302/Packing/PrefixTransportCore.olean
-            .lake/build/lib/lean/Erdos302/Packing/PrefixTransportCore.ilean
-            .lake/build/lib/lean/Erdos302/Asymptotic.olean
-            .lake/build/lib/lean/Erdos302/Asymptotic.ilean
-            .lake/build/lib/lean/Erdos302/Packing/PrefixOmission.olean
-            .lake/build/lib/lean/Erdos302/Packing/PrefixOmission.ilean
-            INTEGRATION-MANIFEST.json
-            AxiomAudit.log
-            *.log
+          path: integration-critical.tar.zst
           if-no-files-found: error
-          include-hidden-files: true
           retention-days: 90
 
   verify-artifact:
@@ -330,10 +321,13 @@ jobs:
       - name: Verify complete published artifact
         run: |
           set -euo pipefail
+          zstd -t verified-download/integration-critical.tar.zst
+          mkdir verified-download/extracted
+          zstd -dc verified-download/integration-critical.tar.zst | tar -xf - -C verified-download/extracted
           python3 - <<'PY'
           import hashlib,json
           from pathlib import Path
-          root=Path('verified-download')
+          root=Path('verified-download/extracted')
           manifest=json.loads((root/'INTEGRATION-MANIFEST.json').read_text())
           if manifest.get('schema') != 2:
               raise SystemExit('unexpected manifest schema')
