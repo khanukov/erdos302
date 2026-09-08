@@ -163,6 +163,14 @@ jobs:
           zstd -t semantic-stage-download/semantic-stage.tar.zst
           zstd -d -q -c semantic-stage-download/semantic-stage.tar.zst | tar -xf -
           test -s .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.olean
+      - name: Add bounded swap for combined proof closures
+        run: |
+          set -euo pipefail
+          sudo fallocate -l 32G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
       - name: Compile downstream critical path with Lean kernel
         run: |
           set -euo pipefail
