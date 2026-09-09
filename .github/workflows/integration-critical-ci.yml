@@ -8,6 +8,7 @@ on:
       - "Erdos302/Generated/PackingCertificateLevelsNat*.lean"
       - "Erdos302/Generated/SemanticPackingChecks*.lean"
       - "Erdos302/Generated/SemanticChecks.lean"
+      - "Erdos302/Generated/ConfigurationValidity*.lean"
       - "Erdos302/Generated/SemanticContext.lean"
       - "Erdos302/Generated/SemanticBaseAdapter.lean"
       - "Erdos302/Generated/BasePrefix/**"
@@ -21,6 +22,7 @@ on:
       - "Erdos302/Asymptotic/Integration.lean"
       - "scripts/generate_packing_level_bridge.py"
       - "scripts/generate_semantic_packing_bridge.py"
+      - "scripts/generate_configuration_validity_bridge.py"
       - "scripts/audit_lean_sources.py"
       - "scripts/audit_project_imports.py"
       - "scripts/assemble_integration_overlay.py"
@@ -206,6 +208,13 @@ jobs:
         run: |
           python3 scripts/audit_lean_sources.py
           python3 scripts/audit_project_imports.py
+      - name: Regenerate configuration validity bridge
+        run: |
+          set -euo pipefail
+          before=$(sha256sum Erdos302/Generated/ConfigurationValidity*.lean | sha256sum)
+          python3 scripts/generate_configuration_validity_bridge.py
+          after=$(sha256sum Erdos302/Generated/ConfigurationValidity*.lean | sha256sum)
+          test "$before" = "$after"
       - name: Compile downstream critical path with Lean kernel
         run: |
           set -euo pipefail
@@ -220,6 +229,11 @@ jobs:
             test -s ".lake/build/lib/lean/${mod}.olean"
             test -s ".lake/build/lib/lean/${mod}.ilean"
           }
+          compile Erdos302/Generated/ConfigurationValidityCore.lean
+          for i in $(seq 0 14); do
+            compile "Erdos302/Generated/ConfigurationValidityGroup${i}.lean"
+          done
+          compile Erdos302/Generated/ConfigurationValidity.lean
           compile Erdos302/Packing/PrefixTransportCore.lean
           compile Erdos302/Packing/PrefixTransport.lean
           compile Erdos302/Packing/PrefixOmission.lean
@@ -266,6 +280,9 @@ jobs:
             'Erdos302/Generated/SemanticPackingChecksCore',
             *[f'Erdos302/Generated/SemanticPackingChecksGroup{i}' for i in range(14)],
             'Erdos302/Generated/SemanticChecks',
+            'Erdos302/Generated/ConfigurationValidityCore',
+            *[f'Erdos302/Generated/ConfigurationValidityGroup{i}' for i in range(15)],
+            'Erdos302/Generated/ConfigurationValidity',
             'Erdos302/Packing/PrefixTransportCore',
             'Erdos302/Packing/PrefixTransport',
             'Erdos302/Packing/PrefixOmission',

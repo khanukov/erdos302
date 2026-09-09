@@ -1,5 +1,5 @@
 import Erdos302.Asymptotic.FiniteOmission
-import Erdos302.Generated.Configurations
+import Erdos302.Generated.ConfigurationValidity
 import Erdos302.SemanticBridge
 
 /-!
@@ -90,6 +90,14 @@ def RawSupportBelow (c : RawConfiguration) (k : ℕ) : Prop :=
 def rawSupportBoundedByMaximum (c : RawConfiguration) : Bool :=
   c.support.all fun v => decide (v.val ≤ c.maximum.val)
 
+/-- Convert structural validity into the executable support-bound check. -/
+theorem rawSupportBoundedByMaximum_of_valid {c : RawConfiguration}
+    (hvalid : c.valid = true) : rawSupportBoundedByMaximum c = true := by
+  apply List.all_eq_true.mpr
+  intro v hv
+  exact decide_eq_true
+    (RawConfiguration.support_le_maximum_of_valid hvalid hv)
+
 theorem rawSupportBelow_of_boundedByMaximum {c : RawConfiguration} {k : ℕ}
     (hBound : rawSupportBoundedByMaximum c = true)
     (hMaximum : c.maximum.val < k) :
@@ -156,16 +164,16 @@ theorem meetsDemand_prefixPullback_iff {k : ℕ} {cover : Finset ℕ}
 
 /-! ## Fixed generated-data checks -/
 
-set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-/-- `PackingCertificate.Valid` bounds only the cached maximum.  This closed
-kernel computation supplies the separate, indispensable fact that every
-concrete support entry is at most that maximum. -/
+/-- Every concrete support is bounded by its cached maximum.  The generated
+work is split into per-chunk validity checks; this proof only applies the
+generic consequence of structural validity. -/
 theorem concreteConfigurations_support_bounded :
     ∀ i : Fin 14691,
       rawSupportBoundedByMaximum
         (Generated.concreteConfigurationAt i.val) = true := by
-  decide
+  intro i
+  exact rawSupportBoundedByMaximum_of_valid
+    (Generated.concreteConfigurationAt_valid i.isLt)
 
 theorem concreteConfigurationAt_support_bounded {i : ℕ}
     (hi : i < 14691) :
