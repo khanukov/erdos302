@@ -1,0 +1,138 @@
+From 08227ec7db58caf5e82471914325f51f96600369 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 9 Sep 2026 03:39:06 +0000
+Subject: [PATCH] Sync the axiom audit file with CI, drop the dead certificate
+ import, narrow the shard trigger
+
+- Erdos302/Axioms.lean now audits the five endpoint declarations that the
+  integration workflow checks, instead of a stale list that omitted the final
+  theorem; the workflow runs this file rather than a heredoc copy.
+- Erdos302.lean no longer imports Erdos302.Generated.PackingCertificates: the
+  rational trace family is not reachable from the final theorem, so the
+  default lake target stops compiling about 2,500 unused modules.
+- packing-ci-canary.yml triggers only on files the certificate shards import,
+  instead of every Lean file under Erdos302/.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VstGbUBvQMgh9AEzEKDvMz
+---
+ .github/workflows/integration-critical-ci.yml | 11 +----
+ .github/workflows/packing-ci-canary.yml       | 12 ++++-
+ Erdos302.lean                                 |  1 -
+ Erdos302/Axioms.lean                          | 44 +++++--------------
+ 4 files changed, 24 insertions(+), 44 deletions(-)
+
+diff --git a/.github/workflows/integration-critical-ci.yml b/.github/workflows/integration-critical-ci.yml
+index af8a4793e..0d929fba2 100644
+--- a/.github/workflows/integration-critical-ci.yml
++++ b/.github/workflows/integration-critical-ci.yml
+@@ -19,6 +19,7 @@ on:
+       - "Erdos302/Packing/PrefixOmission.lean"
+       - "Erdos302/Asymptotic.lean"
+       - "Erdos302/Asymptotic/Integration.lean"
++      - "Erdos302/Axioms.lean"
+       - "scripts/generate_packing_level_bridge.py"
+       - "scripts/generate_semantic_packing_bridge.py"
+       - "scripts/audit_lean_sources.py"
+@@ -229,15 +230,7 @@ jobs:
+       - name: Audit final theorem axioms
+         run: |
+           set -euo pipefail
+-          cat > AxiomAudit.lean <<'EOF'
+-          import Erdos302.Asymptotic
+-          #print axioms Erdos302.Generated.repeatedThresholdLevelAt
+-          #print axioms Erdos302.Packing.prefix_omission_certificate
+-          #print axioms Erdos302.Asymptotic.erdos302Certificate_holds
+-          #print axioms Erdos302.Asymptotic.erdos_302_upper_140803024_163562355
+-          #print axioms Erdos302.Asymptotic.f302_upper_140803024_163562355
+-          EOF
+-          lake env lean -s 1048576 AxiomAudit.lean 2>&1 | tee AxiomAudit.log
++          lake env lean -s 1048576 Erdos302/Axioms.lean 2>&1 | tee AxiomAudit.log
+           python3 - <<'PY'
+           import re
+           from pathlib import Path
+diff --git a/.github/workflows/packing-ci-canary.yml b/.github/workflows/packing-ci-canary.yml
+index 4842a5bd8..0f7104c59 100644
+--- a/.github/workflows/packing-ci-canary.yml
++++ b/.github/workflows/packing-ci-canary.yml
+@@ -5,7 +5,17 @@ on:
+     branches: [agent/packing-ci-shards]
+     paths:
+       - ".github/workflows/packing-ci-canary.yml"
+-      - "Erdos302/**"
++      - "Erdos302/Certificate.lean"
++      - "Erdos302/CertificateNat.lean"
++      - "Erdos302/CertificateNatSchema.lean"
++      - "Erdos302/CertificateSchema.lean"
++      - "Erdos302/UpperBound.lean"
++      - "Erdos302/Problem.lean"
++      - "Erdos302/Arithmetic.lean"
++      - "Erdos302/Generated/Divisors.lean"
++      - "Erdos302/Generated/Configurations*.lean"
++      - "Erdos302/Generated/PackingConfigurationLinkCatalogue*.lean"
++      - "Erdos302/Generated/PackingCertificateNat*.lean"
+       - "lakefile.toml"
+       - "lake-manifest.json"
+       - "lean-toolchain"
+diff --git a/Erdos302.lean b/Erdos302.lean
+index aff4a022b..97d792081 100644
+--- a/Erdos302.lean
++++ b/Erdos302.lean
+@@ -7,4 +7,3 @@ import Erdos302.Generated.DivisorHypergraph
+ import Erdos302.Generated.PrefixStrength
+ import Erdos302.Generated.Gadgets
+ import Erdos302.Generated.Configurations
+-import Erdos302.Generated.PackingCertificates
+diff --git a/Erdos302/Axioms.lean b/Erdos302/Axioms.lean
+index 016b579af..63b2ab888 100644
+--- a/Erdos302/Axioms.lean
++++ b/Erdos302/Axioms.lean
+@@ -1,34 +1,12 @@
+-import Erdos302
++import Erdos302.Asymptotic
+ 
+-/-! Audit entry point for every kernel-checked upper-bound component currently
+-available in the root project.  The final asymptotic theorem will be added here
+-only after its proof term exists. -/
+-#print axioms Erdos302.reciprocalTripleInt_iff
+-#print axioms Erdos302.card_le_f302
+-#print axioms Erdos302.exists_extremizer
+-#print axioms Erdos302.reciprocalTriple_scale
+-#print axioms Erdos302.tripleFree_omits_scaled_edge
+-#print axioms Erdos302.fractionalPacking_bound
+-#print axioms Erdos302.card_biUnion_eq_sum_card
+-#print axioms Erdos302.card_inter_biUnion_le_sum
+-#print axioms Erdos302.target_upper_constant
+-#print axioms Erdos302.limitingMultiplierDensity_eq
+-#print axioms Erdos302.forcedOmissionDensity_eq
+-#print axioms Erdos302.small_residue_eq
+-#print axioms Erdos302.factorization_eq_of_mul_eq
+-#print axioms Erdos302.Generated.denominator_count
+-#print axioms Erdos302.Generated.prefix_threshold_count
+-#print axioms Erdos302.Generated.weighted_prefix_sum
+-#print axioms Erdos302.Generated.reciprocal_edge_count
+-#print axioms Erdos302.Generated.every_edge_chunk_valid
+-#print axioms Erdos302.Generated.scaled_base_divisor
+-#print axioms Erdos302.Generated.hierarchical_gadget_count
+-#print axioms Erdos302.Generated.total_configuration_count
+-#print axioms Erdos302.divisor_coordinate_eq_of_mul_eq
+-#print axioms Erdos302.disjoint_dilate_coordinates
+-#print axioms Erdos302.dilatedDivisors_disjoint
+-#print axioms Erdos302.Generated.concrete_configuration_count
+-#print axioms Erdos302.Generated.all_configuration_chunks_valid
+-#print axioms Erdos302.PackingCertificate.coverCard_ge
+-#print axioms Erdos302.Generated.allPackingCertificatesSound
+-#print axioms Erdos302.Generated.certifiedPrefixCoverLowerBound
++/-! Axiom audit of the upper-bound endpoint.  This is the file the
++`integration-critical-ci.yml` workflow runs after compiling the critical path;
++its output must list only `propext`, `Classical.choice`, and `Quot.sound` for
++each of the five declarations below.  Importing this module requires the
++generated certificate closure (high-memory build). -/
++#print axioms Erdos302.Generated.repeatedThresholdLevelAt
++#print axioms Erdos302.Packing.prefix_omission_certificate
++#print axioms Erdos302.Asymptotic.erdos302Certificate_holds
++#print axioms Erdos302.Asymptotic.erdos_302_upper_140803024_163562355
++#print axioms Erdos302.Asymptotic.f302_upper_140803024_163562355
+-- 
+2.43.0
+
