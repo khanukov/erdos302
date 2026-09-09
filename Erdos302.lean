@@ -7,4 +7,3 @@ import Erdos302.Generated.DivisorHypergraph
 import Erdos302.Generated.PrefixStrength
 import Erdos302.Generated.Gadgets
 import Erdos302.Generated.Configurations
-import Erdos302.Generated.PackingCertificates
