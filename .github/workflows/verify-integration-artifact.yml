@@ -23,6 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: 77cab654a1764d0bbf3a17dec8b770c607f757d3
           path: verifier-source
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
