@@ -1,0 +1,74 @@
+name: Verify published integration artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Run containing integration-critical artifact"
+        required: true
+        type: string
+      artifact_sha:
+        description: "Exact proof commit named by the artifact"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.artifact_sha }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: integration-critical-${{ inputs.artifact_sha }}
+          path: verified-download
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify exact published artifact
+        env:
+          ARTIFACT_SHA: ${{ inputs.artifact_sha }}
+        run: |
+          set -euo pipefail
+          zstd -t verified-download/integration-critical.tar.zst
+          mkdir verified-download/extracted
+          zstd -dc verified-download/integration-critical.tar.zst | \
+            tar -xf - -C verified-download/extracted
+          python3 - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          root=Path('verified-download/extracted')
+          manifest=json.loads((root/'INTEGRATION-MANIFEST.json').read_text())
+          expected=os.environ['ARTIFACT_SHA']
+          if manifest.get('schema') != 2:
+              raise SystemExit('unexpected manifest schema')
+          if manifest.get('commit') != expected:
+              raise SystemExit('artifact commit mismatch')
+          tree=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()
+          if manifest.get('tree') != tree:
+              raise SystemExit('artifact tree mismatch')
+          def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+          for entry in manifest['metadata']:
+              path=Path(entry['path'])
+              if not path.is_file(): raise SystemExit(f'missing metadata source: {path}')
+              if path.stat().st_size != entry['bytes'] or digest(path) != entry['sha256']:
+                  raise SystemExit(f'bad metadata source: {path}')
+          for entry in manifest['files']:
+              path=root/entry['path']
+              if not path.is_file(): raise SystemExit(f'missing artifact member: {entry["path"]}')
+              if path.stat().st_size != entry['bytes'] or digest(path) != entry['sha256']:
+                  raise SystemExit(f'bad artifact member: {entry["path"]}')
+          audit=root/'AxiomAudit.log'
+          if digest(audit) != manifest['axiom_audit_sha256']:
+              raise SystemExit('axiom audit digest mismatch')
+          expected_axioms='[propext, Classical.choice, Quot.sound]'
+          lines=[line for line in audit.read_text().splitlines() if 'depends on axioms:' in line]
+          if len(lines) != 5 or any(not line.endswith(expected_axioms) for line in lines):
+              raise SystemExit(f'unexpected axiom audit: {lines!r}')
+          print(f"artifact_verification_green files={len(manifest['files'])} commit={expected}")
+          PY
