@@ -32,8 +32,9 @@ would settle it. The one patch that is applied is CI/audit-only
 | tracked generated modules **not** reachable | 3 316 (17 MB) + `Density.lean`, old `Axioms.lean` | import trace |
 
 Fit of the measured shard times: wall ≈ 330 s + 2.9 s × terms, i.e. about
-92 CPU-hours for all 271 certificates, of which roughly half is per-module
-import floor and not proof checking.
+92 wall-hours at ≈2 cores (≈179 CPU-hours) for all 271 certificates, of which
+roughly half is per-module import floor (4.5–5 s of CPU per module) and not
+proof checking. See `UPPER_BOUND_TRUST_CLOSURE_PLAN.md` §9 for corrections.
 
 ## 2. Root cause (all four reviews agree)
 
