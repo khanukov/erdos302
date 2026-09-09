@@ -37,6 +37,14 @@ on:
         description: "Commit SHA used to name and build that artifact"
         required: false
         type: string
+      published_run_id:
+        description: "Verify-only mode: run containing a published artifact"
+        required: false
+        type: string
+      published_artifact_sha:
+        description: "Verify-only mode: exact commit named by the artifact"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -46,7 +54,7 @@ env:
 
 jobs:
   semantic-stage:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.semantic_run_id == '' }}
+    if: ${{ inputs.published_run_id == '' && (github.event_name != 'workflow_dispatch' || inputs.semantic_run_id == '') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -140,7 +148,7 @@ jobs:
 
   downstream:
     needs: semantic-stage
-    if: ${{ always() && (needs.semantic-stage.result == 'success' || inputs.semantic_run_id != '') }}
+    if: ${{ always() && inputs.published_run_id == '' && (needs.semantic-stage.result == 'success' || inputs.semantic_run_id != '') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 480
     steps:
@@ -329,13 +337,18 @@ jobs:
 
   verify-artifact:
     needs: downstream
-    if: ${{ always() && needs.downstream.result == 'success' }}
+    if: ${{ always() && (needs.downstream.result == 'success' || inputs.published_run_id != '') }}
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.published_artifact_sha || github.sha }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: integration-critical-${{ github.sha }}
+          name: integration-critical-${{ inputs.published_artifact_sha || github.sha }}
           path: verified-download
+          run-id: ${{ inputs.published_run_id || github.run_id }}
+          github-token: ${{ github.token }}
       - name: Verify complete published artifact
         run: |
           set -euo pipefail
@@ -343,13 +356,25 @@ jobs:
           mkdir verified-download/extracted
           zstd -dc verified-download/integration-critical.tar.zst | tar -xf - -C verified-download/extracted
           python3 - <<'PY'
-          import hashlib,json
+          import hashlib,json,os,subprocess
           from pathlib import Path
           root=Path('verified-download/extracted')
           manifest=json.loads((root/'INTEGRATION-MANIFEST.json').read_text())
           if manifest.get('schema') != 2:
               raise SystemExit('unexpected manifest schema')
+          expected=os.environ.get('PUBLISHED_ARTIFACT_SHA') or subprocess.check_output(
+              ['git','rev-parse','HEAD'],text=True).strip()
+          if manifest.get('commit') != expected:
+              raise SystemExit('artifact commit mismatch')
+          tree=subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()
+          if manifest.get('tree') != tree:
+              raise SystemExit('artifact tree mismatch')
           def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+          for entry in manifest['metadata']:
+              path=Path(entry['path'])
+              if not path.is_file(): raise SystemExit(f'missing metadata source: {path}')
+              if path.stat().st_size != entry['bytes'] or digest(path) != entry['sha256']:
+                  raise SystemExit(f'bad metadata source: {path}')
           for entry in manifest['files']:
               path=root/entry['path']
               if not path.is_file(): raise SystemExit(f'missing artifact member: {entry["path"]}')
@@ -360,3 +385,5 @@ jobs:
               raise SystemExit('axiom audit digest mismatch')
           print(f"artifact_verification_green files={len(manifest['files'])} commit={manifest['commit']}")
           PY
+        env:
+          PUBLISHED_ARTIFACT_SHA: ${{ inputs.published_artifact_sha }}
