@@ -29,16 +29,9 @@ on:
       - "scripts/verify_integration_overlay.py"
       - "scripts/verify_github_run_provenance.py"
       - "scripts/verify_published_integration_artifact.py"
+      - "scripts/restore_semantic_stage.py"
   workflow_dispatch:
     inputs:
-      semantic_run_id:
-        description: "Completed run containing a verified semantic-stage artifact"
-        required: false
-        type: string
-      artifact_sha:
-        description: "Commit SHA used to name and build that artifact"
-        required: false
-        type: string
       published_run_id:
         description: "Verify-only mode: run containing a published artifact"
         required: false
@@ -57,7 +50,7 @@ env:
 
 jobs:
   semantic-stage:
-    if: ${{ inputs.published_run_id == '' && (github.event_name != 'workflow_dispatch' || inputs.semantic_run_id == '') }}
+    if: ${{ inputs.published_run_id == '' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -127,6 +120,19 @@ jobs:
       - name: Pack semantic stage outputs
         run: |
           set -euo pipefail
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          from scripts.restore_semantic_stage import EXPECTED,digest
+          entries=[]
+          for name in sorted(EXPECTED):
+              path=Path(name)
+              if not path.is_file() or path.is_symlink():
+                  raise SystemExit(f'missing semantic-stage output: {name}')
+              entries.append({'path':name,'bytes':path.stat().st_size,'sha256':digest(path)})
+          manifest={'schema':1,'commit':os.environ['GITHUB_SHA'],'files':entries}
+          Path('SEMANTIC-STAGE-MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          PY
           tar -cf semantic-stage.tar \
             .lake/build/lib/lean/Erdos302/Generated/PackingCertificateLevelsNat.{o,i}lean \
             .lake/build/lib/lean/Erdos302/Valuation.{o,i}lean \
@@ -139,7 +145,8 @@ jobs:
             .lake/build/lib/lean/Erdos302/SemanticBridge.{o,i}lean \
             .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.olean \
             .lake/build/lib/lean/Erdos302/Generated/SemanticPackingChecks*.ilean \
-            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.{o,i}lean
+            .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.{o,i}lean \
+            SEMANTIC-STAGE-MANIFEST.json
           zstd -T0 -10 semantic-stage.tar -o semantic-stage.tar.zst
           zstd -t semantic-stage.tar.zst
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -151,7 +158,7 @@ jobs:
 
   downstream:
     needs: semantic-stage
-    if: ${{ always() && inputs.published_run_id == '' && (needs.semantic-stage.result == 'success' || inputs.semantic_run_id != '') }}
+    if: ${{ needs.semantic-stage.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 480
     steps:
@@ -175,37 +182,19 @@ jobs:
           python3 scripts/verify_integration_overlay.py
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: semantic-stage-${{ inputs.artifact_sha || github.sha }}
+          name: semantic-stage-${{ github.sha }}
           path: semantic-stage-download
-          run-id: ${{ inputs.semantic_run_id || github.run_id }}
+          run-id: ${{ github.run_id }}
           github-token: ${{ github.token }}
-      - name: Verify reused stage source provenance
-        if: ${{ inputs.semantic_run_id != '' }}
-        env:
-          ARTIFACT_SHA: ${{ inputs.artifact_sha }}
-        run: |
-          set -euo pipefail
-          test -n "$ARTIFACT_SHA"
-          git fetch origin "$ARTIFACT_SHA" --depth=1
-          git diff --quiet "$ARTIFACT_SHA" HEAD -- \
-            Erdos302/Generated/PackingCertificateLevelsNat*.lean \
-            Erdos302/Generated/SemanticPackingChecks*.lean \
-            Erdos302/Generated/SemanticChecks.lean \
-            Erdos302/SemanticBridge.lean \
-            Erdos302/Valuation.lean \
-            Erdos302/Asymptotic/PeriodicCount.lean \
-            Erdos302/Asymptotic/Multipliers.lean \
-            Erdos302/Asymptotic/FiniteOmission.lean \
-            Erdos302/Asymptotic/Thresholds.lean \
-            Erdos302/Asymptotic/ShiftSum.lean \
-            Erdos302/Asymptotic/Interface.lean \
-            scripts/generate_packing_level_bridge.py \
-            scripts/generate_semantic_packing_bridge.py
       - name: Verify and restore semantic stage
         run: |
           set -euo pipefail
           zstd -t semantic-stage-download/semantic-stage.tar.zst
-          zstd -d -q -c semantic-stage-download/semantic-stage.tar.zst | tar -xf -
+          zstd -dc semantic-stage-download/semantic-stage.tar.zst > semantic-stage.tar
+          python3 scripts/restore_semantic_stage.py \
+            --tar semantic-stage.tar \
+            --destination . \
+            --expected-sha "$GITHUB_SHA"
           test -s .lake/build/lib/lean/Erdos302/Generated/SemanticChecks.olean
       - name: Add bounded swap for combined proof closures
         run: |
@@ -362,7 +351,8 @@ jobs:
           python3 verifier-source/scripts/verify_github_run_provenance.py \
             --run-json source-run.json \
             --repository "$GITHUB_REPOSITORY" \
-            --expected-sha "$ARTIFACT_SHA"
+            --expected-sha "$ARTIFACT_SHA" \
+            --workflow-file proof-source/.github/workflows/integration-critical-ci.yml
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: integration-critical-${{ inputs.published_artifact_sha || github.sha }}
