@@ -1,16 +1,19 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.1.1-preprint` is a corrected preprint. Preliminary and unrefereed;
-it is not independently verified.** It is released under
-[`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint).
-Zenodo archives the tagged source automatically under concept DOI
-[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assigns
-the immutable version DOI after GitHub release ingestion. The historical
+**Version `0.2.0-preprint` is prepared as the next corrected preprint.
+Preliminary and unrefereed; it is not independently verified.** Its publication
+gate remains closed pending merge, an exact green push-to-`main` Verify run,
+and final author approval. The reserved tag and release URL are
+[`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint).
+Zenodo will archive the tagged source automatically under concept DOI
+[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assign
+a new immutable version DOI after GitHub release ingestion. Historical releases
+[`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint)
+(DOI [`10.5281/zenodo.21989077`](https://doi.org/10.5281/zenodo.21989077)) and
 [`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint)
-and its version DOI
-[`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591) remain
-unchanged.
+(DOI [`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591))
+remain unchanged.
 <!-- release-state:end -->
 
 The repository and manuscript report complete proofs of two partial bounds;
@@ -309,9 +312,10 @@ replacement; earlier public versions remain part of the scientific record.
 
 The finite upper packing was discovered with AI-assisted search. Its finite
 acceptance depends only on the committed exact certificate and verifier, not
-on the floating-point solver used during discovery; the asymptotic passage is
-the human proof in the manuscript. AI systems also assisted with
-code generation, proof audits, and Lean formalization. The external #301/#327
+on the floating-point solver used during discovery. The finite semantics,
+packing certificates, omission argument, and asymptotic endpoint are also
+connected in the source-closed Lean proof. AI systems assisted with code
+generation, proof audits, and Lean formalization. The external #301/#327
 work and the present manuscript are unrefereed. Repository merge is an
 engineering integration event: a fully green commit may be merged while
 remaining explicitly unrefereed, with any referee corrections made in

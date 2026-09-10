@@ -30,8 +30,8 @@ publisher = load_publisher()
 
 
 FINAL_CONTROLS = publisher.ReleaseControls(
-    version="0.1.1-preprint",
-    tag="v0.1.1-corrected-preprint",
+    version="0.2.0-preprint",
+    tag="v0.2.0-corrected-preprint",
     publish_ready="true",
     preprint_doi="10.5281/zenodo.99999999",
     concept_doi="10.5281/zenodo.21966590",
@@ -92,8 +92,8 @@ class GateTests(unittest.TestCase):
     def test_closed_gate_validates_metadata_but_never_constructs_publisher(self) -> None:
         events: list[str] = []
         controls = publisher.ReleaseControls(
-            version="0.1.1-dev",
-            tag="v0.1.1-corrected-preprint",
+            version="0.2.0-dev",
+            tag="v0.2.0-corrected-preprint",
             publish_ready="false",
             preprint_doi="UNRESERVED",
             concept_doi="10.5281/zenodo.21966590",
@@ -134,7 +134,7 @@ class GateTests(unittest.TestCase):
 
     def test_true_gate_refuses_development_version_before_publisher(self) -> None:
         controls = publisher.ReleaseControls(
-            version="0.1.1-dev",
+            version="0.2.0-dev",
             tag=FINAL_CONTROLS.tag,
             publish_ready="true",
             preprint_doi=FINAL_CONTROLS.preprint_doi,
@@ -184,6 +184,16 @@ class GateTests(unittest.TestCase):
             ),
         )
         self.assertEqual(constructed, [controls])
+
+    def test_metadata_refuses_reused_v011_version_doi(self) -> None:
+        builder = publisher.release_builder
+        original = builder.PREPRINT_DOI
+        try:
+            builder.PREPRINT_DOI = builder.PREVIOUS_DOI
+            with self.assertRaisesRegex(RuntimeError, "prior-version DOI"):
+                builder.validate_release_metadata()
+        finally:
+            builder.PREPRINT_DOI = original
 
 
 class ManifestTests(unittest.TestCase):
@@ -416,6 +426,12 @@ class NewReleasePublisher(publisher.Publisher):
         if arguments[:2] == ["release", "create"]:
             if "--draft" not in arguments or "--prerelease" not in arguments:
                 raise AssertionError("new release was not created draft-first")
+            expected_title = f"Erdos 302 corrected preprint {FINAL_CONTROLS.version}"
+            title = arguments[arguments.index("--title") + 1]
+            if title != expected_title:
+                raise AssertionError(
+                    f"release title {title!r} does not equal {expected_title!r}"
+                )
             self.events.append("gh:create-draft")
             return ""
         if arguments[:2] == ["release", "edit"]:

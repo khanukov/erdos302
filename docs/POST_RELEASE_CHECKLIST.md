@@ -1,13 +1,13 @@
 # Post-release and corrected-archive checklist
 
-Use this checklist for a corrected preprint version after the immutable
-priority snapshot. The GitHub release is validated automatically; the enabled
-Zenodo GitHub integration archives its tagged source as the next immutable
+Use this checklist for the v0.2.0 corrected preprint after the immutable
+v0.1.0 and v0.1.1 snapshots. The GitHub release is validated automatically;
+the enabled Zenodo GitHub integration archives its tagged source as the next immutable
 version without rewriting the historical record.
 
 ## 1. Preserve the priority snapshot
 
-The following identifiers are already public and must remain unchanged:
+The following preprint identifiers are already public and must remain unchanged:
 
 - tag: `v0.1.0-priority-preprint`;
 - tagged commit: `e5af32bb10aafb74919c850929154f905b291006`;
@@ -15,29 +15,41 @@ The following identifiers are already public and must remain unchanged:
   <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>;
 - Zenodo version DOI: <https://doi.org/10.5281/zenodo.21966591>;
 - Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>.
+- v0.1.1 tag: `v0.1.1-corrected-preprint`;
+- v0.1.1 tagged commit: `98e61f9fda1b05d0d7733960a9004d7a48e69553`;
+- v0.1.1 version DOI: <https://doi.org/10.5281/zenodo.21989077>.
 
 Never force-push, delete, or retarget that tag. Never replace its release
 assets in place. Corrections belong in a new tag, GitHub Release, Zenodo
 version, and (after submission) arXiv replacement.
 
-The v0.1.0 Zenodo record is an exact tagged-source archive. It does not contain
-the standalone release PDF, verification transcript, release ZIP, or release
-asset manifest. This is a preservation-scope limitation, not evidence that
-those GitHub assets were absent or unchecked.
+The v0.1.0 and v0.1.1 records are exact tagged-source archives. They do not
+contain the standalone release PDF, verification transcript, release ZIP, or
+release asset manifest. This is a preservation-scope limitation, not evidence
+that those GitHub assets were absent or unchecked.
+
+The same concept lineage also contains automatically ingested technical
+staging releases with DOIs `10.5281/zenodo.22373181` and
+`10.5281/zenodo.22651029`. They are build archives, not preprint versions.
+Confirm that the new v0.2.0 record becomes the latest scholarly version; do not
+cite the staging records as papers or conceal their presence in the version
+history.
 
 ## 2. Freeze metadata for automatic Zenodo assignment
 
 1. Keep `khanukov/erdos302` enabled in the Zenodo GitHub integration. Do not
    create a manual **New version** draft for the same tag.
-2. Final controls are `0.1.1-preprint`,
-   `v0.1.1-corrected-preprint`, `PREPRINT_DOI=ZENODO_AUTO`, unchanged
-   `CONCEPT_DOI=10.5281/zenodo.21966590`, and `PUBLISH_READY=true`.
+2. Candidate controls are `0.2.0-preprint`,
+   `v0.2.0-corrected-preprint`, `PREPRINT_DOI=ZENODO_AUTO`, unchanged
+   `CONCEPT_DOI=10.5281/zenodo.21966590`, and `PUBLISH_READY=false`. Change the
+   gate to `true` only in a separate reviewed commit after the merged candidate
+   has a green exact push-to-`main` Verify run and the author has approved its PDF.
 3. `ZENODO_AUTO` is not presented as a DOI. It records that the exact version
    DOI is unknowable until the public GitHub release webhook has been ingested.
    CFF, README, and release notes use the stable concept DOI and exact GitHub
    Release URL meanwhile.
 4. The shared validator rejects `UNRESERVED`, `-dev`, stale development
-   wording, a historical DOI reused for v0.1.1, or disagreement among controls,
+   wording, a historical DOI reused for v0.2.0, or disagreement among controls,
    CFF, README, and manuscript version/date.
 5. Automatic ingestion preserves the tagged source ZIP as a Zenodo software
    record. The full PDF/bundle/manifest inventory remains on the validated
@@ -124,13 +136,13 @@ Verify run was a successful `push` run for `main` at that SHA.
 
 ## 5. Confirm automatic Zenodo ingestion
 
-Wait for Zenodo to process `v0.1.1-corrected-preprint`, then confirm:
+Wait for Zenodo to process `v0.2.0-corrected-preprint`, then confirm:
 
 - the new record is the next version under concept DOI
   `10.5281/zenodo.21966590`;
 - the old version DOI `10.5281/zenodo.21966591` still resolves to v0.1.0;
 - the new record has its own immutable version DOI;
-- its single source ZIP names the v0.1.1 tag and corresponds to the tagged
+- its single source ZIP names the v0.2.0 tag and corresponds to the tagged
   GitHub source archive; and
 - title, author, version, keywords, and preliminary/unrefereed description were
   taken from the release metadata.
@@ -193,8 +205,9 @@ rulesets live in GitHub settings and cannot be applied by a source-only pull
 request. After merging the audit corrections, set and record:
 
 - description: `Preliminary, unrefereed two-sided partial progress on Erdős
-  Problem 302, with exact Python certificates and a Lean-checked lower bound.`;
-- homepage: `https://doi.org/10.5281/zenodo.21966591` until a later published
+  Problem 302, with exact certificates and end-to-end Lean-checked upper and
+  lower bounds.`;
+- homepage: `https://doi.org/10.5281/zenodo.21989077` until the v0.2.0
   version DOI or arXiv record replaces it;
 - topics: `erdos-problems`, `unit-fractions`, `lean4`,
   `computer-assisted-proof`, and `extremal-number-theory`;

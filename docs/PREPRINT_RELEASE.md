@@ -4,29 +4,44 @@ This procedure prepares and publishes a preliminary, unrefereed version to
 establish a standard scientific timestamp. It does not authorize an Erdős
 Problems forum post or the phrase “independently verified.”
 
-Current corrected-release controls:
+Current v0.2.0 release-candidate controls:
 
 ```text
-version:       0.1.1-preprint
-tag:           v0.1.1-corrected-preprint
-release date:  2026-08-18
+version:       0.2.0-preprint
+tag:           v0.2.0-corrected-preprint
+release date:  2026-09-10
 version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
-PUBLISH_READY: true
+PUBLISH_READY: false
 ```
 
-Published immutable priority identifiers:
+Published immutable preprint identifiers:
 
 ```text
-version: 0.1.0-preprint
-tag:     v0.1.0-priority-preprint
-commit:  e5af32bb10aafb74919c850929154f905b291006
-DOI:     10.5281/zenodo.21966591
-concept: 10.5281/zenodo.21966590
+v0.1.1 version: 0.1.1-preprint
+v0.1.1 tag:     v0.1.1-corrected-preprint
+v0.1.1 commit:  98e61f9fda1b05d0d7733960a9004d7a48e69553
+v0.1.1 DOI:     10.5281/zenodo.21989077
+
+v0.1.0 version: 0.1.0-preprint
+v0.1.0 tag:     v0.1.0-priority-preprint
+v0.1.0 commit:  e5af32bb10aafb74919c850929154f905b291006
+v0.1.0 DOI:     10.5281/zenodo.21966591
+concept:        10.5281/zenodo.21966590
 ```
 
-The priority tag, GitHub Release, and Zenodo version are immutable historical
-records. Do not retarget, delete, replace, or silently edit them. The corrected
+The concept lineage also contains two automatically ingested technical staging
+releases (`packing-aggregate-staging-20260905`, DOI
+`10.5281/zenodo.22373181`, and `integration-overlay-20260907`, DOI
+`10.5281/zenodo.22651029`). They are build archives, not mathematical preprint
+versions. Do not cite them as papers. Publishing v0.2.0 restores the scholarly
+preprint as the latest version, but does not erase those immutable technical
+records. Do not create future build-staging GitHub Releases in this repository
+while automatic Zenodo ingestion is enabled; use Actions artifacts or a
+separate non-archived repository instead.
+
+The published tags, GitHub Releases, and Zenodo versions are immutable
+historical records. Do not retarget, delete, replace, or silently edit them. The corrected
 release uses the existing enabled GitHub-to-Zenodo integration, matching the
 v0.1.0 archival path. `ZENODO_AUTO` is an explicit machine-readable final mode:
 the GitHub release is frozen first, Zenodo then archives its tagged source and
@@ -45,8 +60,8 @@ not authors and cannot perform this approval.
 
 ## 2. Use the enabled automatic Zenodo ingestion
 
-The v0.1.0 priority snapshot used Zenodo's GitHub integration, and the same
-enabled repository integration is the publication path for v0.1.1. A public
+The earlier preprints used Zenodo's GitHub integration, and the same enabled
+repository integration is the publication path for v0.2.0. A public
 GitHub release triggers Zenodo to archive the tagged source, create the next
 version in the existing lineage, and assign its version DOI. Do not create a
 second manual **New version** draft for the same tag, because that could race
@@ -81,9 +96,9 @@ the external-dependency and third-party exclusions in `LICENSE_SCOPE.md`.
 Merge the preprint-preparation change, then require a green GitHub Actions run
 on the exact `main` commit. The workflow builds an artifact named from
 `release/PREPRINT_VERSION` only after all proof, mutation, MILP-regression,
-lower-Lean, manuscript, and bundle jobs succeed. Development builds may create
-a `0.1.1-dev` candidate artifact, but the closed publication gate prevents it
-from becoming a tag or GitHub Release.
+lower-Lean, manuscript, and bundle jobs succeed. Pull-request and closed-gate
+builds may create a `0.2.0-preprint` candidate artifact, but
+`PUBLISH_READY=false` prevents it from becoming a tag or GitHub Release.
 
 The same bundle can be reproduced from a clean checkout with:
 
@@ -103,6 +118,13 @@ The command refuses a tracked dirty worktree and emits:
 - SHA-256 manifests.
 
 ## 4. Create the GitHub prerelease
+
+This PR intentionally keeps `PUBLISH_READY=false`; merging it cannot create a
+tag or release. After the merge, wait for the exact push-to-`main` Verify run,
+download and inspect its v0.2.0 PDF and candidate bundle, and obtain the named
+author's approval. Then make a separate reviewed commit changing only
+`release/PUBLISH_READY` to `true`. Its own green push-to-`main` Verify run is
+the authoritative publisher input.
 
 The `Publish priority preprint` workflow runs only after a successful
 push-triggered `Verify` workflow on `main`. It first requires
@@ -171,10 +193,10 @@ version; do not claim that the v0.1.0 Zenodo record contains them.
 Record both the version DOI and the concept DOI. Use the version DOI when
 citing this exact priority snapshot.
 
-For the corrected version, do not edit or overwrite v0.1.0. Confirm that the
+For v0.2.0, do not edit or overwrite v0.1.0 or v0.1.1. Confirm that the
 automatic record appears as the next version under concept DOI
 `10.5281/zenodo.21966590`, record the new version DOI, and verify that its
-source ZIP corresponds to `v0.1.1-corrected-preprint`. The exact PDF and full
+source ZIP corresponds to `v0.2.0-corrected-preprint`. The exact PDF and full
 verified asset inventory are authenticated on the GitHub Release by
 `GITHUB_RELEASE_SHA256SUMS.txt`; automatic Zenodo ingestion is not claimed to
 mirror those individual assets.
@@ -208,10 +230,10 @@ of the scientific record; later corrections belong in a replacement version.
 ## 7. Solicit review and announce carefully
 
 The GitHub Release and concept-DOI links in `release/REVIEW_REQUEST.md` and
-`release/ANNOUNCEMENT.md` identify v0.1.1 while preserving the historical
-v0.1.0 DOI. They explicitly state that no arXiv identifier is yet available
-and that the exact v0.1.1 DOI is assigned after automatic ingestion. Before
-sending a review request, personalize the salutation and relevance sentence.
+`release/ANNOUNCEMENT.md` identify v0.2.0 while preserving the historical
+v0.1.0 and v0.1.1 DOIs. They explicitly state that no arXiv identifier is yet
+available and that the exact v0.2.0 DOI is assigned after automatic ingestion.
+Before sending a review request, personalize the salutation and relevance sentence.
 Do not imply that a recipient has reviewed or endorsed the paper without
 explicit permission.
 

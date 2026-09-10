@@ -1,9 +1,10 @@
-# Public preprint announcement for v0.1.1
+# Release-time announcement for v0.2.0
 
-This file records the corrected GitHub release and stable Zenodo concept DOI.
-Zenodo assigns the exact v0.1.1 version DOI after automatic GitHub ingestion.
-There is no arXiv identifier yet; do not add or imply one until an arXiv
-submission has been announced.
+Use this announcement only after the `v0.2.0-corrected-preprint` GitHub
+prerelease is public and its assets have passed read-back verification. Zenodo
+assigns the exact v0.2.0 version DOI after automatic GitHub ingestion. There is
+no arXiv identifier yet; do not add or imply one until an arXiv submission has
+been announced.
 
 We have posted a preliminary, unrefereed preprint giving two-sided partial
 progress on Erdős Problem 302:
@@ -29,9 +30,10 @@ This is partial progress, not a solution of Problem 302. The manuscript and
 external formal developments are unrefereed; no independent human verification
 or peer review is claimed.
 
-- Manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.1.1-corrected-preprint/erdos302-v0.1.1-preprint.pdf>
-- v0.1.1 version DOI: assigned by Zenodo after automatic GitHub ingestion
+- Manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf>
+- v0.2.0 version DOI: assigned by Zenodo after automatic GitHub ingestion
 - Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
-- Verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint>
+- Verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint>
+- Historical v0.1.1 DOI: <https://doi.org/10.5281/zenodo.21989077>
 - Historical v0.1.0 DOI: <https://doi.org/10.5281/zenodo.21966591>
 - arXiv: not yet available

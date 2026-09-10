@@ -586,7 +586,7 @@ class Publisher:
                     "--draft",
                     "--prerelease",
                     "--title",
-                    f"Erdos 302 priority preprint {self.controls.version}",
+                    f"Erdos 302 corrected preprint {self.controls.version}",
                     "--notes-file",
                     str(assets_dir / "RELEASE_NOTES.md"),
                 ]
