@@ -222,6 +222,8 @@ class WorkflowGateTests(unittest.TestCase):
         self.assertTrue(workflow.startswith("name: Integration critical CI\n"))
         self.assertIn("leanprover/lean4checker", workflow)
         self.assertIn("--branch v4.27.0", workflow)
+        self.assertIn('(cd "$checker" && lake test)', workflow)
+        self.assertNotIn('lake -d "$checker" test', workflow)
         self.assertIn("--fresh Erdos302.Asymptotic.Integration", workflow)
         self.assertIn("--num-workers=1 Erdos302.Asymptotic", workflow)
         self.assertIn("FRESH_INTEGRATION_REPLAY_OK", workflow)

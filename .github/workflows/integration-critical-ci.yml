@@ -230,7 +230,7 @@ jobs:
           test "$(git -C "$checker" rev-parse HEAD)" = "$LEAN4CHECKER_COMMIT"
           cp lean-toolchain "$checker/lean-toolchain"
           lake -d "$checker" build
-          lake -d "$checker" test
+          (cd "$checker" && lake test)
           : > Lean4CheckerFresh.log
           /usr/bin/time -v lake env \
             "$checker/.lake/build/bin/lean4checker" \
