@@ -188,9 +188,8 @@ class IntegrationOverlayVerifierTests(unittest.TestCase):
             scripts.mkdir()
             verifier = scripts / "verify_integration_overlay.py"
             verifier.write_bytes((ROOT / "scripts/verify_integration_overlay.py").read_bytes())
-            lean = subprocess.check_output(["lean", "--version"], text=True).splitlines()[0]
             (root / "MANIFEST.json").write_text(
-                json.dumps({"schema": 2, "lean": lean, "files": [], "receipts": {}}),
+                json.dumps({"schema": 2, "lean": "unused", "files": [], "receipts": {}}),
                 encoding="utf-8",
             )
             result = subprocess.run(
@@ -198,6 +197,7 @@ class IntegrationOverlayVerifierTests(unittest.TestCase):
                 text=True,
                 capture_output=True,
                 check=False,
+                env={"PATH": "/nonexistent"},
             )
             self.assertNotEqual(result.returncode, 0, result.stdout)
             self.assertIn("schema", result.stdout + result.stderr)
