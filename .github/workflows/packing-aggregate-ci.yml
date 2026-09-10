@@ -36,7 +36,7 @@ jobs:
       - name: Download staged verified build inputs
         env:
           GH_TOKEN: ${{ github.token }}
-          STAGING_TAG: ${{ inputs.staging_tag || 'packing-aggregate-staging-20260905' }}
+          STAGING_TAG: ${{ inputs.staging_tag }}
         run: |
           mkdir -p staging-parts
           gh release download "$STAGING_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'packing-build.part-*' --dir staging-parts

@@ -13,7 +13,13 @@ IMPORT = re.compile(r"\s*import\s+(Erdos302(?:\.[A-Za-z0-9_]+)+)\s*$")
 
 def main() -> None:
     names = subprocess.check_output(
-        ["git", "ls-files", "Erdos302.lean", "Erdos302/**/*.lean"],
+        [
+            "git",
+            "ls-files",
+            "Erdos302.lean",
+            ":(glob)Erdos302/*.lean",
+            ":(glob)Erdos302/**/*.lean",
+        ],
         cwd=ROOT,
         text=True,
     ).splitlines()

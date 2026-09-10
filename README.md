@@ -121,7 +121,7 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 | Derived \(D(720)\) finite two-tail data and arithmetic | exact exhaustive standard-library verifier |
 | Derived \(D(720)\) multiplier/disjoint-prefix transfer | human comparison argument in the manuscript |
 | Upper asymptotic disjoint-block argument | Lean-kernel checked |
-| Upper end-to-end Lean formalization | complete for the stated `140803024/163562355` eventual upper bound; high-memory CI target |
+| Upper end-to-end Lean formalization | complete for the stated `140803024/163562355` eventual upper bound; high-memory CI recompiles 48 critical modules against a hash-verified `.olean` overlay and fresh-kernel-replays the imported environment before separately replaying the final module; serialization trusted; not a cache-free rebuild |
 | Lower analytic input | pinned cached `.olean` closure; full Lean-kernel replay runs on `main`, tag, and manual Verify events but is skipped on pull requests; the automated publisher accepts only a successful push-to-`main` run for the exact commit; serialization trusted; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
@@ -314,7 +314,15 @@ The finite upper packing was discovered with AI-assisted search. Its finite
 acceptance depends only on the committed exact certificate and verifier, not
 on the floating-point solver used during discovery. The finite semantics,
 packing certificates, omission argument, and asymptotic endpoint are also
-connected in the source-closed Lean proof. AI systems assisted with code
+connected in the source-closed Lean proof. Here `source-closed` means that every
+project module in the theorem closure has committed source; it does not mean a
+cache-free rebuild. The theorem closure imports 80,127 project modules from the
+immutable SHA-256-verified `.olean` overlay. High-memory CI recompiles 48 modules
+in that closure, runs Lean4Checker `--fresh` through the integration module's
+complete imported environment, and separately replays the final module. That
+fresh replay uses Lean's kernel but still structurally trusts `.olean`
+serialization and does not prove source-to-binary correspondence for the
+cached modules. AI systems assisted with code
 generation, proof audits, and Lean formalization. The external #301/#327
 work and the present manuscript are unrefereed. Repository merge is an
 engineering integration event: a fully green commit may be merged while

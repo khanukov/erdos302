@@ -35,10 +35,25 @@ def add_bytes(archive: tarfile.TarFile, name: str, content: bytes = b"x") -> Non
 
 
 class PublicationArchiveTests(unittest.TestCase):
+    def test_exact_inventory_contains_only_rebuilt_proof_modules(self) -> None:
+        self.assertEqual(len(publication.EXPECTED_FILES), 96)
+
     def make_archive(self, path: Path, names: list[str]) -> None:
         with tarfile.open(path, "w:") as archive:
             for name in names:
                 add_bytes(archive, name)
+
+    def test_fresh_replay_log_requires_exact_success_marker(self) -> None:
+        publication.validate_fresh_replay_log(
+            "FRESH_INTEGRATION_REPLAY_OK\nFINAL_MODULE_REPLAY_OK\n"
+        )
+        for text in (
+            "FRESH_INTEGRATION_REPLAY_OK\n",
+            "FINAL_MODULE_REPLAY_OK\n",
+            "FRESH_INTEGRATION_REPLAY_OK\nFRESH_INTEGRATION_REPLAY_OK\nFINAL_MODULE_REPLAY_OK\n",
+        ):
+            with self.subTest(text=text), self.assertRaises(SystemExit):
+                publication.validate_fresh_replay_log(text)
 
     def test_exact_inventory_is_accepted(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -108,6 +123,84 @@ class WorkflowVerifierPinTests(unittest.TestCase):
                     add_bytes(output, name)
             with self.assertRaises(SystemExit):
                 pinned.safe_extract(duplicate, root / "duplicate-out")
+
+
+class ProvenanceVerifierTests(unittest.TestCase):
+    verifier = ROOT / "scripts/verify_github_run_provenance.py"
+
+    def run_verifier(self, data: dict, repository: str = "owner/repository") -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as temporary:
+            run_json = Path(temporary) / "run.json"
+            run_json.write_text(json.dumps(data), encoding="utf-8")
+            return subprocess.run(
+                [
+                    sys.executable,
+                    str(self.verifier),
+                    "--run-json",
+                    str(run_json),
+                    "--repository",
+                    repository,
+                    "--expected-sha",
+                    "a" * 40,
+                    "--workflow-file",
+                    str(ROOT / ".github/workflows/integration-critical-ci.yml"),
+                ],
+                text=True,
+                capture_output=True,
+            )
+
+    def test_fresh_exact_sha_main_run_is_accepted_without_numeric_allowlist(self) -> None:
+        data = {
+            "id": 99999999999,
+            "repository": {"full_name": "owner/repository"},
+            "head_repository": {"full_name": "owner/repository"},
+            "path": ".github/workflows/integration-critical-ci.yml",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "a" * 40,
+            "event": "push",
+            "head_branch": "main",
+        }
+        result = self.run_verifier(data)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_fresh_run_from_wrong_repository_is_rejected(self) -> None:
+        data = {
+            "id": 99999999999,
+            "repository": {"full_name": "attacker/repository"},
+            "head_repository": {"full_name": "attacker/repository"},
+            "path": ".github/workflows/integration-critical-ci.yml",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "a" * 40,
+            "event": "push",
+            "head_branch": "main",
+        }
+        result = self.run_verifier(data)
+        self.assertNotEqual(result.returncode, 0)
+
+
+class IntegrationOverlayVerifierTests(unittest.TestCase):
+    def test_optimized_mode_rejects_wrong_manifest_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            scripts = root / "scripts"
+            scripts.mkdir()
+            verifier = scripts / "verify_integration_overlay.py"
+            verifier.write_bytes((ROOT / "scripts/verify_integration_overlay.py").read_bytes())
+            lean = subprocess.check_output(["lean", "--version"], text=True).splitlines()[0]
+            (root / "MANIFEST.json").write_text(
+                json.dumps({"schema": 2, "lean": lean, "files": [], "receipts": {}}),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "-O", str(verifier)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            self.assertIn("schema", result.stdout + result.stderr)
 
 
 class AggregateStagingTests(unittest.TestCase):

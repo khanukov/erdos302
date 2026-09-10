@@ -422,6 +422,18 @@ the corresponding Erd\H{o}s-302 definitions in
 to the name of one bound variable), while a separate bridge identifies that
 interface with the concrete finite maximum used in the proof.
 
+All project modules in this upper-theorem closure have committed Lean source,
+but the authoritative high-memory run is not a cache-free rebuild. It imports
+80,127 project modules from an immutable SHA-256-verified \texttt{.olean}
+overlay and recompiles 48 modules in that closure. The run additionally invokes
+Lean4Checker \texttt{{-}{-}fresh} through the integration module, replaying its
+complete imported environment through Lean's kernel, and separately replays the
+final module. This catches invalid serialized
+proof environments, but still structurally trusts \texttt{.olean}
+serialization and does not establish that every cached binary was produced
+from the corresponding source in this commit. Thus ``source-closed'' here
+means source availability, not complete source-to-binary provenance.
+
 The lower result imports analytic input from pinned Della Pietra Problem
 301/327 Lean developments.  At commit
 \texttt{4c365e9ded04f04ecd9a6d89a38f97c529194475}, the separate lower project

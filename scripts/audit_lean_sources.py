@@ -69,7 +69,13 @@ def code_only(text: str) -> str:
 
 def main() -> None:
     names = subprocess.check_output(
-        ["git", "ls-files", "Erdos302.lean", "Erdos302/**/*.lean"],
+        [
+            "git",
+            "ls-files",
+            "Erdos302.lean",
+            ":(glob)Erdos302/*.lean",
+            ":(glob)Erdos302/**/*.lean",
+        ],
         cwd=ROOT,
         text=True,
     ).splitlines()

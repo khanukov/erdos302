@@ -28,19 +28,27 @@ def main() -> None:
     data = json.loads(args.run_json.read_text())
     trusted = TRUSTED_PUBLISHED_RUNS.get(data.get("id"))
     workflow_digest = hashlib.sha256(args.workflow_file.read_bytes()).hexdigest()
+    historical = trusted is not None
+    current_main = (
+        trusted is None
+        and data.get("event") == "push"
+        and data.get("head_branch") == "main"
+    )
+    trusted_identity = current_main or (
+        historical
+        and data.get("event") in {"push", "workflow_dispatch"}
+        and trusted["sha"] == args.expected_sha
+        and data.get("head_branch") == trusted["branch"]
+        and workflow_digest == trusted["workflow_sha256"]
+    )
     checks = {
-        "allowlisted_run": trusted is not None,
         "repository": data.get("repository", {}).get("full_name") == args.repository,
         "head_repository": data.get("head_repository", {}).get("full_name") == args.repository,
         "workflow_path": data.get("path") == EXPECTED_WORKFLOW_PATH,
         "status": data.get("status") == "completed",
         "conclusion": data.get("conclusion") == "success",
         "head_sha": data.get("head_sha") == args.expected_sha,
-        "event": data.get("event") in {"push", "workflow_dispatch"},
-        "allowlisted_sha": trusted is not None and trusted["sha"] == args.expected_sha,
-        "trusted_branch": trusted is not None and data.get("head_branch") == trusted["branch"],
-        "immutable_workflow": trusted is not None
-        and workflow_digest == trusted["workflow_sha256"],
+        "trusted_identity": trusted_identity,
     }
     failed = [name for name, passed in checks.items() if not passed]
     if failed:

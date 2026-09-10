@@ -23,7 +23,12 @@ for all sufficiently large \(N\), and that
 \]
 
 The upper bound is supported by an exact rational certificate, a
-dependency-free verification path, and an end-to-end source-closed Lean proof.
+dependency-free verification path, and a source-closed Lean proof. All project
+sources are committed, but high-memory CI is not a cache-free rebuild: it
+imports 80,127 modules from a SHA-256-verified `.olean` overlay. CI recompiles
+48 modules in that closure, fresh-kernel-replays the imported environment
+through the integration module, and separately replays the final module
+while still structurally trusting `.olean` serialization.
 Compared with v0.1.1, this release adds the complete kernel-checked
 semantic-to-asymptotic upper chain, hardened exact-inventory proof artifacts,
 and deterministic source/provenance gates. The qualitative lower improvement

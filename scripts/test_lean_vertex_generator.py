@@ -66,10 +66,25 @@ def main() -> None:
         else: raise RuntimeError("conflicting snapshots were accepted")
     finally: generator.snapshot_key = original
     before_files = generated_files(ids); before = digest(before_files)
-    subprocess.run([sys.executable, "-I", "-S", "-O", str(GENERATOR), "--only", *map(str, ids)], cwd=ROOT, check=True)
-    after_files = generated_files(ids)
-    if [p.name for p in before_files] != [p.name for p in after_files] or before != digest(after_files):
-        raise RuntimeError("lightweight generator is not deterministic")
+    aggregate_paths = [
+        OUT / "PackingCertificateNatManifest.json",
+        OUT / "PackingCertificateNatMutations.lean",
+        OUT / "PackingCertificatesNatSmoke.lean",
+    ]
+    aggregate_before = {
+        path: path.read_bytes() if path.exists() else None for path in aggregate_paths
+    }
+    try:
+        subprocess.run([sys.executable, "-I", "-S", "-O", str(GENERATOR), "--only", *map(str, ids)], cwd=ROOT, check=True)
+        after_files = generated_files(ids)
+        if [p.name for p in before_files] != [p.name for p in after_files] or before != digest(after_files):
+            raise RuntimeError("lightweight generator is not deterministic")
+    finally:
+        for path, content in aggregate_before.items():
+            if content is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.write_bytes(content)
     print(f"structural checks: {len(expected)} global links; IDs {ids}; 719 capacities each; deterministic; conflict rejection exercised")
 
 if __name__ == "__main__": main()

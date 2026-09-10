@@ -21,9 +21,15 @@ abstract: >-
   lower improvement over density 5/8 and the upper bound
   140803024/163562355. It is not independently verified or peer reviewed and
   is not a solution of Problem 302. The finite semantics, all exact packing
-  certificates, omission argument, and upper asymptotic endpoint are checked
-  end to end by a source-closed Lean 4 development and cross-checked by exact
-  dependency-free software. The lower theorem is Lean-checked through pinned
+  certificates, omission argument, and upper asymptotic endpoint are connected
+  by a source-closed Lean 4 development and cross-checked by exact
+  dependency-free software. Here source-closed means that every project module
+  has committed source, not that CI performs a cache-free rebuild. The theorem
+  closure imports 80,127 modules from a SHA-256-verified .olean overlay. CI
+  recompiles 48 modules in that closure, fresh-kernel-replays the imported
+  environment through the integration module, and separately replays the final
+  module while still structurally trusting .olean serialization. The
+  lower theorem is Lean-checked through pinned
   external formal developments. AI systems assisted with search, code,
   formalization, and audits; the named author remains responsible for all
   claims. Software and verification material are MIT-licensed; the manuscript

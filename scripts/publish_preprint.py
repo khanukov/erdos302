@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Publish a verified preprint candidate without weakening release invariants.
 
-This script is intentionally dependency-free.  It is the sole imperative body of
-the ``Publish priority preprint`` workflow; the workflow itself only supplies the
-verified commit and Verify-run identifiers.
+This script is intentionally dependency-free. It is the sole imperative body
+of the ``Publish corrected preprint`` workflow; the workflow supplies the
+verified commit and exact Verify/integration run identifiers.
 """
 
 from __future__ import annotations
@@ -81,6 +81,7 @@ class PublicationContext:
     verified_sha: str
     source_run_id: str
     runner_temp: Path
+    integration_run_id: str = ""
 
     @classmethod
     def from_environment(
@@ -89,6 +90,7 @@ class PublicationContext:
         repository = environment.get("GITHUB_REPOSITORY", "")
         verified_sha = environment.get("VERIFIED_SHA", "")
         source_run_id = environment.get("SOURCE_RUN_ID", "")
+        integration_run_id = environment.get("INTEGRATION_RUN_ID", "")
         runner_temp_raw = environment.get("RUNNER_TEMP", "")
         if REPOSITORY_PATTERN.fullmatch(repository) is None:
             raise PublicationError(f"invalid GITHUB_REPOSITORY: {repository!r}")
@@ -96,12 +98,22 @@ class PublicationContext:
             raise PublicationError(f"invalid VERIFIED_SHA: {verified_sha!r}")
         if RUN_ID_PATTERN.fullmatch(source_run_id) is None:
             raise PublicationError(f"invalid SOURCE_RUN_ID: {source_run_id!r}")
+        if RUN_ID_PATTERN.fullmatch(integration_run_id) is None:
+            raise PublicationError(
+                f"invalid INTEGRATION_RUN_ID: {integration_run_id!r}"
+            )
         if not runner_temp_raw:
             raise PublicationError("RUNNER_TEMP is required")
         runner_temp = Path(runner_temp_raw)
         if not runner_temp.is_dir():
             raise PublicationError(f"RUNNER_TEMP is not a directory: {runner_temp}")
-        return cls(repository, verified_sha, source_run_id, runner_temp)
+        return cls(
+            repository,
+            verified_sha,
+            source_run_id,
+            runner_temp,
+            integration_run_id,
+        )
 
 
 class CommandRunner:
@@ -223,6 +235,46 @@ def validate_verify_run_data(data: object, run_id: str, expected_sha: str) -> No
         )
 
 
+def validate_integration_run_data(data: object, run_id: str, expected_sha: str) -> None:
+    if not isinstance(data, dict):
+        raise PublicationError(
+            f"Integration critical CI run {run_id} API response is not an object"
+        )
+    expected = {
+        "name": "Integration critical CI",
+        "path": ".github/workflows/integration-critical-ci.yml",
+        "conclusion": "success",
+        "head_sha": expected_sha,
+        "event": "push",
+        "head_branch": "main",
+    }
+    if any(data.get(key) != value for key, value in expected.items()):
+        raise PublicationError(
+            f"Integration critical CI run {run_id} is not a successful main push "
+            f"for {expected_sha}"
+        )
+
+
+def validate_integration_jobs_data(data: object, run_id: str) -> None:
+    if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
+        raise PublicationError(
+            f"Integration critical CI run {run_id} jobs response is malformed"
+        )
+    matches = [
+        job
+        for job in data["jobs"]
+        if isinstance(job, dict) and job.get("name") == "verify-artifact"
+    ]
+    if len(matches) != 1 or any(
+        matches[0].get(key) != value
+        for key, value in {"status": "completed", "conclusion": "success"}.items()
+    ):
+        raise PublicationError(
+            f"Integration critical CI run {run_id} lacks exactly one successful "
+            "verify-artifact job"
+        )
+
+
 def require_current_draft_binding(
     *,
     expected_draft: bool,
@@ -264,6 +316,38 @@ class Publisher:
             f"Verify run {run_id}",
         )
         validate_verify_run_data(data, run_id, expected_sha)
+
+    def validate_integration_run(self, run_id: str, expected_sha: str) -> None:
+        data = self.gh_json(
+            [
+                "api",
+                f"/repos/{self.context.repository}/actions/runs/{run_id}",
+            ],
+            f"Integration critical CI run {run_id}",
+        )
+        validate_integration_run_data(data, run_id, expected_sha)
+        pages = self.gh_json(
+            [
+                "api",
+                "--paginate",
+                "--slurp",
+                f"/repos/{self.context.repository}/actions/runs/{run_id}/jobs"
+                "?filter=latest&per_page=100",
+            ],
+            f"Integration critical CI run {run_id} jobs",
+        )
+        if (
+            not isinstance(pages, list)
+            or any(not isinstance(page, dict) for page in pages)
+            or any(not isinstance(page.get("jobs"), list) for page in pages)
+        ):
+            raise PublicationError(
+                f"Integration critical CI run {run_id} jobs pagination is malformed"
+            )
+        validate_integration_jobs_data(
+            {"jobs": [job for page in pages for job in page.get("jobs", [])]},
+            run_id,
+        )
 
     def tag_target(self) -> str:
         tag = self.controls.tag
@@ -501,6 +585,9 @@ class Publisher:
             state = self.release_state()
             existing_draft = state.get("isDraft")
             if existing_draft is True:
+                self.validate_integration_run(
+                    self.context.integration_run_id, self.context.verified_sha
+                )
                 self.validate_release(True)
                 self.gh(
                     [
@@ -524,6 +611,9 @@ class Publisher:
         if match_count != 0:
             raise PublicationError(f"multiple GitHub releases claim tag {self.controls.tag}")
 
+        self.validate_integration_run(
+            self.context.integration_run_id, self.context.verified_sha
+        )
         self.validate_verify_run(self.context.source_run_id, self.context.verified_sha)
         with tempfile.TemporaryDirectory(
             prefix="preprint-assets-", dir=self.context.runner_temp

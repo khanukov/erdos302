@@ -1,4 +1,4 @@
-name: Integration critical path on high-memory CI
+name: Integration critical CI
 
 on:
   push:
@@ -20,7 +20,7 @@ permissions:
 
 concurrency:
   group: integration-critical-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
   STAGING_TAG: integration-overlay-20260907
@@ -183,6 +183,7 @@ jobs:
           free -h
       - name: Reject project-local proof escapes and unresolved imports
         run: |
+          python3 -I -S scripts/test_source_audits.py
           python3 scripts/audit_lean_sources.py
           python3 scripts/audit_project_imports.py
       - name: Regenerate configuration validity bridge
@@ -217,6 +218,32 @@ jobs:
           compile Erdos302/Asymptotic/Endpoint.lean
           compile Erdos302/Asymptotic/Integration.lean
           compile Erdos302/Asymptotic.lean
+
+      - name: Fresh kernel replay of the complete imported environment
+        env:
+          LEAN4CHECKER_COMMIT: 7df74851c95d9bd1bbb8fc9b51aeb291304faaf6
+        run: |
+          set -euo pipefail
+          checker="$RUNNER_TEMP/lean4checker"
+          git clone --quiet --depth 1 --branch v4.27.0 \
+            https://github.com/leanprover/lean4checker "$checker"
+          test "$(git -C "$checker" rev-parse HEAD)" = "$LEAN4CHECKER_COMMIT"
+          cp lean-toolchain "$checker/lean-toolchain"
+          lake -d "$checker" build
+          lake -d "$checker" test
+          : > Lean4CheckerFresh.log
+          /usr/bin/time -v lake env \
+            "$checker/.lake/build/bin/lean4checker" \
+            --fresh Erdos302.Asymptotic.Integration \
+            2>&1 | tee -a Lean4CheckerFresh.log
+          echo FRESH_INTEGRATION_REPLAY_OK | tee -a Lean4CheckerFresh.log
+          /usr/bin/time -v lake env \
+            "$checker/.lake/build/bin/lean4checker" \
+            --num-workers=1 Erdos302.Asymptotic \
+            2>&1 | tee -a Lean4CheckerFresh.log
+          echo FINAL_MODULE_REPLAY_OK | tee -a Lean4CheckerFresh.log
+          grep -Fx 'FRESH_INTEGRATION_REPLAY_OK' Lean4CheckerFresh.log
+          grep -Fx 'FINAL_MODULE_REPLAY_OK' Lean4CheckerFresh.log
       - name: Audit final theorem axioms
         run: |
           set -euo pipefail
@@ -266,6 +293,7 @@ jobs:
             'Erdos302/Asymptotic/Endpoint',
             'Erdos302/Asymptotic/Integration',
             'Erdos302/Asymptotic',
+
           ]
           files=[Path('.lake/build/lib/lean')/(s+ext) for s in stems for ext in ('.olean','.ilean')]
           def h(p): return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -277,6 +305,7 @@ jobs:
             'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],
             'overlay':{'bytes':2972900109,'sha256':'c0dfb31167c18787dd3352f728cd1aa44776697ce9263a8294c3ff72d186c05b'},
             'axiom_audit_sha256':h(Path('AxiomAudit.log')),
+            'lean4checker_fresh_sha256':h(Path('Lean4CheckerFresh.log')),
             'metadata':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in metadata],
             'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files],
           }
@@ -290,7 +319,7 @@ jobs:
           from pathlib import Path
           manifest=json.loads(Path('INTEGRATION-MANIFEST.json').read_text())
           paths=[entry['path'] for entry in manifest['files']]
-          paths += ['INTEGRATION-MANIFEST.json', 'AxiomAudit.log']
+          paths += ['INTEGRATION-MANIFEST.json', 'AxiomAudit.log', 'Lean4CheckerFresh.log']
           Path('publication-files.txt').write_text('\n'.join(dict.fromkeys(paths))+'\n')
           PY
           tar -cf integration-critical.tar -T publication-files.txt

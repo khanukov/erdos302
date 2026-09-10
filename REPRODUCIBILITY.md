@@ -106,8 +106,12 @@ The authoritative high-memory reproduction is the pinned
 restores hash-bound prerequisite compiler outputs, regenerates the bounded
 bridges, audits every committed Lean source and project import, compiles the
 semantic-to-asymptotic critical path, requires the exact five-declaration axiom
-transcript, publishes a manifest-bound archive, and downloads and verifies that
-archive again.  The prerequisite `.olean` overlay is a verified build cache,
+transcript, fresh-kernel-replays the complete imported environment with
+Lean4Checker, publishes a manifest-bound archive containing both audit logs,
+and downloads and verifies that archive again. The prerequisite `.olean`
+overlay supplies 80,127 imported project modules in the theorem closure; CI
+recompiles 48 modules in that closure, fresh-replays the imported environment
+through the integration module, and separately replays the final module. It is a verified build cache,
 not a substitute for source: all project modules in the theorem's import
 closure have committed Lean source.  The run therefore trusts Lean 4.27.0,
 Mathlib and `.olean` serialization in addition to the ordinary axioms listed in

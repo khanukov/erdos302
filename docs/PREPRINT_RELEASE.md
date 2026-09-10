@@ -1,4 +1,4 @@
-# Priority-preprint release procedure
+# Corrected-preprint release procedure
 
 This procedure prepares and publishes a preliminary, unrefereed version to
 establish a standard scientific timestamp. It does not authorize an Erdős
@@ -31,7 +31,7 @@ concept:        10.5281/zenodo.21966590
 ```
 
 The concept lineage also contains two automatically ingested technical staging
-releases (`packing-aggregate-staging-20260905`, DOI
+records (`packing-aggregate-staging-20260905`, DOI
 `10.5281/zenodo.22373181`, and `integration-overlay-20260907`, DOI
 `10.5281/zenodo.22651029`). They are build archives, not mathematical preprint
 versions. Do not cite them as papers. Publishing v0.2.0 restores the scholarly
@@ -39,6 +39,10 @@ preprint as the latest version, but does not erase those immutable technical
 records. Do not create future build-staging GitHub Releases in this repository
 while automatic Zenodo ingestion is enabled; use Actions artifacts or a
 separate non-archived repository instead.
+
+The GitHub release/tag `packing-aggregate-staging-20260905` has since been
+deleted; only its immutable Zenodo technical record remains. Current upper
+proof CI uses the still-live `integration-overlay-20260907` GitHub release.
 
 The published tags, GitHub Releases, and Zenodo versions are immutable
 historical records. Do not retarget, delete, replace, or silently edit them. The corrected
@@ -93,12 +97,16 @@ the external-dependency and third-party exclusions in `LICENSE_SCOPE.md`.
 
 ## 3. Produce the exact release candidate
 
-Merge the preprint-preparation change, then require a green GitHub Actions run
-on the exact `main` commit. The workflow builds an artifact named from
+Merge the preprint-preparation change with a merge commit (not squash or
+rebase), preserving the immutable verifier commit in `main` history. Then
+require green `Verify` and `Integration critical CI` GitHub Actions runs on the
+exact `main` commit. The Verify workflow builds an artifact named from
 `release/PREPRINT_VERSION` only after all proof, mutation, MILP-regression,
 lower-Lean, manuscript, and bundle jobs succeed. Pull-request and closed-gate
 builds may create a `0.2.0-preprint` candidate artifact, but
-`PUBLISH_READY=false` prevents it from becoming a tag or GitHub Release.
+`PUBLISH_READY=false` prevents it from becoming a tag or GitHub Release. The
+integration run must include a successful `verify-artifact` job and fresh
+Lean4Checker replay.
 
 The same bundle can be reproduced from a clean checkout with:
 
@@ -123,11 +131,15 @@ This PR intentionally keeps `PUBLISH_READY=false`; merging it cannot create a
 tag or release. After the merge, wait for the exact push-to-`main` Verify run,
 download and inspect its v0.2.0 PDF and candidate bundle, and obtain the named
 author's approval. Then make a separate reviewed commit changing only
-`release/PUBLISH_READY` to `true`. Its own green push-to-`main` Verify run is
-the authoritative publisher input.
+`release/PUBLISH_READY` to `true`. Its own exact-SHA green push-to-`main`
+Verify and Integration critical CI runs are the authoritative publisher
+inputs. Main-branch integration runs are never cancelled by a later push.
 
-The `Publish priority preprint` workflow runs only after a successful
-push-triggered `Verify` workflow on `main`. It first requires
+The `Publish corrected preprint` workflow runs only after a successful
+push-triggered `Integration critical CI` workflow on `main`. It requires that
+exact integration run to contain one successful `verify-artifact` job, locates
+and revalidates a successful exact-SHA push-triggered `Verify` run, and only
+then considers publication. It first requires
 the release controls and CFF to pass the same machine validator used by the
 candidate builder. It then requires `release/PUBLISH_READY` to contain exactly
 `true`; `false` exits without any GitHub mutation and every other value fails.

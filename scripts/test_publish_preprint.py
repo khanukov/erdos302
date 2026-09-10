@@ -196,6 +196,45 @@ class GateTests(unittest.TestCase):
             builder.PREPRINT_DOI = original
 
 
+class WorkflowGateTests(unittest.TestCase):
+    def test_publisher_is_triggered_by_exact_integration_completion(self) -> None:
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github"
+            / "workflows"
+            / "publish-preprint.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('workflows: ["Integration critical CI"]', workflow)
+        self.assertNotIn('workflows: ["Verify"]', workflow)
+        self.assertIn("INTEGRATION_RUN_ID: ${{ github.event.workflow_run.id }}", workflow)
+        self.assertIn("SOURCE_RUN_ID=$run_id", workflow)
+        self.assertIn("gh run list", workflow)
+        self.assertIn('--workflow "Verify"', workflow)
+        self.assertIn('--commit "$VERIFIED_SHA"', workflow)
+
+    def test_integration_ci_runs_fresh_kernel_replay(self) -> None:
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github"
+            / "workflows"
+            / "integration-critical-ci.yml"
+        ).read_text(encoding="utf-8")
+        self.assertTrue(workflow.startswith("name: Integration critical CI\n"))
+        self.assertIn("leanprover/lean4checker", workflow)
+        self.assertIn("--branch v4.27.0", workflow)
+        self.assertIn("--fresh Erdos302.Asymptotic.Integration", workflow)
+        self.assertIn("--num-workers=1 Erdos302.Asymptotic", workflow)
+        self.assertIn("FRESH_INTEGRATION_REPLAY_OK", workflow)
+        self.assertIn("FINAL_MODULE_REPLAY_OK", workflow)
+        self.assertNotIn("{ /usr/bin/time", workflow)
+        self.assertGreaterEqual(workflow.count("tee -a Lean4CheckerFresh.log"), 2)
+        self.assertIn(
+            "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", workflow
+        )
+        self.assertIn("python3 -I -S scripts/test_source_audits.py", workflow)
+
+
+
 class ManifestTests(unittest.TestCase):
     def test_safe_complete_manifest_is_accepted(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
@@ -312,6 +351,49 @@ class BindingTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(publisher.PublicationError):
                 publisher.validate_verify_run_data(bad, "123", "a" * 40)
 
+    def test_integration_run_requires_successful_main_push_and_exact_sha(self) -> None:
+        good = {
+            "name": "Integration critical CI",
+            "path": ".github/workflows/integration-critical-ci.yml",
+            "conclusion": "success",
+            "head_sha": "a" * 40,
+            "event": "push",
+            "head_branch": "main",
+        }
+        publisher.validate_integration_run_data(good, "456", "a" * 40)
+        for key, bad_value in (
+            ("name", "Other"),
+            ("path", ".github/workflows/other.yml"),
+            ("conclusion", "failure"),
+            ("head_sha", "b" * 40),
+            ("event", "workflow_dispatch"),
+            ("head_branch", "feature"),
+        ):
+            bad = dict(good)
+            bad[key] = bad_value
+            with self.subTest(key=key), self.assertRaises(publisher.PublicationError):
+                publisher.validate_integration_run_data(bad, "456", "a" * 40)
+
+    def test_integration_run_requires_successful_artifact_verifier_job(self) -> None:
+        good = {
+            "jobs": [
+                {"name": "semantic-stage", "status": "completed", "conclusion": "success"},
+                {"name": "downstream", "status": "completed", "conclusion": "success"},
+                {"name": "verify-artifact", "status": "completed", "conclusion": "success"},
+            ]
+        }
+        publisher.validate_integration_jobs_data(good, "456")
+        for jobs in (
+            [],
+            [{"name": "verify-artifact", "status": "completed", "conclusion": "failure"}],
+            [
+                {"name": "verify-artifact", "status": "completed", "conclusion": "success"},
+                {"name": "verify-artifact", "status": "completed", "conclusion": "success"},
+            ],
+        ):
+            with self.subTest(jobs=jobs), self.assertRaises(publisher.PublicationError):
+                publisher.validate_integration_jobs_data({"jobs": jobs}, "456")
+
     def test_duplicate_exact_evidence_line_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             evidence = Path(raw) / "COMMIT_SHA.txt"
@@ -403,6 +485,9 @@ class NewReleasePublisher(publisher.Publisher):
 
     def validate_verify_run(self, run_id: str, expected_sha: str) -> None:
         self.events.append(f"verify:{run_id}:{expected_sha}")
+
+    def validate_integration_run(self, run_id: str, expected_sha: str) -> None:
+        self.events.append(f"integration:{run_id}:{expected_sha}")
 
     def download_run_artifact(self, run_id: str, directory: Path) -> None:
         self.events.append(f"download:{run_id}")
@@ -532,6 +617,7 @@ class OrchestrationTests(unittest.TestCase):
             verified_sha=sha,
             source_run_id=run_id,
             runner_temp=temporary,
+            integration_run_id="456",
         )
 
     def test_new_release_mutations_are_draft_first_and_surrounded_by_validation(self) -> None:
@@ -543,6 +629,7 @@ class OrchestrationTests(unittest.TestCase):
                 events,
                 [
                     "release-count:0",
+                    f"integration:456:{'a' * 40}",
                     f"verify:123:{'a' * 40}",
                     "download:123",
                     "validate-candidate",

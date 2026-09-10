@@ -22,9 +22,15 @@ eventually for some absolute \(\delta>0\), and
 \]
 
 The upper bound is supported by an exact rational certificate, reproducible
-verifier, and an end-to-end source-closed Lean proof. The qualitative lower
-bound is Lean-checked through immutable pinned formal developments. Independent
-mathematical review is now being solicited.
+verifier, and a source-closed Lean proof. Here source-closed means all project
+sources are committed, not a cache-free rebuild: the theorem closure imports
+80,127 modules from a SHA-256-verified `.olean` overlay. High-memory CI
+recompiles 48 modules in that closure, fresh-kernel-replays the imported
+environment through the integration module, and separately replays the final module while
+still trusting `.olean` serialization. The qualitative lower bound is
+Lean-checked through immutable pinned formal developments. Independent
+mathematical review is now being solicited. This announcement is not approval
+for an Erdős Problems forum post.
 
 This is partial progress, not a solution of Problem 302. The manuscript and
 external formal developments are unrefereed; no independent human verification
