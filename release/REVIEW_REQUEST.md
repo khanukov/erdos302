@@ -17,10 +17,10 @@ for Erdős Problem 302:
   \(\limsup f_{302}(N)/N\leq140803024/163562355\).
 
 The upper finite step has an exact rational certificate and reproducible
-verifier. The lower result is checked in Lean through exact pinned external
-formal developments. The manuscript explicitly discloses that it is
-unrefereed, that AI systems assisted with search, code, formalization, and
-audits, and that the upper asymptotic passage is not formalized end to end.
+verifier, and its complete semantic-to-asymptotic chain is checked in Lean.
+The lower result is checked in Lean through exact pinned external formal
+developments. The manuscript explicitly discloses that it is unrefereed and
+that AI systems assisted with search, code, formalization, and audits.
 
 Please replace this paragraph before sending with one sentence explaining why
 this recipient's expertise is relevant. Suggested focus lines appear below.

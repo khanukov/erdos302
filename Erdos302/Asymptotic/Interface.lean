@@ -10,16 +10,15 @@ local namespace `Erdos302.FormalConjectures`, so that a future import of
 them to the local `Erdos302.TripleFree` predicate and to the genuine finite
 maximum `Erdos302.f302`.
 
-**Unverified correspondence.**  These definitions are *intended* to mirror the
-Erdős-302 statement of `formal-conjectures` at commit
-`cb247a82de0a869f0cfe3d5c6bdfaeb440b065e1`, but that source was not available
-in this environment, so the correspondence has **not** been checked.  Nothing
-downstream depends on the correspondence: the endpoint theorem is proved for
-this local `IsMaxNoTripleCard`, and `eq_f302_of_isMaxNoTripleCard` shows that
-predicate pins `f` to the concrete `f302`.  Anyone wishing to claim agreement
-with upstream must diff the two statements by hand; in particular the upstream
-version may use `Finset.Icc 1 N` or `Finset.range (N+1) \ {0}`, `IsGreatest` or
-`sSup`, and may or may not require pairwise distinctness in the same way.
+**Verified correspondence.**  On 2026-09-10 the Erdős-302 source in
+`google-deepmind/formal-conjectures` was checked at commit
+`cb247a82de0a869f0cfe3d5c6bdfaeb440b065e1` and at its then-current `main`.
+Both upstream files had SHA-256
+`6c3f5777888534cbd34f4ee16a26ca6a18dd1af4a90e9a1bcb5340feaf9b0274`.
+`NoUnitFractionTriple` is textually identical, and `IsMaxNoTripleCard` differs
+only in the bound-variable name (`m` upstream, `n` here).  The endpoint remains
+logically independent of that source comparison: it is proved for this local
+predicate, and `eq_f302_of_isMaxNoTripleCard` pins `f` to the concrete `f302`.
 
 No `axiom`, `sorry`, `admit`, `unsafe`, `native_decide`, or `Lean.ofReduceBool`
 occurs here.

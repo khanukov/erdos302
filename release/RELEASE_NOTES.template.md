@@ -22,15 +22,16 @@ for all sufficiently large \(N\), and that
 \approx0.860852266403232.
 \]
 
-The upper bound is supported by an exact rational certificate and
-dependency-free verification path. The qualitative lower improvement is
+The upper bound is supported by an exact rational certificate, a
+dependency-free verification path, and an end-to-end source-closed Lean proof.
+The qualitative lower improvement is
 Lean-checked through immutable pinned external formal developments; the
 required push-to-`main` release-gating Verify run fresh-replays the stored
 dependency closure through Lean's kernel and separately reproduces its axiom
 report. The replay structurally trusts
-`.olean` serialization. The upper asymptotic passage remains a human proof and
-is not formalized end to end in Lean. Full trust-boundary and AI-assistance
-disclosures are included in the manuscript and repository.
+`.olean` serialization. Full trust-boundary and AI-assistance disclosures are
+included in the manuscript and repository. Neither formalization constitutes
+independent human review or a solution of Problem 302.
 
 This corrected version also cites Wang's May 2026 Problem 301 preprint and
 distinguishes its theorem from the \(2125/2418\) two-tail comparison used here.

@@ -45,10 +45,11 @@ $1/a=1/b+1/c$.  We give a computer-assisted proof that
   \limsup_{N\to\infty}\frac{f(N)}N\leq \frac{5273}{6048}
   =0.8718584656\ldots .
 \]
-The finite lemma is proved by a dependency-free exhaustive verifier and is
-independently cross-checked by a mixed-integer linear program.  Only the
-elementary arithmetic layer is currently checked in Lean 4; this note does
-not claim an end-to-end Lean formalization.
+The finite lemma is checked by a dependency-free exhaustive verifier and is
+independently cross-checked by a mixed-integer linear program.  The later
+source-closed Lean 4 development in this repository checks the finite
+certificates, semantic bridge, omission argument, and asymptotic endpoint end
+to end.
 \end{abstract}
 
 \section{The finite hypergraphs}

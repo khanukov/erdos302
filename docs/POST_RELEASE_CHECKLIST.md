@@ -163,9 +163,9 @@ Confirm every field in the automatically published record:
 The description must contain, in substance, all of the following statements:
 
 > Preliminary and unrefereed. This is partial progress, not a solution of
-> Erdős Problem 302. The finite upper certificate is checked by exact
-> software, while the upper asymptotic passage is not formalized end to end in
-> Lean. The lower theorem is Lean-checked through pinned external formal
+> Erdős Problem 302. The upper certificate and asymptotic passage are checked
+> end to end in Lean and cross-checked by exact software. The lower theorem is
+> Lean-checked through pinned external formal
 > developments. AI systems assisted with search, code, formalization, and
 > audits; the named author remains responsible for all claims. No independent
 > mathematical verification or peer review is claimed.

@@ -20,14 +20,14 @@ eventually for some absolute \(\delta>0\), and
 \approx0.8608522664.
 \]
 
-The upper bound is supported by an exact rational certificate and
-reproducible verifier. The qualitative lower bound is Lean-checked through
-immutable pinned formal developments. Independent mathematical review is now
-being solicited.
+The upper bound is supported by an exact rational certificate, reproducible
+verifier, and an end-to-end source-closed Lean proof. The qualitative lower
+bound is Lean-checked through immutable pinned formal developments. Independent
+mathematical review is now being solicited.
 
 This is partial progress, not a solution of Problem 302. The manuscript and
-external formal developments are unrefereed, and the upper asymptotic proof is
-not formalized end to end in Lean.
+external formal developments are unrefereed; no independent human verification
+or peer review is claimed.
 
 - Manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.1.1-corrected-preprint/erdos302-v0.1.1-preprint.pdf>
 - v0.1.1 version DOI: assigned by Zenodo after automatic GitHub ingestion

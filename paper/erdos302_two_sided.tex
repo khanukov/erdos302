@@ -39,14 +39,15 @@ certificate on the nontrivial divisors of $139708800$ gives
 \]
 The upper finite certificate is checked by a dependency-free exact
 verification path.  The lower derivation is checked in Lean through pinned
-external Problem 301/327 dependencies. The lower statement is unconditional
+external Problem 301/327 dependencies. The upper certificate, semantic
+bridge, finite omission argument, and asymptotic endpoint are also checked
+end to end in Lean 4. The lower statement is unconditional
 in the standard formal sense: push-to-main release-gating CI fresh-replays its
 complete exact-pinned stored dependency closure through the Lean kernel and
 reports no nonstandard axioms. The replay structurally trusts the serialized
 \texttt{.olean} input.
 Its constant is qualitative and non-explicit, and the external developments
-and this manuscript are unrefereed. The upper asymptotic proof is not
-formalized end to end in Lean. Neither result closes Problem 302.
+and this manuscript are unrefereed. Neither result closes Problem 302.
 \end{abstract}
 
 \section{Statement and prior context}
@@ -406,10 +407,20 @@ which completes Theorem~\ref{thm:main}.
 
 The upper packing was discovered with AI-assisted search and a
 floating-point LP solver.  The published claim depends only on the committed
-exact rational certificate and the program's standard-library verification
-path.  That path is run under normal and optimized Python, regenerates the
+exact rational certificate and its Lean-kernel-checked proof chain.  The
+dependency-free standard-library verifier provides an independent executable
+cross-check: it is run under normal and optimized Python, regenerates the
 complete finite instance, pins its digest and target sequence, and includes
-deliberate corruption tests.
+deliberate corruption tests.  The Lean development checks the finite semantic
+data, all 271 natural-number packing certificates, the 274-level ledger, the
+prefix-omission certificate, and the asymptotic endpoint.  The final theorem
+has no certificate hypothesis; its transitive axiom report contains only
+\texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.  Its
+predicates \texttt{NoUnitFractionTriple} and \texttt{IsMaxNoTripleCard} match
+the corresponding Erd\H{o}s-302 definitions in
+\texttt{google-deepmind/formal-conjectures} at the pinned source revision (up
+to the name of one bound variable), while a separate bridge identifies that
+interface with the concrete finite maximum used in the proof.
 
 The lower result imports analytic input from pinned Della Pietra Problem
 301/327 Lean developments.  At commit
@@ -460,9 +471,8 @@ human review to establish a public timestamp, provided that the exact released
 commit passes every proof-boundary check and the release is explicitly labelled
 preliminary and unrefereed.  Such a release must not claim independent
 verification, peer review, or a solution of Problem 302.  Named independent
-human mathematical review, or complete end-to-end formalization of every
-released claim, is required before posting the result to the Erd\H{o}s Problems
-forum or describing it as independently verified.
+human mathematical review is required before describing the result as
+independently verified.
 
 Original manuscript material is licensed under
 \href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}.  Attribution

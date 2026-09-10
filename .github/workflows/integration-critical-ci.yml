@@ -2,34 +2,7 @@ name: Integration critical path on high-memory CI
 
 on:
   push:
-    branches: [agent/integration-ci]
-    paths:
-      - ".github/workflows/integration-critical-ci.yml"
-      - "Erdos302/Generated/PackingCertificateLevelsNat*.lean"
-      - "Erdos302/Generated/SemanticPackingChecks*.lean"
-      - "Erdos302/Generated/SemanticChecks.lean"
-      - "Erdos302/Generated/ConfigurationValidity*.lean"
-      - "Erdos302/Generated/SemanticContext.lean"
-      - "Erdos302/Generated/SemanticBaseAdapter.lean"
-      - "Erdos302/Generated/BasePrefix/**"
-      - "Erdos302/SemanticBridge.lean"
-      - "Erdos302/SemanticConfig.lean"
-      - "Erdos302/BasePrefixCover*.lean"
-      - "Erdos302/Packing/PrefixTransport.lean"
-      - "Erdos302/Packing/PrefixTransportCore.lean"
-      - "Erdos302/Packing/PrefixOmission.lean"
-      - "Erdos302/Asymptotic.lean"
-      - "Erdos302/Asymptotic/Integration.lean"
-      - "scripts/generate_packing_level_bridge.py"
-      - "scripts/generate_semantic_packing_bridge.py"
-      - "scripts/generate_configuration_validity_bridge.py"
-      - "scripts/audit_lean_sources.py"
-      - "scripts/audit_project_imports.py"
-      - "scripts/assemble_integration_overlay.py"
-      - "scripts/verify_integration_overlay.py"
-      - "scripts/verify_github_run_provenance.py"
-      - "scripts/verify_published_integration_artifact.py"
-      - "scripts/restore_semantic_stage.py"
+    branches: [main, agent/integration-ci]
   workflow_dispatch:
     inputs:
       published_run_id:
@@ -44,6 +17,10 @@ on:
 permissions:
   actions: read
   contents: read
+
+concurrency:
+  group: integration-critical-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   STAGING_TAG: integration-overlay-20260907
