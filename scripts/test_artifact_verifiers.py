@@ -6,6 +6,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import re
 import subprocess
 import sys
 import tarfile
@@ -63,6 +64,50 @@ class PublicationArchiveTests(unittest.TestCase):
             self.make_archive(archive, names + [names[0]])
             with self.assertRaises(SystemExit):
                 publication.safe_extract(archive, root / "out")
+
+
+class WorkflowVerifierPinTests(unittest.TestCase):
+    workflows = (
+        ROOT / ".github/workflows/integration-critical-ci.yml",
+        ROOT / ".github/workflows/verify-integration-artifact.yml",
+    )
+
+    def pinned_sha(self, workflow: Path) -> str:
+        match = re.search(
+            r"ref: ([0-9a-f]{40})\n\s+path: verifier-source",
+            workflow.read_text(),
+        )
+        self.assertIsNotNone(match, workflow)
+        assert match is not None
+        return match.group(1)
+
+    def test_workflows_pin_the_same_hardened_verifier(self) -> None:
+        pins = {self.pinned_sha(workflow) for workflow in self.workflows}
+        self.assertEqual(len(pins), 1)
+        pin = pins.pop()
+        source = subprocess.check_output(
+            ["git", "show", f"{pin}:scripts/verify_published_integration_artifact.py"],
+            cwd=ROOT,
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            module_path = root / "pinned_verifier.py"
+            module_path.write_bytes(source)
+            pinned = load("pinned_publication_verifier", module_path)
+            archive = root / "artifact.tar"
+            names = sorted(pinned.EXPECTED_ARCHIVE_FILES) + ["unexpected.log"]
+            with tarfile.open(archive, "w:") as output:
+                for name in names:
+                    add_bytes(output, name)
+            with self.assertRaises(SystemExit):
+                pinned.safe_extract(archive, root / "out")
+            duplicate = root / "duplicate.tar"
+            expected = sorted(pinned.EXPECTED_ARCHIVE_FILES)
+            with tarfile.open(duplicate, "w:") as output:
+                for name in expected + [expected[0]]:
+                    add_bytes(output, name)
+            with self.assertRaises(SystemExit):
+                pinned.safe_extract(duplicate, root / "duplicate-out")
 
 
 class AggregateStagingTests(unittest.TestCase):
