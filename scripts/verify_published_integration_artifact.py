@@ -53,6 +53,10 @@ EXPECTED_DECLARATIONS = [
     "Erdos302.Asymptotic.erdos_302_upper_140803024_163562355",
     "Erdos302.Asymptotic.f302_upper_140803024_163562355",
 ]
+EXPECTED_ARCHIVE_FILES = EXPECTED_FILES | {
+    "INTEGRATION-MANIFEST.json",
+    "AxiomAudit.log",
+}
 
 
 def digest(path: Path) -> str:
@@ -67,11 +71,20 @@ def safe_relative(name: str) -> bool:
 def safe_extract(archive: Path, destination: Path) -> None:
     with tarfile.open(archive, "r:") as tf:
         members = tf.getmembers()
+        names = [member.name for member in members]
+        if len(names) != len(set(names)):
+            raise SystemExit("duplicate archive member")
         for member in members:
             if not safe_relative(member.name):
                 raise SystemExit(f"unsafe archive path: {member.name!r}")
-            if not (member.isfile() or member.isdir()):
+            if not member.isfile():
                 raise SystemExit(f"non-regular archive member: {member.name!r}")
+        if set(names) != EXPECTED_ARCHIVE_FILES:
+            missing = sorted(EXPECTED_ARCHIVE_FILES - set(names))
+            extra = sorted(set(names) - EXPECTED_ARCHIVE_FILES)
+            raise SystemExit(
+                f"wrong archive inventory: missing={missing} extra={extra}"
+            )
         destination.mkdir(parents=True, exist_ok=False)
         tf.extractall(destination, members=members, filter="data")
 

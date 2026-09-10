@@ -291,7 +291,6 @@ jobs:
           manifest=json.loads(Path('INTEGRATION-MANIFEST.json').read_text())
           paths=[entry['path'] for entry in manifest['files']]
           paths += ['INTEGRATION-MANIFEST.json', 'AxiomAudit.log']
-          paths += sorted(str(p) for p in Path('.').glob('*.log'))
           Path('publication-files.txt').write_text('\n'.join(dict.fromkeys(paths))+'\n')
           PY
           tar -cf integration-critical.tar -T publication-files.txt

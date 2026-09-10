@@ -2,13 +2,14 @@ name: Packing Lean CI shards
 
 on:
   push:
-    branches: [agent/packing-ci-shards]
+    branches: [main, agent/packing-ci-shards]
     paths:
       - ".github/workflows/packing-ci-canary.yml"
       - "Erdos302/**"
       - "lakefile.toml"
       - "lake-manifest.json"
       - "lean-toolchain"
+      - "scripts/pack_packing_ci_artifacts.py"
 
 permissions:
   contents: read
@@ -42,6 +43,7 @@ jobs:
           - 247
           - 248
           - 249
+          - 250
           - 251
           - 252
           - 253
