@@ -22,7 +22,7 @@ eventually for some absolute \(\delta>0\), and
 \]
 
 The lower result is derived using Della Pietra's structured Problem 301
-construction. The new contribution in this work is the odd-quarter padding
+construction. The contribution developed in this work is the odd-quarter padding
 lemma that converts that witness into a Problem 302 construction of density
 strictly greater than \(5/8\). The required external Lean development is pinned
 and kernel-checked but unrefereed. The upper bound does not depend on the Della

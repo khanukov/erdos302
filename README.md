@@ -49,7 +49,7 @@ and
 The upper result is a computer-assisted proof with a dependency-free exact
 rational verifier and does not depend on the Della Pietra developments. The
 lower result is derived using Donald Della Pietra's structured Problem 301
-construction; the new contribution here is the odd-quarter padding lemma that
+construction; the contribution developed here is the odd-quarter padding lemma that
 converts that witness into a Problem 302 construction of density strictly
 greater than \(5/8\). The required external Lean development is pinned,
 kernel-checked, and unrefereed. Its proof terms enter the dependency closure
@@ -202,7 +202,7 @@ density, or final bound; a missing generated hierarchical configuration; and
 a base verifier whose pinned SHA-256 no longer matches.
 
 The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
-algorithmically separate cross-check of the 21 base demands used by the new
+algorithmically separate cross-check of the 21 base demands used by the
 hierarchical certificate.
 
 ## What the Lean files prove
@@ -263,17 +263,29 @@ work. The original downstream contribution is the odd-quarter padding lemma
 and its Problem 302 bridge. See
 [dependence on Problem 301](#dependence-on-problem-301) below.
 
-The corresponding upper declaration is
+The upper interface theorem is declared in
 `Erdos302.Asymptotic.erdos_302_upper_140803024_163562355`, in
-[`Erdos302/Asymptotic.lean`](Erdos302/Asymptotic.lean). Its type is
+[`Erdos302/Asymptotic/Integration.lean`](Erdos302/Asymptotic/Integration.lean).
+Its exact source type is
 
 ```lean
 theorem erdos_302_upper_140803024_163562355
-    (f : ℕ → ℕ)
-    (hf : ∀ N, IsMaxNoTripleCard N (f N))
-    (ε : ℝ) (hε : 0 < ε) :
-    ∀ᶠ N in Filter.atTop,
-      (f N : ℝ) ≤ ((140803024 : ℝ) / 163562355 + ε) * N
+    (f : ℕ → ℕ) (hf : ∀ N : ℕ, IsMaxNoTripleCard N (f N))
+    (epsilon : ℝ) (positivity : 0 < epsilon) :
+    ∀ᶠ N : ℕ in (Filter.atTop : Filter ℕ),
+      (f N : ℝ) ≤
+        ((140803024 : ℝ) / (163562355 : ℝ) + epsilon) * (N : ℝ)
+```
+
+The same file states the concrete extremal-function corollary, with no
+abstract function or maximality premise:
+
+```lean
+theorem f302_upper_140803024_163562355
+    (epsilon : ℝ) (positivity : 0 < epsilon) :
+    ∀ᶠ N : ℕ in (Filter.atTop : Filter ℕ),
+      (f302 N : ℝ) ≤
+        ((140803024 : ℝ) / (163562355 : ℝ) + epsilon) * (N : ℝ)
 ```
 
 The concrete prefix-omission certificate is constructed inside the Lean

@@ -2,19 +2,19 @@
 
 The two bounds use intentionally separate proof routes.
 
-The lower conclusion is an unconditional theorem of the current two-sided
-draft in the standard formal sense. The root Lean project does not check that
-route. A separate exact-pins `lower-lean` job builds the local bridge against
-the pinned dependency environment and reproduces the committed transitive
-axiom report byte for byte. On pushes to `main`, version tags, and manual
-workflow runs, it also replays the complete imported-and-local `.olean`
-environment through Lean's kernel into a fresh environment. Pull requests
-skip only that long replay. The result is qualitative and unrefereed, but it
-is not conditional on an upstream mathematical hypothesis.
+The lower conclusion is a theorem of the current two-sided draft. No Problem
+301 hypothesis occurs in its statement: exact pinned upstream declarations
+enter through the proof-term dependency closure. The root Lean project does
+not check that route. A separate exact-pins `lower-lean` job builds the local
+bridge against the pinned dependency environment and reproduces the committed
+transitive axiom report byte for byte. On pushes to `main`, version tags, and
+manual workflow runs, it also replays the complete imported-and-local `.olean`
+environment through Lean's kernel into a fresh environment. Pull requests skip
+only that long replay. The result is qualitative and unrefereed.
 
-Here "standard formal sense" refers only to the reported foundational axiom
-set.  It does **not** mean that the dependency stack is standard upstream
-Lean/Mathlib: the build deliberately pins prerelease Lean `v4.33.0-rc1`, the
+The reported foundational axiom set does **not** imply that the dependency
+stack is standard upstream Lean/Mathlib: the build deliberately pins
+prerelease Lean `v4.33.0-rc1`, the
 `teorth/mathlib4` fork containing the unmerged
 `Mathlib.NumberTheory.Mertens` module. CI fetches those exact source revisions,
 but its ordinary build deliberately uses Mathlib's `lake exe cache get` binary

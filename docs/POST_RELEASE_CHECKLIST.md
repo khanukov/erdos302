@@ -175,9 +175,10 @@ Confirm every field in the automatically published record:
 The description must contain, in substance, all of the following statements:
 
 > Preliminary and unrefereed. This is partial progress, not a solution of
-> Erdős Problem 302. The upper certificate and asymptotic passage are checked
-> end to end in Lean and cross-checked by exact software. The lower theorem is
-> Lean-checked through pinned external formal
+> Erdős Problem 302. The upper finite certificate is cross-checked by exact
+> software. The finite semantics, exact packing certificates, omission
+> argument, and upper asymptotic endpoint are checked end to end in Lean 4.
+> The lower theorem is Lean-checked through pinned external formal
 > developments. AI systems assisted with search, code, formalization, and
 > audits; the named author remains responsible for all claims. No independent
 > mathematical verification or peer review is claimed.
@@ -205,8 +206,9 @@ rulesets live in GitHub settings and cannot be applied by a source-only pull
 request. After merging the audit corrections, set and record:
 
 - description: `Preliminary, unrefereed two-sided partial progress on Erdős
-  Problem 302, with exact certificates and end-to-end Lean-checked upper and
-  lower bounds.`;
+  Problem 302, with an exact upper finite certificate, an end-to-end
+  Lean-checked upper bound, and a Lean-checked lower bound through pinned
+  external formal developments.`;
 - homepage: `https://doi.org/10.5281/zenodo.21989077` until the v0.2.0
   version DOI or arXiv record replaces it;
 - topics: `erdos-problems`, `unit-fractions`, `lean4`,

@@ -7,7 +7,7 @@ message: >-
 title: "Two-sided computer-assisted progress on Erdős Problem 302"
 type: software
 version: "0.2.0-preprint"
-date-released: "2026-09-10"
+date-released: "2026-09-12"
 license: MIT
 authors:
   - family-names: Khanukov
@@ -24,10 +24,10 @@ abstract: >-
   exact certificate gives the upper bound 140803024/163562355; this upper result
   does not depend on the Della Pietra developments. The results are not
   independently verified or peer reviewed and do not solve Problem 302. The
-  finite semantics, exact packing certificates, omission argument, and upper
-  asymptotic endpoint are connected
-  by an end-to-end Lean 4 development with no external certificate hypothesis
-  and are cross-checked by exact dependency-free software. For the publication
+  upper finite certificate is independently cross-checked by exact
+  dependency-free software. The finite semantics, exact packing certificates,
+  omission argument, and upper asymptotic endpoint are connected by an
+  end-to-end Lean 4 development with no external certificate hypothesis. For the publication
   candidate, the cache-free workflow rebuilds all 80,181 committed
   project-local Lean modules from source, verifies the exact 160,362
   .olean/.ilean output inventory, replays the final declarations, reproduces
@@ -65,7 +65,7 @@ preferred-citation:
     - family-names: Khanukov
       given-names: Dmitry
   year: 2026
-  date-released: "2026-09-10"
+  date-released: "2026-09-12"
   status: preprint
   license: CC-BY-4.0
   url: "https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf"

@@ -274,6 +274,8 @@ jobs:
           ! grep -Fq "${banned_unconditional}" \
             README.md CITATION.cff REPRODUCIBILITY.md \
             docs/LOWER_BOUND_PROVENANCE.md docs/PREPRINT_RELEASE.md \
+            docs/TRUST_BOUNDARY.md docs/INDEPENDENT_REVIEW.md \
+            docs/POST_RELEASE_CHECKLIST.md \
             paper/erdos302_two_sided.tex release/ANNOUNCEMENT.md \
             release/ARXIV_METADATA.template.md \
             release/RELEASE_NOTES.template.md \

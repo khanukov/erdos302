@@ -75,7 +75,7 @@ edge set from \((b-a)(c-a)=a^2\). The Wang comparison verifier regenerates the
 computes its exact prefix covers, and checks the density arithmetic yielding
 \(2125/2418\). The multiplier disjointness and asymptotic prefix transfer are
 the human comparison argument in the manuscript; neither is a dependency of
-the new headline certificate.
+the headline certificate proved here.
 The SciPy/HiGHS script is a regression cross-check only.
 
 To run that optional cross-check, install the pinned requirements and use:
@@ -234,7 +234,7 @@ curl -fsSL https://pastebin.com/raw/p7EfqMYQ | sha256sum
 ```
 
 A later mismatch may mean that the mutable note changed; it does not by itself
-invalidate the independently certified bound in this repository.
+affect the exact upper finite-certificate checks in this repository.
 
 ## Licensing scope
 

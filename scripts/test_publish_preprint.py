@@ -244,11 +244,42 @@ class WorkflowGateTests(unittest.TestCase):
 
 
 class ProvenanceMessagingTests(unittest.TestCase):
+    def test_publication_names_exact_upper_declarations_and_sources(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "[`Erdos302/Asymptotic/Integration.lean`](Erdos302/Asymptotic/Integration.lean)",
+            readme,
+        )
+        self.assertIn(
+            "theorem f302_upper_140803024_163562355", readme
+        )
+        self.assertNotIn(
+            "[`Erdos302/Asymptotic.lean`](Erdos302/Asymptotic.lean). Its type is",
+            readme,
+        )
+
+        paper = (root / "paper" / "erdos302_two_sided.tex").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Readers checking the lower formalization", paper)
+        verification = paper.split("\\section{Verification scope and disclosure}", 1)[1]
+        self.assertIn(
+            r"\path{Erdos302.Asymptotic.erdos_302_upper_140803024_163562355}",
+            verification,
+        )
+        self.assertIn(
+            r"\path{Erdos302.Asymptotic.f302_upper_140803024_163562355}",
+            verification,
+        )
+
     def test_lower_provenance_is_explicit_and_consistent_across_release_surface(self) -> None:
         root = Path(__file__).resolve().parents[1]
         banned_unconditional_wording = (
             "unconditional in the standard " + "formal sense"
         )
+        banned_standard_formal_sense = "standard formal " + "sense"
+        banned_unconditional_theorem = "unconditional " + "theorem"
         paths = [
             root / "README.md",
             root / "CITATION.cff",
@@ -277,6 +308,9 @@ class ProvenanceMessagingTests(unittest.TestCase):
             root / "REPRODUCIBILITY.md",
             root / "docs" / "LOWER_BOUND_PROVENANCE.md",
             root / "docs" / "PREPRINT_RELEASE.md",
+            root / "docs" / "TRUST_BOUNDARY.md",
+            root / "docs" / "INDEPENDENT_REVIEW.md",
+            root / "docs" / "POST_RELEASE_CHECKLIST.md",
         ]
         repository_guard_paths = [
             *banned_wording_paths,
@@ -286,7 +320,13 @@ class ProvenanceMessagingTests(unittest.TestCase):
         for path in repository_guard_paths:
             text = path.read_text(encoding="utf-8")
             with self.subTest(banned_wording_path=path.name):
-                self.assertNotIn(banned_unconditional_wording, " ".join(text.split()))
+                normalized_text = " ".join(text.split())
+                self.assertNotIn(banned_unconditional_wording, normalized_text)
+                self.assertNotIn(banned_standard_formal_sense, normalized_text)
+                self.assertNotIn(banned_unconditional_theorem, normalized_text.lower())
+                self.assertNotRegex(
+                    normalized_text.lower(), r"(?:then-)?unconditional (?:full )?replay"
+                )
 
         verification_workflow = (root / ".github" / "workflows" / "verify.yml").read_text(
             encoding="utf-8"
@@ -306,6 +346,65 @@ class ProvenanceMessagingTests(unittest.TestCase):
         theorem = paper.split("\\begin{theorem}", 1)[1].split("\\end{theorem}", 1)[0]
         self.assertNotIn("Della Pietra", theorem)
         self.assertNotIn("Assume", theorem)
+
+        arxiv_metadata = texts[root / "release" / "ARXIV_METADATA.template.md"]
+        self.assertIn(
+            "The upper finite certificate is independently cross-checked by a dependency-free exact verifier.",
+            arxiv_metadata,
+        )
+        self.assertIn(
+            "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
+            arxiv_metadata,
+        )
+        self.assertNotIn("new odd-quarter padding lemma", arxiv_metadata)
+
+        cff = texts[root / "CITATION.cff"]
+        self.assertIn(
+            "The upper finite certificate is independently cross-checked by exact dependency-free software.",
+            " ".join(cff.split()),
+        )
+        lower_provenance = (root / "docs" / "LOWER_BOUND_PROVENANCE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("unconditional lower-bound theorem", lower_provenance.lower())
+
+        reproducibility = (root / "REPRODUCIBILITY.md").read_text(encoding="utf-8")
+        self.assertNotIn("independently certified bound", reproducibility.lower())
+        post_release = (root / "docs" / "POST_RELEASE_CHECKLIST.md").read_text(
+            encoding="utf-8"
+        )
+        normalized_post_release = " ".join(
+            post_release.replace("\n> ", " ").split()
+        )
+        self.assertIn(
+            "The upper finite certificate is cross-checked by exact software.",
+            normalized_post_release,
+        )
+        self.assertIn(
+            "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
+            normalized_post_release,
+        )
+        self.assertNotIn("end-to-end Lean-checked upper and lower bounds", post_release)
+
+        ownership_surface = {
+            **texts,
+            root / "REPRODUCIBILITY.md": (root / "REPRODUCIBILITY.md").read_text(
+                encoding="utf-8"
+            ),
+            root / "docs" / "LOWER_BOUND_PROVENANCE.md": lower_provenance,
+        }
+        novelty_claim_patterns = (
+            "new contribution",
+            "new downstream contribution",
+            "new ingredient",
+            "new headline certificate",
+            "new hierarchical certificate",
+        )
+        for path, text in ownership_surface.items():
+            with self.subTest(ownership_wording_path=path.name):
+                lowered = " ".join(text.lower().split())
+                for pattern in novelty_claim_patterns:
+                    self.assertNotIn(pattern, lowered)
 
 
 class ManifestTests(unittest.TestCase):
