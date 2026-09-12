@@ -107,9 +107,13 @@ builds may create a `0.2.0-preprint` candidate artifact, but
 `PUBLISH_READY=false` prevents it from becoming a tag or GitHub Release. The
 integration run must include a successful `verify-artifact` job and bounded
 Lean4Checker replay of declarations in the rebuilt integration and asymptotic
-modules against the imported environment. This still trusts the cached
-80,127-module overlay and `.olean` serialization; it is not evidence of a
-cache-free full-project rebuild.
+modules against the imported environment. In addition, the manually dispatched
+`cache-free-full-rebuild.yml` workflow must succeed for the exact publication
+commit: it rebuilds all 80,181 project-local Lean modules from source, requires
+the exact 160,362 `.olean`/`.ilean` output inventory, replays the final
+declarations, reproduces the axiom allowlist, and independently reads the
+aggregate artifact back. The Lean kernel/toolchain, operating system and
+hardware, and Mathlib remain disclosed trusted boundaries.
 
 The same bundle can be reproduced from a clean checkout with:
 
@@ -134,15 +138,20 @@ This PR intentionally keeps `PUBLISH_READY=false`; merging it cannot create a
 tag or release. After the merge, wait for the exact push-to-`main` Verify run,
 download and inspect its v0.2.0 PDF and candidate bundle, and obtain the named
 author's approval. Then make a separate reviewed commit changing only
-`release/PUBLISH_READY` to `true`. Its own exact-SHA green push-to-`main`
-Verify and Integration critical CI runs are the authoritative publisher
-inputs. Main-branch integration runs are never cancelled by a later push.
+`release/PUBLISH_READY` to `true`. Its exact-SHA push-to-`main` Verify and
+Integration critical CI runs must pass, and the cache-free full-project rebuild
+must be manually dispatched and pass for that same commit. If the first
+Integration run finishes before the cache-free rebuild, rerun that exact
+push-triggered Integration run after the rebuild succeeds so publication is
+re-evaluated. Main-branch integration runs are never cancelled by a later push.
 
 The `Publish corrected preprint` workflow runs only after a successful
 push-triggered `Integration critical CI` workflow on `main`. It requires that
 exact integration run to contain one successful `verify-artifact` job, locates
-and revalidates a successful exact-SHA push-triggered `Verify` run, and only
-then considers publication. It first requires
+and revalidates a successful exact-SHA push-triggered `Verify` run, and locates
+and independently revalidates a successful exact-SHA manually dispatched
+`Cache-free full-project Lean rebuild`, including exactly one successful
+`aggregate` and `read-back` job. Only then does it consider publication. It first requires
 the release controls and CFF to pass the same machine validator used by the
 candidate builder. It then requires `release/PUBLISH_READY` to contain exactly
 `true`; `false` exits without any GitHub mutation and every other value fails.

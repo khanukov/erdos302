@@ -10,6 +10,9 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{plain}
 \newcommand{\N}{\mathbb N}
 \newcommand{\Q}{\mathbb Q}
 
@@ -24,13 +27,15 @@
 \begin{abstract}
 Let $f(N)$ denote the largest size of a subset of $\{1,\ldots,N\}$
 containing no distinct $a,b,c$ with $1/a=1/b+1/c$.  We prove two partial
-results.  First, adapting the structured positive-density construction
-developed by Della Pietra for Erd\H{o}s Problem 301, we show that there is an
-absolute $\delta>0$ such that
+results.  First, using the structured Problem 301 construction of Della
+Pietra, we show via an odd-quarter padding lemma that there is an absolute
+$\delta>0$ such that
 \[
   f(N)\geq(5/8+\delta)N
 \]
-for all sufficiently large $N$.  Second, a hierarchical exact rational
+for all sufficiently large $N$.  The required Problem 301 input comes from a
+pinned, kernel-checked but unrefereed external Lean development.  Second, a
+hierarchical exact rational
 certificate on the nontrivial divisors of $139708800$ gives
 \[
   \limsup_{N\to\infty}\frac{f(N)}N
@@ -38,16 +43,11 @@ certificate on the nontrivial divisors of $139708800$ gives
   \approx 0.860852266403232.
 \]
 The upper finite certificate is checked by a dependency-free exact
-verification path.  The lower derivation is checked in Lean through pinned
-external Problem 301/327 dependencies. The upper certificate, semantic
-bridge, finite omission argument, and asymptotic endpoint are also checked
-end to end in Lean 4. The lower statement is unconditional
-in the standard formal sense: push-to-main release-gating CI fresh-replays its
-complete exact-pinned stored dependency closure through the Lean kernel and
-reports no nonstandard axioms. The replay structurally trusts the serialized
-\texttt{.olean} input.
-Its constant is qualitative and non-explicit, and the external developments
-and this manuscript are unrefereed. Neither result closes Problem 302.
+verification path, and the upper certificate, semantic bridge, finite
+omission argument, and asymptotic endpoint are checked end to end in Lean 4.
+The upper bound does not depend on the Della Pietra developments.  The lower
+constant is qualitative and non-explicit, and the external developments and
+this manuscript are unrefereed. Neither result closes Problem 302.
 \end{abstract}
 
 \section{Statement and prior context}
@@ -127,6 +127,11 @@ Numerically and exactly, the relevant upper bounds are ordered as
 \]
 It does not prove that $f(N)/N$ converges.
 
+Our contribution to the lower bound is an odd-quarter padding lemma converting
+Della Pietra's structured Problem 301 witness into a Problem 302 construction
+of density strictly greater than $5/8$.  The upper bound is independent of the
+Della Pietra developments.
+
 \begin{theorem}\label{thm:main}
 There is an absolute $\delta>0$ and an $N_0$ such that, for every $N\geq N_0$,
 \[
@@ -141,8 +146,8 @@ Moreover,
 
 \section{The lower bound}
 
-The argument uses the following structured input from Della Pietra's pinned
-Problem 301 development \cite{DellaPietra301}.  Put
+The following proposition is imported from the pinned Della Pietra Problem
+301 development \cite{DellaPietra301} and is not original to this work.  Put
 \[
  P_L=\prod_{p<L}p,
  \qquad
@@ -169,6 +174,10 @@ or $N\leq2n$;
 \end{enumerate}
 \end{proposition}
 
+All subsequent arguments in this section are elementary except for this
+imported structured input.  The new ingredient is
+Lemma~\ref{lem:padding}, the odd-quarter padding lemma.
+
 The exact Lean interfaces and immutable dependency revisions used for this
 proposition are recorded in the repository.  The underlying analytic work
 uses the centered-tail library developed for Problem 327
@@ -176,14 +185,12 @@ uses the centered-tail library developed for Problem 327
 analytic estimates \cite{Tenenbaum2015,BretecheTenenbaum2026}.  These external
 developments are unrefereed.
 
-The structured proposition is not assumed as a hypothesis. For release
-verification, its exact pinned proof term and complete transitive stored
-dependency closure, including the analytic input, are replayed through Lean's
-kernel into a fresh environment.
-The replay kernel-checks the proof terms while structurally trusting the serialized
-\texttt{.olean} input. The resulting lower theorem is therefore unconditional
-in the standard formal sense, while remaining an unrefereed result with a
-qualitative, non-explicit constant.
+The proposition enters the Lean dependency closure as an exact pinned proof
+term, not as a hypothesis of Theorem~\ref{thm:main}.  Mathematical confidence
+in the lower result nevertheless depends on the correctness and intended
+interpretation of that unrefereed upstream formalization.  The verification
+and trust-boundary details are given in the final section.  The upper bound of
+Theorem~\ref{thm:main} does not depend on these external developments.
 
 Define the odd quarter
 \[
@@ -248,7 +255,28 @@ cardinalities of triple-free subsets of $\{1,\ldots,N\}$, proves that every
 such witness is bounded by this maximum, and derives the lower statement of
 Theorem~\ref{thm:main} in that conventional notation.  Separate examples
 verify that $\{2,3,6\}$ and every full interval with $N\geq6$ violate the
-literal predicate.
+literal predicate, so the formal statement is not vacuously true.
+
+Readers checking the formalization should go to a single declaration, namely
+\[
+ \texttt{Erdos302Lower.erdos302\_f302\_lower\_five\_eighths\_plus}
+\]
+in the file \texttt{lower-lean/Erdos302Lower/Maximum.lean}.  Unfolding its
+type
+\[
+ \texttt{Erdos302MaximumLowerConclusion}
+\]
+gives
+\[
+ \exists\,\delta>0\ \exists\,N_0\ \forall N\geq N_0:\quad
+ \left(\frac58+\delta\right)N\leq f_{302}(N).
+\]
+The unfolded statement mentions the single project definition \texttt{f302},
+whose own definition uses \texttt{admissibleSubsets} and
+\texttt{NoUnitFractionTriple}; those three are reproduced in the repository
+README and are the entire vocabulary required.  The proof modules culminate
+in this declaration, while the validation and axiom-audit modules are
+independent of it.
 
 \section{The hierarchical finite certificate}
 
@@ -261,44 +289,164 @@ The reciprocal-triple hypergraph $H$ has vertex set $D$ and one edge for each
 unordered all-distinct triple satisfying $bc=a(b+c)$.  The verifier
 regenerates $719$ vertices and $12675$ edges from these definitions.
 
-We use a family $\mathcal G$ of configurations.  Every edge is a
-configuration of demand one.  The remaining configurations are all $96$
-admissible exponent shifts of each of the $21$ exactly verified prefixes of
-the divisor tile
+Throughout, a \emph{vertex cover} of a hypergraph is a set of vertices
+meeting every edge.  A triple-free subset of $D$ is exactly the complement of
+a vertex cover of $H$, so lower bounds for cover numbers are what the upper
+bound needs.  Computing those numbers directly on $H$ is infeasible, so we
+bound them from below by a weighted family of subsets whose individual cover
+requirements are already known.  The next definition names that device; the
+two families we actually use are constructed in Lemmas~\ref{lem:edge}
+and~\ref{lem:scaling}.
+
+For $W\subseteq D$ let $H[W]$ denote the induced sub-hypergraph, whose edges
+are the edges of $H$ contained in $W$, and let $\tau(\cdot)$ denote the
+minimum size of a vertex cover.
+
+\begin{definition}[configuration, demand, support]\label{def:configuration}
+A \emph{configuration} is a pair $(S,r)$ consisting of a subset $S\subseteq
+D$, called its \emph{support}, and an integer $r\geq0$, called its
+\emph{demand}, such that
 \[
- Q_0=3360=2^5\cdot3\cdot5\cdot7.
+ \tau\bigl(H[S]\bigr)\geq r .
 \]
-Thus there are $96\cdot21=2016$ hierarchical gadgets and $14691$
-configurations in total.  A gadget's demand is its exact base-prefix cover
-number.
+\end{definition}
+
+The demand is therefore a proved property of the pair, not a label attached
+to it: exhibiting a configuration requires proving the displayed inequality.
+The point of the definition is that a demand established once remains valid
+inside every larger vertex set, which is what lets a single family serve all
+the prefixes used below.
 
 \begin{lemma}[configuration packing]\label{lem:packing}
-Let $H=(V,E)$ be a finite hypergraph.  Suppose each $G\in\mathcal G$ has an
-integer demand $r(G)\geq0$ such that every vertex cover $C$ satisfies
-$|C\cap G|\geq r(G)$.  If nonnegative rational weights $y_G$ satisfy
+Let $W\subseteq D$, let $\mathcal G$ be a finite family of configurations
+with $S\subseteq W$ for every $(S,r)\in\mathcal G$, and let
+$y_{(S,r)}\geq0$ be rational weights satisfying the load condition
 \[
- \sum_{G\ni v}y_G\leq1\qquad(v\in V),
+ \sum_{(S,r)\in\mathcal G:\,v\in S}y_{(S,r)}\leq1\qquad(v\in W).
 \]
-then every vertex cover satisfies
+Then every vertex cover $C$ of $H[W]$ satisfies
 \[
- |C|\geq\sum_{G\in\mathcal G}r(G)y_G.
+ |C|\geq\sum_{(S,r)\in\mathcal G}r\,y_{(S,r)}.
 \]
 \end{lemma}
 \begin{proof}
-Exact double counting gives
+Fix $(S,r)\in\mathcal G$.  Every edge of $H[S]$ is an edge of $H[W]$ and is
+contained in $S$, so it is met by $C$ inside $S$; hence $C\cap S$ is a vertex
+cover of $H[S]$ and $|C\cap S|\geq\tau(H[S])\geq r$.  Exact double counting
+now gives
 \[
- \sum_G r(G)y_G
- \leq\sum_G|C\cap G|y_G
- =\sum_{v\in C}\sum_{G\ni v}y_G
- \leq|C|.
+ \sum_{(S,r)}r\,y_{(S,r)}
+ \leq\sum_{(S,r)}|C\cap S|\,y_{(S,r)}
+ =\sum_{v\in C}\ \sum_{(S,r):\,v\in S}y_{(S,r)}
+ \leq|C|.\qedhere
 \]
 \end{proof}
 
-In particular, an objective strictly greater than $k-1$ certifies integral
-cover number at least $k$.  For $x\geq1$, write
+The first family of configurations is immediate.
+
+\begin{lemma}[edge configurations]\label{lem:edge}
+For every edge $e$ of $H$, the pair $(e,1)$ is a configuration.
+\end{lemma}
+\begin{proof}
+The hypergraph $H[e]$ has $e$ among its edges, so a vertex cover of $H[e]$ is
+nonempty and $\tau(H[e])\geq1$.
+\end{proof}
+
+The second family transports exactly computed cover numbers from a smaller
+divisor set.  Put
+\[
+ Q_0=3360=2^5\cdot3\cdot5\cdot7,
+ \qquad D_0=\operatorname{Div}(Q_0)\setminus\{1\},
+\]
+so that $|D_0|=47$, and let $H_0$ denote the reciprocal-triple hypergraph on
+$D_0$, defined by the same relation $bc=a(b+c)$.  For $x\geq1$ write
+\[
+ D_{0,\leq x}=\{d\in D_0:d\leq x\}.
+\]
+Because $D_0$ is small, the exact vertex-cover number
+$\tau\bigl(H_0[D_{0,\leq x}]\bigr)$ of every such prefix is computed by
+exhaustive search; a separate verifier performs this computation
+independently of the main certificate.  These exact numbers rise from $0$ to
+$21$, and for $1\leq k\leq21$ we define
+\[
+ s_k=\min\bigl\{t\in D_0:\tau\bigl(H_0[D_{0,\leq t}]\bigr)\geq k\bigr\},
+\]
+which yields
+\[
+ \begin{aligned}
+ (s_1,\ldots,s_{21})=(
+ &6,12,24,30,40,42,56,84,96,105,120,\\
+ &140,210,224,240,336,420,560,1120,1680,3360).
+ \end{aligned}
+\]
+We call $D_{0,\leq s_k}$ the \emph{$k$-th certified base prefix}.  Its exact
+cover number is $k$, not merely at least $k$.  Indeed, consecutive prefixes
+of $D_0$ differ by a single vertex, and adjoining one vertex $v$ raises the
+cover number by at most one, since if $C$ covers a prefix $W$ then
+$C\cup\{v\}$ covers $W\cup\{v\}$: every edge of $H_0[W\cup\{v\}]$ either lies
+in $W$, and is met by $C$, or contains $v$.  By minimality of $s_k$ the
+preceding prefix has cover number at most $k-1$, so the prefix
+$D_{0,\leq s_k}$ has cover number at most $k$, hence exactly $k$.  The
+exhaustive verifier computes these numbers directly and checks the equality.
+This replaces an infeasible computation on $H$ by $21$ feasible ones on
+$H_0$.
+
+\begin{lemma}[scaled base prefixes]\label{lem:scaling}
+Let $m$ divide $Q/Q_0$ and let $1\leq k\leq21$.  Then
+\[
+ \bigl(m\cdot D_{0,\leq s_k},\ k\bigr)
+\]
+is a configuration of $H$.
+\end{lemma}
+\begin{proof}
+Write $S=m\cdot D_{0,\leq s_k}$.  If $d\mid Q_0$ and $m\mid Q/Q_0$, then
+$md\mid Q$ and $md\neq1$, so $S\subseteq D$, and $d\mapsto md$ is injective.
+It also preserves the defining relation in both directions, since
+\[
+ \frac1a=\frac1b+\frac1c
+ \iff
+ \frac1{ma}=\frac1{mb}+\frac1{mc},
+\]
+so it maps every edge of $H_0[D_{0,\leq s_k}]$ to an edge of $H$ contained in
+$S$, that is, to an edge of $H[S]$.  Now let $C$ be a vertex cover of $H[S]$
+and put
+\[
+ C_0=\{d\in D_{0,\leq s_k}:md\in C\}.
+\]
+Given an edge $e_0$ of $H_0[D_{0,\leq s_k}]$, its image $me_0$ is an edge of
+$H[S]$, so $C$ contains some $md\in me_0$, whence $d\in C_0\cap e_0$.  Thus
+$C_0$ is a vertex cover of $H_0[D_{0,\leq s_k}]$, and injectivity gives
+\[
+ |C|\geq|C_0|\geq\tau\bigl(H_0[D_{0,\leq s_k}]\bigr)=k,
+\]
+so $\tau(H[S])\geq k$.
+\end{proof}
+
+The verifier does not take the edge correspondence used in this proof on
+trust: for every multiplier $m$ and every certified base prefix, it checks
+that each mapped triple actually occurs in the independently regenerated edge
+set of $H$.
+
+Since
+\[
+ \frac{Q}{Q_0}=41580=2^2\cdot3^3\cdot5\cdot7\cdot11
+\]
+has $3\cdot4\cdot2\cdot2\cdot2=96$ divisors, Lemma~\ref{lem:scaling} supplies
+$96\cdot21=2016$ configurations, which we call \emph{hierarchical gadgets}.
+Together with the $12675$ edge configurations of Lemma~\ref{lem:edge}, they
+form the family $\mathcal G$ used below, of size
+\[
+ 12675+2016=14691.
+\]
+
+For $x\geq1$ write
 \[
  D_{\leq x}=\{d\in D:d\leq x\}.
 \]
+We apply Lemma~\ref{lem:packing} with $W=D_{\leq x}$, using those
+configurations of $\mathcal G$ whose support lies in $D_{\leq x}$.  Since
+cover numbers are integers, a packing whose objective is strictly greater
+than $k-1$ certifies $\tau(H[D_{\leq x}])\geq k$.
 The committed JSON contains exact rational packings at $271$ prefixes,
 producing a nondecreasing sequence of possibly repeated thresholds
 \[
@@ -422,15 +570,16 @@ the corresponding Erd\H{o}s-302 definitions in
 to the name of one bound variable), while a separate bridge identifies that
 interface with the concrete finite maximum used in the proof.
 
-All project modules in this upper-theorem closure have committed Lean source.
-The authoritative high-memory run recompiles 48 critical modules, then
-Lean4Checker replays declarations in the rebuilt integration and asymptotic
-modules against the imported environment. The cached 80,127-module immutable
-SHA-256-verified \texttt{.olean} overlay and \texttt{.olean} serialization
-remain trusted. No cache-free full-project rebuild has completed yet, and the
-replay does not establish that every cached binary was produced from the
-corresponding source in this commit. Thus ``source-closed'' here means source
-availability, not complete source-to-binary provenance.
+All 80,181 committed project-local Lean modules have source.  For exact main
+commit \texttt{015d376e432040a2a71c7a5689c2fd238779ac2c}, the cache-free
+full-project workflow compiled every one of those modules from source,
+required the exact inventory of 160,362 \texttt{.olean}/\texttt{.ilean}
+outputs, replayed the final declarations, and reproduced the axiom allowlist
+in GitHub Actions run
+\href{https://github.com/khanukov/erdos302/actions/runs/34676374033}{34676374033}.
+The present revision changes no project-local Lean source.
+The Lean kernel and toolchain, operating system and hardware, and Mathlib are
+disclosed trusted boundaries of that source build.
 
 The lower result imports analytic input from pinned Della Pietra Problem
 301/327 Lean developments.  At commit
@@ -449,10 +598,9 @@ successful push-to-main run for the exact commit. The upstream results are
 imported as proof terms, not as hypotheses.
 The transitive axiom transcript contains only \texttt{propext},
 \texttt{Classical.choice}, and \texttt{Quot.sound}; no project-local open proof
-obligation is admitted.  Thus the lower statement is unconditional in the
-standard formal sense, although its constant is non-explicit and the work is
-unrefereed.  Here ``standard formal sense'' describes the axiom closure, not
-the software pedigree: the exact build deliberately uses prerelease Lean
+obligation or Problem 301 hypothesis occurs in the theorem statement.  This
+records its axiom closure, not independent review or the pedigree of the
+software stack: the exact build deliberately uses prerelease Lean
 \texttt{v4.33.0-rc1} and the pinned \texttt{teorth/mathlib4} fork containing
 the then-unmerged \texttt{Mathlib.NumberTheory.\allowbreak Mertens} module.
 The ordinary build downloads precompiled Mathlib \texttt{.olean} files; fresh replay

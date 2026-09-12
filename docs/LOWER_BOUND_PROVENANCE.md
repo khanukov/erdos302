@@ -38,9 +38,11 @@ The #327 repository is used as a transitive analytic library. Neither the #301
 result nor the statement of Erdős Problem 327 is introduced as a hypothesis;
 the required declarations are imported as proof terms from immutable pins.
 
-The phrase "unconditional in the standard formal sense" describes the
-*axiom closure*, not the software stack.  The lower build deliberately uses a
-nonstandard, exactly pinned stack: the prerelease Lean toolchain
+No Problem 301 hypothesis occurs in the final theorem statement: the pinned
+external declarations enter as proof terms in its dependency closure. This is
+an axiom-closure fact, not a claim about the software stack or independent
+mathematical review. The lower build deliberately uses a nonstandard, exactly
+pinned stack: the prerelease Lean toolchain
 `v4.33.0-rc1` and the `teorth/mathlib4` fork containing the unmerged
 `Mathlib.NumberTheory.Mertens` module. CI reconstructs the dependency graph
 from `lake-manifest.json`, fetches the exact source revisions, downloads

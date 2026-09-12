@@ -21,13 +21,21 @@ eventually for some absolute \(\delta>0\), and
 \approx0.8608522664.
 \]
 
+The lower result is derived using Della Pietra's structured Problem 301
+construction. The new contribution in this work is the odd-quarter padding
+lemma that converts that witness into a Problem 302 construction of density
+strictly greater than \(5/8\). The required external Lean development is pinned
+and kernel-checked but unrefereed. The upper bound does not depend on the Della
+Pietra developments.
+
 The upper bound is supported by an exact rational certificate, reproducible
-verifier, and a source-closed Lean proof. Here source-closed means all project
-sources are committed. CI recompiles 48 critical modules, then Lean4Checker
-replays declarations in the rebuilt integration and asymptotic modules against
-the imported environment. The cached 80,127-module SHA-256-verified `.olean`
-overlay and `.olean` serialization remain trusted; no cache-free full-project
-rebuild has completed yet. The qualitative lower bound is
+verifier, and an end-to-end Lean proof with no external certificate hypothesis.
+For the publication candidate, the cache-free workflow rebuilt all 80,181
+committed project-local Lean modules from source, verified the exact 160,362
+`.olean`/`.ilean` output inventory, replayed the final declarations, reproduced
+the axiom allowlist, and independently read back the aggregate artifact. The
+Lean kernel/toolchain, operating system and hardware, and Mathlib remain
+disclosed trusted boundaries. The derived qualitative lower bound is
 Lean-checked through immutable pinned formal developments. Independent
 mathematical review is now being solicited. This announcement is not approval
 for an Erdős Problems forum post.
