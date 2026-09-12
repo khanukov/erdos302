@@ -1,6 +1,6 @@
 # Lower-bound provenance
 
-The unconditional lower-bound theorem in `lower-lean/` is a downstream
+The lower-bound theorem in `lower-lean/` is a downstream
 derivation from a specific structured witness in Donald Della Pietra's Erdős
 Problem 301 Lean development. It does not import an informal numerical
 estimate or assume the upstream result as a hypothesis: the push-to-`main`
@@ -148,7 +148,7 @@ and `leanchecker --fresh` replay establish different, stronger properties.
 ## Attribution and licensing
 
 The analytic construction and its Lean formalization are Della Pietra's. The
-new downstream contribution is the odd-quarter padding lemma, cardinality
+downstream contribution developed in this work is the odd-quarter padding lemma, cardinality
 ledger, bridge to the literal Erdős 302 predicate, semantic anti-vacuity
 checks, and formal bridge to the finite maximum `f302`.
 

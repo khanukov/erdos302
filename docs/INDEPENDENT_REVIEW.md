@@ -65,7 +65,7 @@ substitute for a named referee.
       before automated publication. Tag and manual runs are additional
       evidence, not authoritative publisher inputs.
 - [x] In [GitHub Actions run 32082358958](https://github.com/khanukov/erdos302/actions/runs/32082358958),
-      the `lower-lean` job and its then-unconditional full replay succeeded;
+      the `lower-lean` job and its then-required full replay succeeded;
       the replay took about 26 minutes 46 seconds. The overall run later
       failed at the case-sensitive README publication-wording grep corrected
       here. It is useful replay evidence for that commit, but it is not a

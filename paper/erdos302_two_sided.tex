@@ -18,7 +18,7 @@
 
 \title{Two-sided computer-assisted progress on Erd\H{o}s Problem 302}
 \author{Dmitry Khanukov}
-\date{Version 0.2.0-preprint, 10 September 2026\\[0.5ex]
+\date{Version 0.2.0-preprint, 12 September 2026\\[0.5ex]
 \textbf{Preliminary and unrefereed}}
 
 \begin{document}
@@ -175,7 +175,7 @@ or $N\leq2n$;
 \end{proposition}
 
 All subsequent arguments in this section are elementary except for this
-imported structured input.  The new ingredient is
+imported structured input.  The ingredient developed in this work is
 Lemma~\ref{lem:padding}, the odd-quarter padding lemma.
 
 The exact Lean interfaces and immutable dependency revisions used for this
@@ -257,7 +257,8 @@ Theorem~\ref{thm:main} in that conventional notation.  Separate examples
 verify that $\{2,3,6\}$ and every full interval with $N\geq6$ violate the
 literal predicate, so the formal statement is not vacuously true.
 
-Readers checking the formalization should go to a single declaration, namely
+Readers checking the lower formalization should go to a single declaration,
+namely
 \[
  \texttt{Erdos302Lower.erdos302\_f302\_lower\_five\_eighths\_plus}
 \]
@@ -559,16 +560,25 @@ exact rational certificate and its Lean-kernel-checked proof chain.  The
 dependency-free standard-library verifier provides an independent executable
 cross-check: it is run under normal and optimized Python, regenerates the
 complete finite instance, pins its digest and target sequence, and includes
-deliberate corruption tests.  The Lean development checks the finite semantic
+deliberate corruption tests.
+\begin{sloppypar}
+The Lean development checks the finite semantic
 data, all 271 natural-number packing certificates, the 274-level ledger, the
-prefix-omission certificate, and the asymptotic endpoint.  The final theorem
-has no certificate hypothesis; its transitive axiom report contains only
-\texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.  Its
-predicates \texttt{NoUnitFractionTriple} and \texttt{IsMaxNoTripleCard} match
+prefix-omission certificate, and the asymptotic endpoint.  The upper interface
+theorem is
+\path{Erdos302.Asymptotic.erdos_302_upper_140803024_163562355}; its
+concrete extremal-function corollary is
+\path{Erdos302.Asymptotic.f302_upper_140803024_163562355}.  The interface
+theorem has no certificate hypothesis, and the concrete corollary has no
+abstract-function or maximality premise.  Their transitive axiom reports contain
+only \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.  The
+interface predicates \texttt{NoUnitFractionTriple} and
+\texttt{IsMaxNoTripleCard} match
 the corresponding Erd\H{o}s-302 definitions in
-\texttt{google-deepmind/formal-conjectures} at the pinned source revision (up
+\path{google-deepmind/formal-conjectures} at the pinned source revision (up
 to the name of one bound variable), while a separate bridge identifies that
 interface with the concrete finite maximum used in the proof.
+\end{sloppypar}
 
 All 80,181 committed project-local Lean modules have source.  For exact main
 commit \texttt{015d376e432040a2a71c7a5689c2fd238779ac2c}, the cache-free
