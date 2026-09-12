@@ -85,9 +85,10 @@ python3 -m pip install -r requirements-crosscheck.txt
 python3 scripts/milp_crosscheck.py
 ```
 
-## Root Lean arithmetic
+## Root Lean build and end-to-end upper theorem
 
-The root project remains pinned to Lean/Mathlib 4.27.0:
+The root project is pinned to Lean/Mathlib 4.27.0.  Its ordinary target is kept
+small enough for commodity CI:
 
 ```bash
 lake update
@@ -95,9 +96,34 @@ git diff --exit-code -- lake-manifest.json
 lake build
 ```
 
-It checks the reusable rational/scaling lemmas and both the historical and
-new final constant identities. It is not an end-to-end formalization of the
-upper asymptotic proof.
+That command checks the reusable root library; it is intentionally not the
+80,000-module publication proof target.  The end-to-end upper theorem is
+`Erdos302.Asymptotic.erdos_302_upper_140803024_163562355`, with the concrete
+maximum corollary `Erdos302.Asymptotic.f302_upper_140803024_163562355`.
+
+The authoritative high-memory reproduction is the pinned
+`.github/workflows/integration-critical-ci.yml` workflow. It verifies and
+restores hash-bound prerequisite compiler outputs, regenerates the bounded
+bridges, audits every committed Lean source and project import, and recompiles
+48 critical modules along the semantic-to-asymptotic path. Lean4Checker then
+replays declarations in the rebuilt integration and asymptotic modules against
+the imported environment. The workflow requires the exact five-declaration
+axiom transcript, publishes a manifest-bound archive containing both audit
+logs, and downloads and verifies that archive again. The cached 80,127-module
+`.olean` overlay and `.olean` serialization remain trusted; no cache-free
+full-project rebuild has completed yet. All project modules in the theorem's
+import closure nevertheless have committed Lean source.
+
+To request the same repository-controlled run for a branch or immutable commit:
+
+```bash
+gh workflow run integration-critical-ci.yml --ref <branch-or-commit>
+```
+
+The successful run must be checked for the requested `head_sha`, and its
+`verify-artifact` job must pass.  A committed audit entry point is available as
+`Erdos302/Axioms.lean`; loading it locally requires the same large compiled
+closure.
 
 ## Lower Lean theorem
 

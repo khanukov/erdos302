@@ -76,9 +76,17 @@ Verification uses no third-party package, network, randomness, or
 floating-point acceptance check. The rounded decimal display is produced by
 integer division; all mathematical decisions are exact.
 
-The upper asymptotic argument is not formalized end to end in Lean. The root
-Lean project checks only reusable arithmetic/scaling lemmas and the final
-rational identity.
+The upper result is formalized end to end in Lean.  The high-memory integration
+target checks the finite semantics, compact base-prefix certificates, all 271
+natural-number packing certificates, the 274-level ledger, finite omission,
+and the asymptotic endpoint.  The ordinary root target intentionally remains
+smaller; it is not the publication proof target.
+
+The local `NoUnitFractionTriple` definition is textually identical to the
+Erdős-302 definition in `google-deepmind/formal-conjectures` at commit
+`cb247a82de0a869f0cfe3d5c6bdfaeb440b065e1`; `IsMaxNoTripleCard` differs only
+in a bound-variable name.  The inspected upstream file had SHA-256
+`6c3f5777888534cbd34f4ee16a26ca6a18dd1af4a90e9a1bcb5340feaf9b0274`.
 
 ## Lower bound
 
@@ -180,7 +188,6 @@ the note; they do not guarantee that the mutable URL will remain available.
 - The exact value or existence of \(\lim f_{302}(N)/N\).
 - A full solution of Erdős Problem 302.
 - A numerical value of the lower improvement \(\delta\).
-- End-to-end Lean verification of the upper asymptotic theorem.
 - Any stronger upper value for which no exact artifact is committed.
 - Independent named human review or peer-reviewed publication.
 

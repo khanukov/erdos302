@@ -1,16 +1,19 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.1.1-preprint` is a corrected preprint. Preliminary and unrefereed;
-it is not independently verified.** It is released under
-[`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint).
-Zenodo archives the tagged source automatically under concept DOI
-[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assigns
-the immutable version DOI after GitHub release ingestion. The historical
+**Version `0.2.0-preprint` is prepared as the next corrected preprint.
+Preliminary and unrefereed; it is not independently verified.** Its publication
+gate remains closed pending merge, an exact green push-to-`main` Verify run,
+and final author approval. The reserved tag and release URL are
+[`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint).
+Zenodo will archive the tagged source automatically under concept DOI
+[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assign
+a new immutable version DOI after GitHub release ingestion. Historical releases
+[`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint)
+(DOI [`10.5281/zenodo.21989077`](https://doi.org/10.5281/zenodo.21989077)) and
 [`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint)
-and its version DOI
-[`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591) remain
-unchanged.
+(DOI [`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591))
+remain unchanged.
 <!-- release-state:end -->
 
 The repository and manuscript report complete proofs of two partial bounds;
@@ -117,15 +120,16 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 | \(Q=139{,}708{,}800\) finite hierarchical certificate | exact standard-library verifier |
 | Derived \(D(720)\) finite two-tail data and arithmetic | exact exhaustive standard-library verifier |
 | Derived \(D(720)\) multiplier/disjoint-prefix transfer | human comparison argument in the manuscript |
-| Upper asymptotic disjoint-block argument | human proof in the manuscript |
-| Upper end-to-end Lean formalization | not complete |
+| Upper asymptotic disjoint-block argument | Lean-kernel checked |
+| Upper end-to-end Lean formalization | complete for the stated `140803024/163562355` eventual upper bound; CI recompiles 48 critical modules, then Lean4Checker replays declarations in the rebuilt integration and asymptotic modules against the imported environment; the cached 80,127-module overlay and `.olean` serialization remain trusted; no cache-free full-project rebuild yet |
 | Lower analytic input | pinned cached `.olean` closure; full Lean-kernel replay runs on `main`, tag, and manual Verify events but is skipped on pull requests; the automated publisher accepts only a successful push-to-`main` run for the exact commit; serialization trusted; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
 
-Generated-data work toward the upper Lean proof must satisfy the
-[upper-formalization gate](docs/UPPER_LEAN_FORMALIZATION_GATE.md). Compiling
-shape-checked tables is a WIP milestone, not an end-to-end certificate proof.
+Generated proof data for the upper theorem is guarded by deterministic
+regeneration, mutation tests, a comment-aware proof-escape scan, exact
+artifact hashes, and a final `#print axioms` allowlist in the dedicated
+high-memory integration workflow.
 
 The lower theorem establishes
 
@@ -413,9 +417,17 @@ replacement; earlier public versions remain part of the scientific record.
 
 The finite upper packing was discovered with AI-assisted search. Its finite
 acceptance depends only on the committed exact certificate and verifier, not
-on the floating-point solver used during discovery; the asymptotic passage is
-the human proof in the manuscript. AI systems also assisted with
-code generation, proof audits, and Lean formalization. The external #301/#327
+on the floating-point solver used during discovery. The finite semantics,
+packing certificates, omission argument, and asymptotic endpoint are also
+connected in the source-closed Lean proof. Here `source-closed` means that every
+project module in the theorem closure has committed source; it does not mean a
+cache-free rebuild. CI recompiles 48 critical modules, then Lean4Checker replays
+declarations in the rebuilt integration and asymptotic modules against the
+imported environment. The cached 80,127-module immutable SHA-256-verified
+`.olean` overlay and `.olean` serialization remain trusted, so this does not
+establish source-to-binary correspondence for the cached modules. No cache-free
+full-project rebuild has completed yet. AI systems assisted with code
+generation, proof audits, and Lean formalization. The external #301/#327
 work and the present manuscript are unrefereed. Repository merge is an
 engineering integration event: a fully green commit may be merged while
 remaining explicitly unrefereed, with any referee corrections made in

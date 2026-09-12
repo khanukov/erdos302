@@ -46,6 +46,9 @@ HISTORICAL_VERSION = "0.1.0-preprint"
 HISTORICAL_DOI = "10.5281/zenodo.21966591"
 HISTORICAL_CONCEPT_DOI = "10.5281/zenodo.21966590"
 HISTORICAL_TAG = "v0.1.0-priority-preprint"
+PREVIOUS_VERSION = "0.1.1-preprint"
+PREVIOUS_DOI = "10.5281/zenodo.21989077"
+PREVIOUS_TAG = "v0.1.1-corrected-preprint"
 
 
 def yaml_scalar(value: str) -> str:
@@ -154,8 +157,8 @@ def validate_release_metadata() -> None:
         )
     if PREPRINT_DOI == CONCEPT_DOI:
         raise RuntimeError("version DOI and concept DOI must be distinct")
-    if PREPRINT_DOI == HISTORICAL_DOI:
-        raise RuntimeError("the immutable v0.1.0 DOI cannot identify this corrected version")
+    if PREPRINT_DOI in {HISTORICAL_DOI, PREVIOUS_DOI}:
+        raise RuntimeError("an immutable prior-version DOI cannot identify this release")
     if VERSION.endswith("-dev"):
         if PUBLISH_READY != "false" or PREPRINT_DOI != DEVELOPMENT_DOI:
             raise RuntimeError(
@@ -231,7 +234,14 @@ def validate_release_metadata() -> None:
         if missing:
             raise RuntimeError(f"{name} is missing release metadata marker(s): {missing}")
     references = "\n".join(cff_section(cff, "references"))
-    for historical_value in (HISTORICAL_DOI, HISTORICAL_CONCEPT_DOI, HISTORICAL_TAG):
+    for historical_value in (
+        HISTORICAL_DOI,
+        HISTORICAL_CONCEPT_DOI,
+        HISTORICAL_TAG,
+        PREVIOUS_VERSION,
+        PREVIOUS_DOI,
+        PREVIOUS_TAG,
+    ):
         if historical_value not in references:
             raise RuntimeError(
                 f"CITATION.cff historical reference is missing {historical_value}"

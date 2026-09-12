@@ -144,8 +144,9 @@ Then make these exact body changes:
 5. Change the upper proof's closing reference from `thm:upper` to `thm:main`.
 6. In the disclosure section, replace the integration-in-progress language
    with the exact successful run URL and commit SHA. State that the separate
-   lower build and axiom-report comparison passed. Do not describe the upper
-   asymptotic argument as end-to-end Lean-verified.
+   lower build and axiom-report comparison passed. This was a historical
+   restoration instruction: the upper asymptotic argument is now end-to-end
+   Lean-verified by PR #14 and current publication text must say so.
 
 ## Trust and review restoration
 

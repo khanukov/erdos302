@@ -1,0 +1,39 @@
+import Erdos302.Generated.PackingCertificateNat155VertexData0
+import Erdos302.Generated.PackingCertificateNat155VertexData1
+import Erdos302.Generated.PackingCertificateNat155VertexData2
+import Erdos302.Generated.PackingCertificateNat155VertexData3
+import Erdos302.Generated.PackingCertificateNat155VertexData4
+import Erdos302.Generated.PackingCertificateNat155VertexData5
+import Erdos302.Generated.PackingCertificateNat155VertexData6
+import Erdos302.Generated.PackingCertificateNat155VertexData7
+import Erdos302.Generated.PackingCertificateNat155VertexData8
+import Erdos302.Generated.PackingCertificateNat155VertexData9
+import Erdos302.Generated.PackingCertificateNat155VertexData10
+import Erdos302.Generated.PackingCertificateNat155VertexData11
+import Erdos302.Generated.PackingCertificateNat155VertexData12
+import Erdos302.Generated.PackingCertificateNat155VertexData13
+import Erdos302.Generated.PackingCertificateNat155VertexData14
+import Erdos302.Generated.PackingCertificateNat155VertexData15
+import Erdos302.Generated.PackingCertificateNat155VertexData16
+import Erdos302.Generated.PackingCertificateNat155VertexData17
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+def packingCertificateNat155VertexChunks : List (List Erdos302.PackingTermNat) :=
+  [packingCertificateNat155VertexChunk0, packingCertificateNat155VertexChunk1, packingCertificateNat155VertexChunk2, packingCertificateNat155VertexChunk3, packingCertificateNat155VertexChunk4, packingCertificateNat155VertexChunk5, packingCertificateNat155VertexChunk6, packingCertificateNat155VertexChunk7, packingCertificateNat155VertexChunk8, packingCertificateNat155VertexChunk9, packingCertificateNat155VertexChunk10, packingCertificateNat155VertexChunk11, packingCertificateNat155VertexChunk12, packingCertificateNat155VertexChunk13, packingCertificateNat155VertexChunk14, packingCertificateNat155VertexChunk15, packingCertificateNat155VertexChunk16, packingCertificateNat155VertexChunk17]
+
+def packingCertificateNat155VertexTerms := packingCertificateNat155VertexChunks.flatten
+
+def packingCertificateNat155 : Erdos302.PackingCertificateNat := {
+  prefixSize := 422
+  requiredCoverSize := 158
+  threshold := 24948
+  scale := 1
+  termChunks := packingCertificateNat155VertexChunks
+  unitStages := []
+}
+
+end Erdos302.Generated

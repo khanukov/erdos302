@@ -24,6 +24,16 @@ substitute for a named referee.
       arithmetic are exact-checked, while the multiplier/asymptotic transfer
       remains a human argument.
 - [x] No unsupported exploratory value is stated as a theorem.
+- [x] The source-closed Lean chain reaches
+      `Erdos302.Asymptotic.f302_upper_140803024_163562355` with no certificate
+      hypothesis; exact axiom output is limited to `propext`,
+      `Classical.choice`, and `Quot.sound`.
+- [x] Exact-head PR run
+      [34436718664](https://github.com/khanukov/erdos302/actions/runs/34436718664)
+      passed semantic regeneration, downstream kernel compilation, axiom audit,
+      exact-inventory publication packaging, and artifact read-back at commit
+      `3607335509fa6dcf49fbff749f130f0a8ac677ed`. A separate push-to-`main`
+      replay is still required for the release commit.
 
 ## Lower checks completed
 

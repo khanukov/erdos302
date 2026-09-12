@@ -1,8 +1,8 @@
-name: Publish priority preprint
+name: Publish corrected preprint
 
 on:
   workflow_run:
-    workflows: [Verify]
+    workflows: ["Integration critical CI"]
     types: [completed]
 
 permissions:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - name: Check out the exact verified main commit
+      - name: Check out the exact integrated main commit
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
@@ -31,10 +31,56 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Validate or publish the verified main-run artifact
+      - name: Resolve the exact successful Verify run
+        id: verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$(<release/PUBLISH_READY)" != "true" ]]; then
+            echo "run_id=1" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow "Verify" \
+            --branch "main" \
+            --event "push" \
+            --status "success" \
+            --commit "$VERIFIED_SHA" \
+            --limit 100 \
+            --json databaseId,headSha,headBranch,event,conclusion,workflowName \
+            > "$RUNNER_TEMP/verify-runs.json"
+          run_id="$(python3 -I -S - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          expected_sha = os.environ["VERIFIED_SHA"]
+          runs = json.loads((Path(os.environ["RUNNER_TEMP"]) / "verify-runs.json").read_text())
+          matches = [
+              run for run in runs
+              if run.get("headSha") == expected_sha
+              and run.get("headBranch") == "main"
+              and run.get("event") == "push"
+              and run.get("conclusion") == "success"
+              and run.get("workflowName") == "Verify"
+              and isinstance(run.get("databaseId"), int)
+          ]
+          if not matches:
+              raise SystemExit(f"no successful exact-SHA Verify run for {expected_sha}")
+          print(max(run["databaseId"] for run in matches))
+          PY
+          )"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "SOURCE_RUN_ID=$run_id" >> "$GITHUB_ENV"
+
+      - name: Validate or publish the doubly verified main-run artifact
         env:
           GH_TOKEN: ${{ github.token }}
           PYTHONDONTWRITEBYTECODE: "1"
           VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
-          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ID: ${{ steps.verify.outputs.run_id }}
+          INTEGRATION_RUN_ID: ${{ github.event.workflow_run.id }}
         run: python3 -I -S scripts/publish_preprint.py
