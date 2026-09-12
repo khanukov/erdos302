@@ -274,7 +274,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.workflow_sha }}
+          ref: cc1953e1e1b814f6839ed2a0105f2f167b6b453d
           path: verifier-source
           fetch-depth: 1
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
