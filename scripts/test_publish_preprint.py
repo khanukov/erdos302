@@ -211,6 +211,10 @@ class WorkflowGateTests(unittest.TestCase):
         self.assertIn("gh run list", workflow)
         self.assertIn('--workflow "Verify"', workflow)
         self.assertIn('--commit "$VERIFIED_SHA"', workflow)
+        self.assertIn('--workflow "Cache-free full-project Lean rebuild"', workflow)
+        self.assertIn('--event "workflow_dispatch"', workflow)
+        self.assertIn("CACHE_FREE_RUN_ID=$cache_free_run_id", workflow)
+        self.assertIn("CACHE_FREE_RUN_ID: ${{ steps.cache-free.outputs.run_id }}", workflow)
 
     def test_integration_ci_runs_fresh_kernel_replay(self) -> None:
         workflow = (
@@ -237,6 +241,71 @@ class WorkflowGateTests(unittest.TestCase):
         )
         self.assertIn("python3 -I -S scripts/test_source_audits.py", workflow)
 
+
+
+class ProvenanceMessagingTests(unittest.TestCase):
+    def test_lower_provenance_is_explicit_and_consistent_across_release_surface(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        banned_unconditional_wording = (
+            "unconditional in the standard " + "formal sense"
+        )
+        paths = [
+            root / "README.md",
+            root / "CITATION.cff",
+            root / "paper" / "erdos302_two_sided.tex",
+            root / "release" / "ANNOUNCEMENT.md",
+            root / "release" / "RELEASE_NOTES.template.md",
+            root / "release" / "ARXIV_METADATA.template.md",
+        ]
+        texts = {path: path.read_text(encoding="utf-8") for path in paths}
+        for path, text in texts.items():
+            normalized = " ".join(text.split())
+            with self.subTest(path=path.name):
+                self.assertIn("Della Pietra", text)
+                self.assertIn("odd-quarter padding", text)
+                self.assertIn("pinned", text)
+                self.assertIn("unrefereed", text)
+                self.assertIn(
+                    "does not depend on the Della Pietra developments", normalized
+                )
+                self.assertNotIn(banned_unconditional_wording, text)
+                self.assertNotIn("conditional result", text)
+                self.assertNotIn("assuming della pietra", text.lower())
+
+        banned_wording_paths = [
+            *paths,
+            root / "REPRODUCIBILITY.md",
+            root / "docs" / "LOWER_BOUND_PROVENANCE.md",
+            root / "docs" / "PREPRINT_RELEASE.md",
+        ]
+        repository_guard_paths = [
+            *banned_wording_paths,
+            root / ".github" / "workflows" / "verify.yml",
+            root / "scripts" / "test_publish_preprint.py",
+        ]
+        for path in repository_guard_paths:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(banned_wording_path=path.name):
+                self.assertNotIn(banned_unconditional_wording, " ".join(text.split()))
+
+        verification_workflow = (root / ".github" / "workflows" / "verify.yml").read_text(
+            encoding="utf-8"
+        )
+        for path in banned_wording_paths:
+            relative_path = path.relative_to(root).as_posix()
+            with self.subTest(workflow_scan_path=relative_path):
+                self.assertIn(relative_path, verification_workflow)
+
+        paper = texts[root / "paper" / "erdos302_two_sided.tex"]
+        abstract = paper.split("\\begin{abstract}", 1)[1].split("\\end{abstract}", 1)[0]
+        self.assertIn("using the structured Problem 301 construction of Della", abstract)
+        self.assertIn("an odd-quarter padding lemma", abstract)
+        self.assertNotIn("new odd-quarter padding lemma", abstract)
+        self.assertIn("pinned, kernel-checked but unrefereed external Lean development", abstract)
+        self.assertIn("and is not original to this work", paper)
+        theorem = paper.split("\\begin{theorem}", 1)[1].split("\\end{theorem}", 1)[0]
+        self.assertNotIn("Della Pietra", theorem)
+        self.assertNotIn("Assume", theorem)
 
 
 class ManifestTests(unittest.TestCase):
@@ -398,6 +467,72 @@ class BindingTests(unittest.TestCase):
             with self.subTest(jobs=jobs), self.assertRaises(publisher.PublicationError):
                 publisher.validate_integration_jobs_data({"jobs": jobs}, "456")
 
+    def test_cache_free_run_requires_successful_main_dispatch_and_exact_sha(self) -> None:
+        good = {
+            "name": "Cache-free full-project Lean rebuild",
+            "path": ".github/workflows/cache-free-full-rebuild.yml",
+            "conclusion": "success",
+            "head_sha": "a" * 40,
+            "event": "workflow_dispatch",
+            "head_branch": "main",
+        }
+        publisher.validate_cache_free_run_data(good, "789", "a" * 40)
+        for malformed in (None, [], {}):
+            with self.subTest(malformed=malformed), self.assertRaises(
+                publisher.PublicationError
+            ):
+                publisher.validate_cache_free_run_data(malformed, "789", "a" * 40)
+        for key, bad_value in (
+            ("name", "Other"),
+            ("path", ".github/workflows/other.yml"),
+            ("conclusion", "failure"),
+            ("head_sha", "b" * 40),
+            ("event", "push"),
+            ("head_branch", "feature"),
+        ):
+            bad = dict(good)
+            bad[key] = bad_value
+            with self.subTest(key=key), self.assertRaises(publisher.PublicationError):
+                publisher.validate_cache_free_run_data(bad, "789", "a" * 40)
+
+    def test_publication_context_requires_cache_free_run_id(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            environment = {
+                "GITHUB_REPOSITORY": "owner/repository",
+                "VERIFIED_SHA": "a" * 40,
+                "SOURCE_RUN_ID": "123",
+                "INTEGRATION_RUN_ID": "456",
+                "RUNNER_TEMP": raw,
+            }
+            with self.assertRaisesRegex(
+                publisher.PublicationError, "CACHE_FREE_RUN_ID"
+            ):
+                publisher.PublicationContext.from_environment(environment)
+
+    def test_cache_free_run_requires_successful_aggregate_and_read_back_jobs(self) -> None:
+        good = {
+            "jobs": [
+                {"name": "aggregate", "status": "completed", "conclusion": "success"},
+                {"name": "read-back", "status": "completed", "conclusion": "success"},
+            ]
+        }
+        publisher.validate_cache_free_jobs_data(good, "789")
+        for jobs in (
+            [],
+            [{"name": "aggregate", "status": "completed", "conclusion": "success"}],
+            [
+                {"name": "aggregate", "status": "completed", "conclusion": "failure"},
+                {"name": "read-back", "status": "completed", "conclusion": "success"},
+            ],
+            [
+                {"name": "aggregate", "status": "completed", "conclusion": "success"},
+                {"name": "read-back", "status": "completed", "conclusion": "success"},
+                {"name": "read-back", "status": "completed", "conclusion": "success"},
+            ],
+        ):
+            with self.subTest(jobs=jobs), self.assertRaises(publisher.PublicationError):
+                publisher.validate_cache_free_jobs_data({"jobs": jobs}, "789")
+
     def test_duplicate_exact_evidence_line_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             evidence = Path(raw) / "COMMIT_SHA.txt"
@@ -426,6 +561,128 @@ class FakeRunner:
         if not self.outputs:
             raise AssertionError(f"unexpected command: {arguments}")
         return self.outputs.pop(0)
+
+
+class RunJobsPaginationTests(unittest.TestCase):
+    def instance(self, runner: FakeRunner) -> publisher.Publisher:
+        context = publisher.PublicationContext(
+            repository="owner/repository",
+            verified_sha="a" * 40,
+            source_run_id="123",
+            runner_temp=Path("/tmp"),
+            integration_run_id="456",
+            cache_free_run_id="789",
+        )
+        return publisher.Publisher(
+            FINAL_CONTROLS, context, runner=runner  # type: ignore[arg-type]
+        )
+
+    def test_boolean_total_count_is_rejected(self) -> None:
+        runner = FakeRunner([json.dumps({"total_count": True, "jobs": []})])
+        with self.assertRaisesRegex(publisher.PublicationError, "malformed"):
+            self.instance(runner).run_jobs("789", "cache-free")
+
+    def test_duplicate_job_ids_across_pages_are_rejected(self) -> None:
+        first_page = [
+            {"id": index, "name": f"job-{index}"} for index in range(1, 101)
+        ]
+        second_page = [{"id": 100, "name": "read-back"}]
+        runner = FakeRunner(
+            [
+                json.dumps({"total_count": 101, "jobs": first_page}),
+                json.dumps({"total_count": 101, "jobs": second_page}),
+            ]
+        )
+        with self.assertRaisesRegex(publisher.PublicationError, "duplicate job ID"):
+            self.instance(runner).run_jobs("789", "cache-free")
+
+    def test_malformed_job_ids_are_rejected(self) -> None:
+        for bad_id in (None, True, 0, -1, "1"):
+            with self.subTest(job_id=bad_id):
+                runner = FakeRunner(
+                    [json.dumps({"total_count": 1, "jobs": [{"id": bad_id}]})]
+                )
+                with self.assertRaisesRegex(publisher.PublicationError, "job ID"):
+                    self.instance(runner).run_jobs("789", "cache-free")
+
+    def test_changed_total_is_rejected(self) -> None:
+        first_page = [{"id": index} for index in range(1, 101)]
+        runner = FakeRunner(
+            [
+                json.dumps({"total_count": 101, "jobs": first_page}),
+                json.dumps({"total_count": 102, "jobs": [{"id": 101}]}),
+            ]
+        )
+        with self.assertRaisesRegex(publisher.PublicationError, "total changed"):
+            self.instance(runner).run_jobs("789", "cache-free")
+
+    def test_early_empty_page_is_rejected(self) -> None:
+        runner = FakeRunner([json.dumps({"total_count": 1, "jobs": []})])
+        with self.assertRaisesRegex(publisher.PublicationError, "ended early"):
+            self.instance(runner).run_jobs("789", "cache-free")
+
+    def test_page_exceeding_total_is_rejected(self) -> None:
+        runner = FakeRunner(
+            [json.dumps({"total_count": 1, "jobs": [{"id": 1}, {"id": 2}]})]
+        )
+        with self.assertRaisesRegex(publisher.PublicationError, "exceeded"):
+            self.instance(runner).run_jobs("789", "cache-free")
+
+    def test_cache_free_validation_paginates_without_gh_slurp(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            run = {
+                "name": "Cache-free full-project Lean rebuild",
+                "path": ".github/workflows/cache-free-full-rebuild.yml",
+                "conclusion": "success",
+                "head_sha": "a" * 40,
+                "event": "workflow_dispatch",
+                "head_branch": "main",
+            }
+            first_page_jobs = [
+                {
+                    "id": 1,
+                    "name": "aggregate",
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            ] + [
+                {
+                    "id": index + 2,
+                    "name": f"shard-{index}",
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+                for index in range(99)
+            ]
+            second_page_jobs = [
+                {
+                    "id": 101,
+                    "name": "read-back",
+                    "status": "completed",
+                    "conclusion": "success",
+                }
+            ]
+            runner = FakeRunner(
+                [
+                    json.dumps(run),
+                    json.dumps({"total_count": 101, "jobs": first_page_jobs}),
+                    json.dumps({"total_count": 101, "jobs": second_page_jobs}),
+                ]
+            )
+            context = publisher.PublicationContext(
+                repository="owner/repository",
+                verified_sha="a" * 40,
+                source_run_id="123",
+                runner_temp=Path(raw),
+                integration_run_id="456",
+                cache_free_run_id="789",
+            )
+            instance = publisher.Publisher(
+                FINAL_CONTROLS, context, runner=runner  # type: ignore[arg-type]
+            )
+            instance.validate_cache_free_run("789", "a" * 40)
+            self.assertFalse(any("--slurp" in command for command in runner.commands))
+            self.assertTrue(any("page=2" in command[-1] for command in runner.commands))
 
 
 class TagTests(unittest.TestCase):
@@ -492,6 +749,9 @@ class NewReleasePublisher(publisher.Publisher):
 
     def validate_integration_run(self, run_id: str, expected_sha: str) -> None:
         self.events.append(f"integration:{run_id}:{expected_sha}")
+
+    def validate_cache_free_run(self, run_id: str, expected_sha: str) -> None:
+        self.events.append(f"cache-free:{run_id}:{expected_sha}")
 
     def download_run_artifact(self, run_id: str, directory: Path) -> None:
         self.events.append(f"download:{run_id}")
@@ -622,6 +882,7 @@ class OrchestrationTests(unittest.TestCase):
             source_run_id=run_id,
             runner_temp=temporary,
             integration_run_id="456",
+            cache_free_run_id="789",
         )
 
     def test_new_release_mutations_are_draft_first_and_surrounded_by_validation(self) -> None:
@@ -635,6 +896,7 @@ class OrchestrationTests(unittest.TestCase):
                     "release-count:0",
                     f"integration:456:{'a' * 40}",
                     f"verify:123:{'a' * 40}",
+                    f"cache-free:789:{'a' * 40}",
                     "download:123",
                     "validate-candidate",
                     "tag-target:missing",

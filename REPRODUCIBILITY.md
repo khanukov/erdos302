@@ -101,7 +101,7 @@ That command checks the reusable root library; it is intentionally not the
 `Erdos302.Asymptotic.erdos_302_upper_140803024_163562355`, with the concrete
 maximum corollary `Erdos302.Asymptotic.f302_upper_140803024_163562355`.
 
-The authoritative high-memory reproduction is the pinned
+The bounded high-memory reproduction is the pinned
 `.github/workflows/integration-critical-ci.yml` workflow. It verifies and
 restores hash-bound prerequisite compiler outputs, regenerates the bounded
 bridges, audits every committed Lean source and project import, and recompiles
@@ -109,10 +109,17 @@ bridges, audits every committed Lean source and project import, and recompiles
 replays declarations in the rebuilt integration and asymptotic modules against
 the imported environment. The workflow requires the exact five-declaration
 axiom transcript, publishes a manifest-bound archive containing both audit
-logs, and downloads and verifies that archive again. The cached 80,127-module
-`.olean` overlay and `.olean` serialization remain trusted; no cache-free
-full-project rebuild has completed yet. All project modules in the theorem's
-import closure nevertheless have committed Lean source.
+logs, and downloads and verifies that archive again.
+
+The stronger source-to-binary correspondence check is
+`.github/workflows/cache-free-full-rebuild.yml`. For exact main commit
+`015d376e432040a2a71c7a5689c2fd238779ac2c`, it rebuilt all 80,181 committed
+project-local Lean modules from source, required the exact inventory of
+160,362 `.olean`/`.ilean` outputs, replayed the final declarations, reproduced
+the axiom allowlist, and independently downloaded and read back the aggregate
+artifact in [run 34676374033](https://github.com/khanukov/erdos302/actions/runs/34676374033).
+The Lean kernel/toolchain, operating system and hardware, and Mathlib remain
+disclosed trusted boundaries.
 
 To request the same repository-controlled run for a branch or immutable commit:
 
@@ -181,10 +188,11 @@ The transitive axiom set is limited to `propext`, `Classical.choice`, and
 `Quot.sound`. The pinned upstream packages are unrefereed formal developments
 whose stored imported proof terms are covered by the blocking replay on
 `main`, tag, and manual runs. Automated release evidence comes specifically
-from the push-to-`main` run for the exact commit. This makes the
-qualitative, non-explicit-\(\delta\) lower theorem unconditional in the standard
-formal sense; that phrase refers to the axiom closure, not to a claim that the
-software stack is standard upstream Lean/Mathlib.  The reproduced stack is
+from the push-to-`main` run for the exact commit. No Problem 301 hypothesis
+occurs in the qualitative, non-explicit-\(\delta\) lower theorem statement;
+the pinned upstream declarations enter through its proof-term dependency
+closure. This records the axiom closure, not a claim that the software stack is
+standard upstream Lean/Mathlib. The reproduced stack is
 deliberately nonstandard and exact: prerelease Lean `v4.33.0-rc1` and the
 `teorth/mathlib4` fork containing the unmerged
 `Mathlib.NumberTheory.Mertens` module. It does not make the work peer-reviewed.

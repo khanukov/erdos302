@@ -76,11 +76,59 @@ jobs:
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
           echo "SOURCE_RUN_ID=$run_id" >> "$GITHUB_ENV"
 
-      - name: Validate or publish the doubly verified main-run artifact
+      - name: Resolve the exact successful cache-free full-project rebuild
+        id: cache-free
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$(<release/PUBLISH_READY)" != "true" ]]; then
+            echo "run_id=1" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh run list \
+            --repo "$GITHUB_REPOSITORY" \
+            --workflow "Cache-free full-project Lean rebuild" \
+            --branch "main" \
+            --event "workflow_dispatch" \
+            --status "success" \
+            --commit "$VERIFIED_SHA" \
+            --limit 100 \
+            --json databaseId,headSha,headBranch,event,conclusion,workflowName \
+            > "$RUNNER_TEMP/cache-free-runs.json"
+          cache_free_run_id="$(python3 -I -S - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          expected_sha = os.environ["VERIFIED_SHA"]
+          runs = json.loads((Path(os.environ["RUNNER_TEMP"]) / "cache-free-runs.json").read_text())
+          matches = [
+              run for run in runs
+              if run.get("headSha") == expected_sha
+              and run.get("headBranch") == "main"
+              and run.get("event") == "workflow_dispatch"
+              and run.get("conclusion") == "success"
+              and run.get("workflowName") == "Cache-free full-project Lean rebuild"
+              and isinstance(run.get("databaseId"), int)
+          ]
+          if not matches:
+              raise SystemExit(
+                  f"no successful exact-SHA cache-free full-project rebuild for {expected_sha}"
+              )
+          print(max(run["databaseId"] for run in matches))
+          PY
+          )"
+          echo "run_id=$cache_free_run_id" >> "$GITHUB_OUTPUT"
+          echo "CACHE_FREE_RUN_ID=$cache_free_run_id" >> "$GITHUB_ENV"
+
+      - name: Validate or publish the fully verified main-run artifact
         env:
           GH_TOKEN: ${{ github.token }}
           PYTHONDONTWRITEBYTECODE: "1"
           VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
           SOURCE_RUN_ID: ${{ steps.verify.outputs.run_id }}
           INTEGRATION_RUN_ID: ${{ github.event.workflow_run.id }}
+          CACHE_FREE_RUN_ID: ${{ steps.cache-free.outputs.run_id }}
         run: python3 -I -S scripts/publish_preprint.py

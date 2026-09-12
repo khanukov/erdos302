@@ -82,6 +82,7 @@ class PublicationContext:
     source_run_id: str
     runner_temp: Path
     integration_run_id: str = ""
+    cache_free_run_id: str = ""
 
     @classmethod
     def from_environment(
@@ -91,6 +92,7 @@ class PublicationContext:
         verified_sha = environment.get("VERIFIED_SHA", "")
         source_run_id = environment.get("SOURCE_RUN_ID", "")
         integration_run_id = environment.get("INTEGRATION_RUN_ID", "")
+        cache_free_run_id = environment.get("CACHE_FREE_RUN_ID", "")
         runner_temp_raw = environment.get("RUNNER_TEMP", "")
         if REPOSITORY_PATTERN.fullmatch(repository) is None:
             raise PublicationError(f"invalid GITHUB_REPOSITORY: {repository!r}")
@@ -101,6 +103,10 @@ class PublicationContext:
         if RUN_ID_PATTERN.fullmatch(integration_run_id) is None:
             raise PublicationError(
                 f"invalid INTEGRATION_RUN_ID: {integration_run_id!r}"
+            )
+        if RUN_ID_PATTERN.fullmatch(cache_free_run_id) is None:
+            raise PublicationError(
+                f"invalid CACHE_FREE_RUN_ID: {cache_free_run_id!r}"
             )
         if not runner_temp_raw:
             raise PublicationError("RUNNER_TEMP is required")
@@ -113,6 +119,7 @@ class PublicationContext:
             source_run_id,
             runner_temp,
             integration_run_id,
+            cache_free_run_id,
         )
 
 
@@ -275,6 +282,47 @@ def validate_integration_jobs_data(data: object, run_id: str) -> None:
         )
 
 
+def validate_cache_free_run_data(data: object, run_id: str, expected_sha: str) -> None:
+    if not isinstance(data, dict):
+        raise PublicationError(
+            f"Cache-free full-project Lean rebuild run {run_id} API response is not an object"
+        )
+    expected = {
+        "name": "Cache-free full-project Lean rebuild",
+        "path": ".github/workflows/cache-free-full-rebuild.yml",
+        "conclusion": "success",
+        "head_sha": expected_sha,
+        "event": "workflow_dispatch",
+        "head_branch": "main",
+    }
+    if any(data.get(key) != value for key, value in expected.items()):
+        raise PublicationError(
+            f"Cache-free full-project Lean rebuild run {run_id} is not a "
+            f"successful exact-main dispatch for {expected_sha}"
+        )
+
+
+def validate_cache_free_jobs_data(data: object, run_id: str) -> None:
+    if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
+        raise PublicationError(
+            f"Cache-free full-project Lean rebuild run {run_id} jobs response is malformed"
+        )
+    for required_name in ("aggregate", "read-back"):
+        matches = [
+            job
+            for job in data["jobs"]
+            if isinstance(job, dict) and job.get("name") == required_name
+        ]
+        if len(matches) != 1 or any(
+            matches[0].get(key) != value
+            for key, value in {"status": "completed", "conclusion": "success"}.items()
+        ):
+            raise PublicationError(
+                f"Cache-free full-project Lean rebuild run {run_id} lacks exactly "
+                f"one successful {required_name} job"
+            )
+
+
 def require_current_draft_binding(
     *,
     expected_draft: bool,
@@ -307,6 +355,50 @@ class Publisher:
     def gh_json(self, arguments: Sequence[str], description: str) -> object:
         return parse_json(self.gh(arguments), description)
 
+    def run_jobs(self, run_id: str, description: str) -> dict[str, list[object]]:
+        jobs: list[object] = []
+        seen_job_ids: set[int] = set()
+        expected_total: int | None = None
+        page = 1
+        while expected_total is None or len(jobs) < expected_total:
+            data = self.gh_json(
+                [
+                    "api",
+                    f"/repos/{self.context.repository}/actions/runs/{run_id}/jobs"
+                    f"?filter=latest&per_page=100&page={page}",
+                ],
+                f"{description} jobs page {page}",
+            )
+            if (
+                not isinstance(data, dict)
+                or not isinstance(data.get("jobs"), list)
+                or type(data.get("total_count")) is not int
+                or data["total_count"] < 0
+            ):
+                raise PublicationError(f"{description} jobs pagination is malformed")
+            if expected_total is None:
+                expected_total = data["total_count"]
+            elif data["total_count"] != expected_total:
+                raise PublicationError(f"{description} jobs total changed during pagination")
+            page_jobs = data["jobs"]
+            if not page_jobs and len(jobs) < expected_total:
+                raise PublicationError(f"{description} jobs pagination ended early")
+            for job in page_jobs:
+                if (
+                    not isinstance(job, dict)
+                    or type(job.get("id")) is not int
+                    or job["id"] <= 0
+                ):
+                    raise PublicationError(f"{description} jobs contain a malformed job ID")
+                if job["id"] in seen_job_ids:
+                    raise PublicationError(f"{description} jobs contain a duplicate job ID")
+                seen_job_ids.add(job["id"])
+            jobs.extend(page_jobs)
+            if len(jobs) > expected_total:
+                raise PublicationError(f"{description} jobs pagination exceeded its total")
+            page += 1
+        return {"jobs": jobs}
+
     def validate_verify_run(self, run_id: str, expected_sha: str) -> None:
         data = self.gh_json(
             [
@@ -326,26 +418,24 @@ class Publisher:
             f"Integration critical CI run {run_id}",
         )
         validate_integration_run_data(data, run_id, expected_sha)
-        pages = self.gh_json(
+        validate_integration_jobs_data(
+            self.run_jobs(run_id, f"Integration critical CI run {run_id}"),
+            run_id,
+        )
+
+    def validate_cache_free_run(self, run_id: str, expected_sha: str) -> None:
+        data = self.gh_json(
             [
                 "api",
-                "--paginate",
-                "--slurp",
-                f"/repos/{self.context.repository}/actions/runs/{run_id}/jobs"
-                "?filter=latest&per_page=100",
+                f"/repos/{self.context.repository}/actions/runs/{run_id}",
             ],
-            f"Integration critical CI run {run_id} jobs",
+            f"Cache-free full-project Lean rebuild run {run_id}",
         )
-        if (
-            not isinstance(pages, list)
-            or any(not isinstance(page, dict) for page in pages)
-            or any(not isinstance(page.get("jobs"), list) for page in pages)
-        ):
-            raise PublicationError(
-                f"Integration critical CI run {run_id} jobs pagination is malformed"
-            )
-        validate_integration_jobs_data(
-            {"jobs": [job for page in pages for job in page.get("jobs", [])]},
+        validate_cache_free_run_data(data, run_id, expected_sha)
+        validate_cache_free_jobs_data(
+            self.run_jobs(
+                run_id, f"Cache-free full-project Lean rebuild run {run_id}"
+            ),
             run_id,
         )
 
@@ -588,6 +678,9 @@ class Publisher:
                 self.validate_integration_run(
                     self.context.integration_run_id, self.context.verified_sha
                 )
+                self.validate_cache_free_run(
+                    self.context.cache_free_run_id, self.context.verified_sha
+                )
                 self.validate_release(True)
                 self.gh(
                     [
@@ -615,6 +708,9 @@ class Publisher:
             self.context.integration_run_id, self.context.verified_sha
         )
         self.validate_verify_run(self.context.source_run_id, self.context.verified_sha)
+        self.validate_cache_free_run(
+            self.context.cache_free_run_id, self.context.verified_sha
+        )
         with tempfile.TemporaryDirectory(
             prefix="preprint-assets-", dir=self.context.runner_temp
         ) as assets_raw:

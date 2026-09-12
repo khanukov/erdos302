@@ -3,8 +3,10 @@
 <!-- release-state:start -->
 **Version `0.2.0-preprint` is prepared as the next corrected preprint.
 Preliminary and unrefereed; it is not independently verified.** Its publication
-gate remains closed pending merge, an exact green push-to-`main` Verify run,
-and final author approval. The reserved tag and release URL are
+gate remains closed pending merge, exact-SHA successful `Verify`,
+`Integration critical CI`, and `Cache-free full-project Lean rebuild` runs
+(including successful `aggregate` and `read-back` jobs), and final author
+approval. The reserved tag and release URL are
 [`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint).
 Zenodo will archive the tagged source automatically under concept DOI
 [`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assign
@@ -45,18 +47,20 @@ and
 \]
 
 The upper result is a computer-assisted proof with a dependency-free exact
-rational verifier. The lower result is an elementary odd-quarter padding
-derivation from Donald Della Pietra's pinned, unrefereed Lean development for
-Erdős Problem 301. The lower bound is unconditional in the standard formal
-sense: the upstream results are imported as proof terms, not assumed as
-hypotheses. The ordinary build uses the pinned Mathlib binary cache. Pull
-request CI performs the source audit, exact-pins build, and axiom comparison;
-it skips the long full-closure replay. Blocking Verify runs on pushes to
-`main`, version tags, and manual dispatch additionally run
-`leanchecker --fresh Erdos302Lower` over the complete imported-and-local
-`.olean` closure. This kernel-checks the stored proof terms in a fresh
-environment while structurally trusting `.olean` serialization. Its
-transitive axiom report contains only `propext`, `Classical.choice`, and
+rational verifier and does not depend on the Della Pietra developments. The
+lower result is derived using Donald Della Pietra's structured Problem 301
+construction; the new contribution here is the odd-quarter padding lemma that
+converts that witness into a Problem 302 construction of density strictly
+greater than \(5/8\). The required external Lean development is pinned,
+kernel-checked, and unrefereed. Its proof terms enter the dependency closure
+rather than the final theorem statement as hypotheses. The ordinary build uses
+the pinned Mathlib binary cache. Pull request CI performs the source audit,
+exact-pins build, and axiom comparison; it skips the long full-closure replay.
+Blocking Verify runs on pushes to `main`, version tags, and manual dispatch
+additionally run `leanchecker --fresh Erdos302Lower` over the complete
+imported-and-local `.olean` closure. This kernel-checks the stored proof terms
+in a fresh environment while structurally trusting `.olean` serialization.
+Its transitive axiom report contains only `propext`, `Classical.choice`, and
 `Quot.sound`. The constant \(\delta\) is qualitative and non-explicit, and the
 external developments and this manuscript are unrefereed.
 
@@ -121,7 +125,7 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 | Derived \(D(720)\) finite two-tail data and arithmetic | exact exhaustive standard-library verifier |
 | Derived \(D(720)\) multiplier/disjoint-prefix transfer | human comparison argument in the manuscript |
 | Upper asymptotic disjoint-block argument | Lean-kernel checked |
-| Upper end-to-end Lean formalization | complete for the stated `140803024/163562355` eventual upper bound; CI recompiles 48 critical modules, then Lean4Checker replays declarations in the rebuilt integration and asymptotic modules against the imported environment; the cached 80,127-module overlay and `.olean` serialization remain trusted; no cache-free full-project rebuild yet |
+| Upper end-to-end Lean formalization | complete for the stated `140803024/163562355` eventual upper bound; the exact-main cache-free workflow rebuilt all 80,181 project-local Lean modules from source, checked the 160,362 expected `.olean`/`.ilean` outputs, replayed the final declarations, and reproduced the axiom allowlist |
 | Lower analytic input | pinned cached `.olean` closure; full Lean-kernel replay runs on `main`, tag, and manual Verify events but is skipped on pull requests; the automated publisher accepts only a successful push-to-`main` run for the exact commit; serialization trusted; unrefereed |
 | Lower local layer | structured wrapper, padding, anti-vacuity checks, and formal maximum-\(f_{302}\) bridge kernel-checked |
 | Full solution of Erdős 302 | not claimed |
@@ -201,6 +205,83 @@ The original \(Q=3360\) exhaustive verifier remains in `scripts/` as an
 algorithmically separate cross-check of the 21 base demands used by the new
 hierarchical certificate.
 
+## What the Lean files prove
+
+The single statement to read is
+`Erdos302Lower.erdos302_f302_lower_five_eighths_plus`, in
+[`lower-lean/Erdos302Lower/Maximum.lean`](lower-lean/Erdos302Lower/Maximum.lean).
+The proof modules `Defs.lean`, `FromErdos301.lean`, and `Maximum.lean`
+culminate in it; `Validate.lean` and `Axioms.lean` are not among its
+dependencies and provide independent anti-vacuity and axiom-audit checks.
+
+Its type is the wrapper `Erdos302MaximumLowerConclusion`, which unfolds to
+
+```lean
+∃ δ : ℝ, 0 < δ ∧ ∃ N₀ : ℕ, ∀ N ≥ N₀, ((5 : ℝ) / 8 + δ) * N ≤ (f302 N : ℝ)
+```
+
+The unfolded statement mentions one project definition, `f302`. Reading that
+one in turn requires `admissibleSubsets` and `NoUnitFractionTriple`, so three
+project definitions in total make up the whole vocabulary:
+
+```lean
+def NoUnitFractionTriple (A : Finset ℕ) : Prop :=
+  ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, a ≠ b → a ≠ c → b ≠ c →
+    (1 : ℚ) / a ≠ (1 : ℚ) / b + (1 : ℚ) / c
+
+noncomputable def admissibleSubsets (N : ℕ) : Finset (Finset ℕ) :=
+  (Finset.Icc 1 N).powerset.filter NoUnitFractionTriple
+
+noncomputable def f302 (N : ℕ) : ℕ :=
+  (admissibleSubsets N).sup Finset.card
+```
+
+(`admissibleSubsets` is written with `classical` in the source; it is shown
+here without that wrapper for readability.)
+
+To build it and print its axiom dependencies:
+
+```bash
+cd lower-lean
+lake exe cache get && lake build
+lake env lean Erdos302Lower/Axioms.lean
+```
+
+The last command reports the transitive axioms of that theorem, and of the
+six supporting results, as `[propext, Classical.choice, Quot.sound]`; CI
+diffs its output against the committed `AXIOMS.txt`.
+
+Two independent checks guard against the statement being vacuously true:
+`not_noUnitFractionTriple_236` and `full_interval_not_triple_free` prove that
+`{2,3,6}` and every full interval with `N ≥ 6` are *not* triple-free, so
+`NoUnitFractionTriple` is not accidentally an empty or trivial predicate.
+
+**What this does not establish.** The proof imports Della Pietra's Problem 301
+development as checked proof terms rather than as hypotheses, so its axiom
+report is clean; but the structured bulk construction is unrefereed external
+work. The original downstream contribution is the odd-quarter padding lemma
+and its Problem 302 bridge. See
+[dependence on Problem 301](#dependence-on-problem-301) below.
+
+The corresponding upper declaration is
+`Erdos302.Asymptotic.erdos_302_upper_140803024_163562355`, in
+[`Erdos302/Asymptotic.lean`](Erdos302/Asymptotic.lean). Its type is
+
+```lean
+theorem erdos_302_upper_140803024_163562355
+    (f : ℕ → ℕ)
+    (hf : ∀ N, IsMaxNoTripleCard N (f N))
+    (ε : ℝ) (hε : 0 < ε) :
+    ∀ᶠ N in Filter.atTop,
+      (f N : ℝ) ≤ ((140803024 : ℝ) / 163562355 + ε) * N
+```
+
+The concrete prefix-omission certificate is constructed inside the Lean
+development; it is not an external hypothesis of this theorem. The proof
+connects the finite semantics and packing certificates through the omission
+argument to the asymptotic endpoint. Its transitive axiom report is
+`[propext, Classical.choice, Quot.sound]`.
+
 ## Verify the lower bound
 
 The lower source is deliberately isolated from the root Lean 4.27 project.
@@ -239,6 +320,47 @@ See [lower-bound provenance](docs/LOWER_BOUND_PROVENANCE.md) and the
 route. At the pinned revisions, the upstream repositories provide no license
 file; this repository pins them as external dependencies and does not vendor
 their source.
+
+## Dependence on Problem 301
+
+The lower bound is not self-contained, and the distinction between its formal
+and its mathematical status matters.
+
+*In Lean*, Della Pietra's Problem 301 result is imported as a checked proof
+term, not assumed as a hypothesis, so no project-local hypothesis appears in
+the statement and the transitive axiom report contains only `propext`,
+`Classical.choice`, and `Quot.sound`.
+
+*Mathematically*, the structured input depends on that external work. The chain is
+
+```
+this repository's 5/8 + δ
+  └── donalddellapietra/erdos-301-proof   (unrefereed)
+        └── donalddellapietra/erdos-327-proof   (unrefereed)
+              └── standard analytic estimates in the literature
+```
+
+A clean axiom report means the Lean kernel accepted the proof terms at the
+pinned revisions. It does not mean the upstream mathematics has been reviewed
+by anyone. **Any defect in the upstream formal statement, in its
+correspondence to the intended Problem 301 claim, or in the trusted pinned
+toolchain and serialized inputs would propagate directly to the lower bound
+in this repository.**
+
+The odd-quarter padding argument, which is the part of the lower bound
+original to this work, remains valid on its own terms: it is the implication
+that adding the odd quarter to a structured carrier creates no new triple.
+What it cannot do without the upstream construction is deliver the
+\(5/8+\delta\) conclusion, because the padding contributes only
+`N/8 - O(1)` elements to a set whose `(1/2 + ρ_L/24)N` bulk comes entirely
+from upstream.
+
+The upper bound has no such dependency: it rests on the exact certificate and
+the asymptotic argument in the manuscript, both self-contained.
+
+As of 15 August 2026 the pinned Problem 327 base carries an open upstream pull
+request, which corrects manuscript and finite-certificate exposition only and
+changes no Lean file; see [trust boundary](docs/TRUST_BOUNDARY.md).
 
 ## Licensing
 
@@ -313,17 +435,18 @@ replacement; earlier public versions remain part of the scientific record.
 The finite upper packing was discovered with AI-assisted search. Its finite
 acceptance depends only on the committed exact certificate and verifier, not
 on the floating-point solver used during discovery. The finite semantics,
-packing certificates, omission argument, and asymptotic endpoint are also
-connected in the source-closed Lean proof. Here `source-closed` means that every
-project module in the theorem closure has committed source; it does not mean a
-cache-free rebuild. CI recompiles 48 critical modules, then Lean4Checker replays
-declarations in the rebuilt integration and asymptotic modules against the
-imported environment. The cached 80,127-module immutable SHA-256-verified
-`.olean` overlay and `.olean` serialization remain trusted, so this does not
-establish source-to-binary correspondence for the cached modules. No cache-free
-full-project rebuild has completed yet. AI systems assisted with code
-generation, proof audits, and Lean formalization. The external #301/#327
-work and the present manuscript are unrefereed. Repository merge is an
+packing certificates, omission argument, and asymptotic endpoint are connected
+in the Lean proof. For exact main commit
+`015d376e432040a2a71c7a5689c2fd238779ac2c`, the cache-free full-project
+workflow rebuilt all 80,181 committed project-local Lean modules from source,
+required the exact 160,362 `.olean`/`.ilean` output inventory, replayed the
+final declarations, and reproduced the axiom allowlist; see
+[run 34676374033](https://github.com/khanukov/erdos302/actions/runs/34676374033).
+This revision does not alter any project-local Lean source.
+The Lean kernel/toolchain, operating system and hardware, and Mathlib remain
+disclosed trusted boundaries. AI systems assisted with code generation, proof
+audits, and Lean formalization. The external #301/#327 work and the present
+manuscript are unrefereed. Repository merge is an
 engineering integration event: a fully green commit may be merged while
 remaining explicitly unrefereed, with any referee corrections made in
 follow-up pull requests. A preliminary GitHub/Zenodo/arXiv release and a

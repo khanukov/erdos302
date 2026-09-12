@@ -22,17 +22,26 @@ for all sufficiently large \(N\), and that
 \approx0.860852266403232.
 \]
 
+The lower result is derived using Della Pietra's structured Problem 301
+construction. The new contribution in this work is the odd-quarter padding
+lemma that converts that witness into a Problem 302 construction of density
+strictly greater than \(5/8\). The required external Lean development is pinned
+and kernel-checked but unrefereed; its proof terms enter the dependency closure,
+not the theorem statement as hypotheses. The upper bound does not depend on the
+Della Pietra developments.
+
 The upper bound is supported by an exact rational certificate, a
-dependency-free verification path, and a source-closed Lean proof. All project
-sources are committed. CI recompiles 48 critical modules, then Lean4Checker
-replays declarations in the rebuilt integration and asymptotic modules against
-the imported environment. The cached 80,127-module SHA-256-verified `.olean`
-overlay and `.olean` serialization remain trusted; no cache-free full-project
-rebuild has completed yet.
+dependency-free verification path, and an end-to-end Lean proof with no
+external certificate hypothesis. For the publication candidate, the
+cache-free workflow rebuilt all 80,181 committed project-local Lean modules
+from source, verified the exact 160,362 `.olean`/`.ilean` output inventory,
+replayed the final declarations, reproduced the axiom allowlist, and
+independently read back the aggregate artifact. The Lean kernel/toolchain,
+operating system and hardware, and Mathlib remain disclosed trusted boundaries.
 Compared with v0.1.1, this release adds the complete kernel-checked
 semantic-to-asymptotic upper chain, hardened exact-inventory proof artifacts,
-and deterministic source/provenance gates. The qualitative lower improvement
-is Lean-checked through immutable pinned external formal developments; the
+and deterministic source/provenance gates. The derived qualitative lower
+improvement is Lean-checked through immutable pinned external formal developments; the
 required push-to-`main` release-gating Verify run fresh-replays the stored
 dependency closure through Lean's kernel and separately reproduces its axiom
 report. The replay structurally trusts
@@ -42,9 +51,10 @@ independent human review or a solution of Problem 302.
 
 This corrected version also cites Wang's May 2026 Problem 301 preprint and
 distinguishes its theorem from the \(2125/2418\) two-tail comparison used here.
-The accompanying script exactly checks its finite tile edges, prefix covers,
-and rational arithmetic; multiplier-block disjointness and asymptotic transfer
-remain human arguments.
+The accompanying script independently checks its finite tile edges, prefix
+covers, and rational arithmetic. The present \(140803024/163562355\) upper
+bound, including multiplier-block disjointness and asymptotic transfer, is
+formalized end to end in Lean.
 
 Release evidence:
 

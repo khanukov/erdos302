@@ -265,8 +265,19 @@ jobs:
             grep -Fq '\frac{2125}{2418}' "$source"
             ! grep -Fq 'complete public comparison' "$source"
           done
-          grep -Fq 'The lower statement is unconditional' \
+          grep -Fq 'show via an odd-quarter padding lemma' \
             paper/erdos302_two_sided.tex
+          grep -Fq 'The upper bound does not depend on the Della Pietra developments' \
+            paper/erdos302_two_sided.tex
+          banned_unconditional_prefix='unconditional in the standard'
+          banned_unconditional="${banned_unconditional_prefix} formal sense"
+          ! grep -Fq "${banned_unconditional}" \
+            README.md CITATION.cff REPRODUCIBILITY.md \
+            docs/LOWER_BOUND_PROVENANCE.md docs/PREPRINT_RELEASE.md \
+            paper/erdos302_two_sided.tex release/ANNOUNCEMENT.md \
+            release/ARXIV_METADATA.template.md \
+            release/RELEASE_NOTES.template.md \
+            .github/workflows/verify.yml scripts/test_publish_preprint.py
           ! grep -inE \
             'assuming[[:space:]]+Della Pietra|conditional (on|upon).{0,80}Della Pietra' \
             README.md paper/erdos302_two_sided.tex

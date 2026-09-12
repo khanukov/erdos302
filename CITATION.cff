@@ -17,18 +17,23 @@ repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.2.0-c
 url: "https://github.com/khanukov/erdos302"
 abstract: >-
   Version 0.2.0-preprint is a preliminary, unrefereed corrected snapshot of
-  two-sided partial progress on Erdős Problem 302: a qualitative Lean-checked
-  lower improvement over density 5/8 and the upper bound
-  140803024/163562355. It is not independently verified or peer reviewed and
-  is not a solution of Problem 302. The finite semantics, all exact packing
-  certificates, omission argument, and upper asymptotic endpoint are connected
-  by a source-closed Lean 4 development and cross-checked by exact
-  dependency-free software. Here source-closed means that every project module
-  has committed source, not that CI performs a cache-free rebuild. The theorem
-  closure imports 80,127 modules from a SHA-256-verified .olean overlay. CI
-  recompiles 48 modules in that closure, fresh-kernel-replays the imported
-  environment through the integration module, and separately replays the final
-  module while still structurally trusting .olean serialization. The
+  two-sided partial progress on Erdős Problem 302. Using Della Pietra's
+  structured Problem 301 construction, an odd-quarter padding lemma gives a
+  qualitative lower improvement over density 5/8. The required external Lean
+  development is pinned and kernel-checked but unrefereed. Independently, an
+  exact certificate gives the upper bound 140803024/163562355; this upper result
+  does not depend on the Della Pietra developments. The results are not
+  independently verified or peer reviewed and do not solve Problem 302. The
+  finite semantics, exact packing certificates, omission argument, and upper
+  asymptotic endpoint are connected
+  by an end-to-end Lean 4 development with no external certificate hypothesis
+  and are cross-checked by exact dependency-free software. For the publication
+  candidate, the cache-free workflow rebuilds all 80,181 committed
+  project-local Lean modules from source, verifies the exact 160,362
+  .olean/.ilean output inventory, replays the final declarations, reproduces
+  the axiom allowlist, and independently reads back the aggregate artifact.
+  The Lean kernel/toolchain, operating system and hardware, and Mathlib remain
+  disclosed trusted boundaries. The
   lower theorem is Lean-checked through pinned
   external formal developments. AI systems assisted with search, code,
   formalization, and audits; the named author remains responsible for all
