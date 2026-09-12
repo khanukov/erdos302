@@ -105,8 +105,11 @@ exact `main` commit. The Verify workflow builds an artifact named from
 lower-Lean, manuscript, and bundle jobs succeed. Pull-request and closed-gate
 builds may create a `0.2.0-preprint` candidate artifact, but
 `PUBLISH_READY=false` prevents it from becoming a tag or GitHub Release. The
-integration run must include a successful `verify-artifact` job and fresh
-Lean4Checker replay.
+integration run must include a successful `verify-artifact` job and bounded
+Lean4Checker replay of declarations in the rebuilt integration and asymptotic
+modules against the imported environment. This still trusts the cached
+80,127-module overlay and `.olean` serialization; it is not evidence of a
+cache-free full-project rebuild.
 
 The same bundle can be reproduced from a clean checkout with:
 

@@ -43,17 +43,17 @@ class PublicationArchiveTests(unittest.TestCase):
             for name in names:
                 add_bytes(archive, name)
 
-    def test_fresh_replay_log_requires_exact_success_marker(self) -> None:
-        publication.validate_fresh_replay_log(
-            "FRESH_INTEGRATION_REPLAY_OK\nFINAL_MODULE_REPLAY_OK\n"
+    def test_replay_log_requires_exact_success_marker(self) -> None:
+        publication.validate_replay_log(
+            "INTEGRATION_MODULE_REPLAY_OK\nFINAL_MODULE_REPLAY_OK\n"
         )
         for text in (
-            "FRESH_INTEGRATION_REPLAY_OK\n",
+            "INTEGRATION_MODULE_REPLAY_OK\n",
             "FINAL_MODULE_REPLAY_OK\n",
-            "FRESH_INTEGRATION_REPLAY_OK\nFRESH_INTEGRATION_REPLAY_OK\nFINAL_MODULE_REPLAY_OK\n",
+            "INTEGRATION_MODULE_REPLAY_OK\nINTEGRATION_MODULE_REPLAY_OK\nFINAL_MODULE_REPLAY_OK\n",
         ):
             with self.subTest(text=text), self.assertRaises(SystemExit):
-                publication.validate_fresh_replay_log(text)
+                publication.validate_replay_log(text)
 
     def test_exact_inventory_is_accepted(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -102,21 +102,17 @@ That command checks the reusable root library; it is intentionally not the
 maximum corollary `Erdos302.Asymptotic.f302_upper_140803024_163562355`.
 
 The authoritative high-memory reproduction is the pinned
-`.github/workflows/integration-critical-ci.yml` workflow.  It verifies and
+`.github/workflows/integration-critical-ci.yml` workflow. It verifies and
 restores hash-bound prerequisite compiler outputs, regenerates the bounded
-bridges, audits every committed Lean source and project import, compiles the
-semantic-to-asymptotic critical path, requires the exact five-declaration axiom
-transcript, fresh-kernel-replays the complete imported environment with
-Lean4Checker, publishes a manifest-bound archive containing both audit logs,
-and downloads and verifies that archive again. The prerequisite `.olean`
-overlay supplies 80,127 imported project modules in the theorem closure; CI
-recompiles 48 modules in that closure, fresh-replays the imported environment
-through the integration module, and separately replays the final module. It is a verified build cache,
-not a substitute for source: all project modules in the theorem's import
-closure have committed Lean source.  The run therefore trusts Lean 4.27.0,
-Mathlib and `.olean` serialization in addition to the ordinary axioms listed in
-the transcript; it is not a cache-free single-process rebuild of all 80,000
-modules.
+bridges, audits every committed Lean source and project import, and recompiles
+48 critical modules along the semantic-to-asymptotic path. Lean4Checker then
+replays declarations in the rebuilt integration and asymptotic modules against
+the imported environment. The workflow requires the exact five-declaration
+axiom transcript, publishes a manifest-bound archive containing both audit
+logs, and downloads and verifies that archive again. The cached 80,127-module
+`.olean` overlay and `.olean` serialization remain trusted; no cache-free
+full-project rebuild has completed yet. All project modules in the theorem's
+import closure nevertheless have committed Lean source.
 
 To request the same repository-controlled run for a branch or immutable commit:
 

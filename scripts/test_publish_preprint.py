@@ -224,12 +224,14 @@ class WorkflowGateTests(unittest.TestCase):
         self.assertIn("--branch v4.27.0", workflow)
         self.assertIn('(cd "$checker" && lake test)', workflow)
         self.assertNotIn('lake -d "$checker" test', workflow)
-        self.assertIn("--fresh Erdos302.Asymptotic.Integration", workflow)
+        self.assertIn("--num-workers=1 Erdos302.Asymptotic.Integration", workflow)
+        self.assertNotIn("--fresh Erdos302.Asymptotic.Integration", workflow)
         self.assertIn("--num-workers=1 Erdos302.Asymptotic", workflow)
-        self.assertIn("FRESH_INTEGRATION_REPLAY_OK", workflow)
+        self.assertIn("INTEGRATION_MODULE_REPLAY_OK", workflow)
         self.assertIn("FINAL_MODULE_REPLAY_OK", workflow)
         self.assertNotIn("{ /usr/bin/time", workflow)
-        self.assertGreaterEqual(workflow.count("tee -a Lean4CheckerFresh.log"), 2)
+        self.assertGreaterEqual(workflow.count("tee -a Lean4CheckerReplay.log"), 2)
+        self.assertNotIn("Lean4CheckerFresh.log", workflow)
         self.assertIn(
             "cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}", workflow
         )

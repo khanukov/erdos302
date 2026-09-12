@@ -57,14 +57,14 @@ EXPECTED_DECLARATIONS = [
 EXPECTED_ARCHIVE_FILES = EXPECTED_FILES | {
     "INTEGRATION-MANIFEST.json",
     "AxiomAudit.log",
-    "Lean4CheckerFresh.log",
+    "Lean4CheckerReplay.log",
 }
 
 
-def validate_fresh_replay_log(text: str) -> None:
+def validate_replay_log(text: str) -> None:
     lines = text.splitlines()
-    if lines.count("FRESH_INTEGRATION_REPLAY_OK") != 1:
-        raise SystemExit("fresh integration replay log lacks exactly one success marker")
+    if lines.count("INTEGRATION_MODULE_REPLAY_OK") != 1:
+        raise SystemExit("integration-module replay log lacks exactly one success marker")
     if lines.count("FINAL_MODULE_REPLAY_OK") != 1:
         raise SystemExit("final-module replay log lacks exactly one success marker")
 
@@ -141,13 +141,13 @@ def main() -> None:
     root = args.extract_dir
     manifest_path = root / "INTEGRATION-MANIFEST.json"
     audit_path = root / "AxiomAudit.log"
-    fresh_path = root / "Lean4CheckerFresh.log"
+    replay_path = root / "Lean4CheckerReplay.log"
     if not manifest_path.is_file() or manifest_path.is_symlink():
         raise SystemExit("missing manifest")
     if not audit_path.is_file() or audit_path.is_symlink():
         raise SystemExit("missing axiom audit")
-    if not fresh_path.is_file() or fresh_path.is_symlink():
-        raise SystemExit("missing fresh replay audit")
+    if not replay_path.is_file() or replay_path.is_symlink():
+        raise SystemExit("missing module replay audit")
     manifest = json.loads(manifest_path.read_text())
     if manifest.get("schema") != 2 or manifest.get("commit") != args.expected_sha:
         raise SystemExit("manifest schema or commit mismatch")
@@ -166,9 +166,9 @@ def main() -> None:
 
     if digest(audit_path) != manifest.get("axiom_audit_sha256"):
         raise SystemExit("axiom audit digest mismatch")
-    if digest(fresh_path) != manifest.get("lean4checker_fresh_sha256"):
-        raise SystemExit("fresh replay audit digest mismatch")
-    validate_fresh_replay_log(fresh_path.read_text())
+    if digest(replay_path) != manifest.get("lean4checker_replay_sha256"):
+        raise SystemExit("module replay audit digest mismatch")
+    validate_replay_log(replay_path.read_text())
     lines = audit_path.read_text().splitlines()
     expected_lines = [
         f"'{declaration}' depends on axioms: {EXPECTED_AXIOMS}"

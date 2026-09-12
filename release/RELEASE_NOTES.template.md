@@ -24,11 +24,11 @@ for all sufficiently large \(N\), and that
 
 The upper bound is supported by an exact rational certificate, a
 dependency-free verification path, and a source-closed Lean proof. All project
-sources are committed, but high-memory CI is not a cache-free rebuild: it
-imports 80,127 modules from a SHA-256-verified `.olean` overlay. CI recompiles
-48 modules in that closure, fresh-kernel-replays the imported environment
-through the integration module, and separately replays the final module
-while still structurally trusting `.olean` serialization.
+sources are committed. CI recompiles 48 critical modules, then Lean4Checker
+replays declarations in the rebuilt integration and asymptotic modules against
+the imported environment. The cached 80,127-module SHA-256-verified `.olean`
+overlay and `.olean` serialization remain trusted; no cache-free full-project
+rebuild has completed yet.
 Compared with v0.1.1, this release adds the complete kernel-checked
 semantic-to-asymptotic upper chain, hardened exact-inventory proof artifacts,
 and deterministic source/provenance gates. The qualitative lower improvement

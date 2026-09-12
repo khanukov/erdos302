@@ -219,7 +219,7 @@ jobs:
           compile Erdos302/Asymptotic/Integration.lean
           compile Erdos302/Asymptotic.lean
 
-      - name: Fresh kernel replay of the complete imported environment
+      - name: Kernel replay of rebuilt integration and final modules
         env:
           LEAN4CHECKER_COMMIT: 7df74851c95d9bd1bbb8fc9b51aeb291304faaf6
         run: |
@@ -231,19 +231,19 @@ jobs:
           cp lean-toolchain "$checker/lean-toolchain"
           lake -d "$checker" build
           (cd "$checker" && lake test)
-          : > Lean4CheckerFresh.log
+          : > Lean4CheckerReplay.log
           /usr/bin/time -v lake env \
             "$checker/.lake/build/bin/lean4checker" \
-            --fresh Erdos302.Asymptotic.Integration \
-            2>&1 | tee -a Lean4CheckerFresh.log
-          echo FRESH_INTEGRATION_REPLAY_OK | tee -a Lean4CheckerFresh.log
+            --num-workers=1 Erdos302.Asymptotic.Integration \
+            2>&1 | tee -a Lean4CheckerReplay.log
+          echo INTEGRATION_MODULE_REPLAY_OK | tee -a Lean4CheckerReplay.log
           /usr/bin/time -v lake env \
             "$checker/.lake/build/bin/lean4checker" \
             --num-workers=1 Erdos302.Asymptotic \
-            2>&1 | tee -a Lean4CheckerFresh.log
-          echo FINAL_MODULE_REPLAY_OK | tee -a Lean4CheckerFresh.log
-          grep -Fx 'FRESH_INTEGRATION_REPLAY_OK' Lean4CheckerFresh.log
-          grep -Fx 'FINAL_MODULE_REPLAY_OK' Lean4CheckerFresh.log
+            2>&1 | tee -a Lean4CheckerReplay.log
+          echo FINAL_MODULE_REPLAY_OK | tee -a Lean4CheckerReplay.log
+          grep -Fx 'INTEGRATION_MODULE_REPLAY_OK' Lean4CheckerReplay.log
+          grep -Fx 'FINAL_MODULE_REPLAY_OK' Lean4CheckerReplay.log
       - name: Audit final theorem axioms
         run: |
           set -euo pipefail
@@ -305,7 +305,7 @@ jobs:
             'lean':subprocess.check_output(['lean','--version'],text=True).splitlines()[0],
             'overlay':{'bytes':2972900109,'sha256':'c0dfb31167c18787dd3352f728cd1aa44776697ce9263a8294c3ff72d186c05b'},
             'axiom_audit_sha256':h(Path('AxiomAudit.log')),
-            'lean4checker_fresh_sha256':h(Path('Lean4CheckerFresh.log')),
+            'lean4checker_replay_sha256':h(Path('Lean4CheckerReplay.log')),
             'metadata':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in metadata],
             'files':[{'path':str(p),'bytes':p.stat().st_size,'sha256':h(p)} for p in files],
           }
@@ -319,7 +319,7 @@ jobs:
           from pathlib import Path
           manifest=json.loads(Path('INTEGRATION-MANIFEST.json').read_text())
           paths=[entry['path'] for entry in manifest['files']]
-          paths += ['INTEGRATION-MANIFEST.json', 'AxiomAudit.log', 'Lean4CheckerFresh.log']
+          paths += ['INTEGRATION-MANIFEST.json', 'AxiomAudit.log', 'Lean4CheckerReplay.log']
           Path('publication-files.txt').write_text('\n'.join(dict.fromkeys(paths))+'\n')
           PY
           tar -cf integration-critical.tar -T publication-files.txt

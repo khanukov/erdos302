@@ -23,11 +23,11 @@ eventually for some absolute \(\delta>0\), and
 
 The upper bound is supported by an exact rational certificate, reproducible
 verifier, and a source-closed Lean proof. Here source-closed means all project
-sources are committed, not a cache-free rebuild: the theorem closure imports
-80,127 modules from a SHA-256-verified `.olean` overlay. High-memory CI
-recompiles 48 modules in that closure, fresh-kernel-replays the imported
-environment through the integration module, and separately replays the final module while
-still trusting `.olean` serialization. The qualitative lower bound is
+sources are committed. CI recompiles 48 critical modules, then Lean4Checker
+replays declarations in the rebuilt integration and asymptotic modules against
+the imported environment. The cached 80,127-module SHA-256-verified `.olean`
+overlay and `.olean` serialization remain trusted; no cache-free full-project
+rebuild has completed yet. The qualitative lower bound is
 Lean-checked through immutable pinned formal developments. Independent
 mathematical review is now being solicited. This announcement is not approval
 for an Erdős Problems forum post.
