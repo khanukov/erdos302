@@ -339,7 +339,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: 54941f1a83dc66e359edf4490f9ef8e0ea4e426a
+          ref: e9e0940b265d0ee88e81b3c95bd5e54c628a2d93
           path: verifier-source
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
