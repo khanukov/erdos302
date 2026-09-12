@@ -1,0 +1,12 @@
+import Erdos302.Generated.PackingCertificateNat187VertexData
+
+set_option maxRecDepth 10000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+theorem packingCertificateNat187_objectiveCheck :
+    Erdos302.checkObjectiveChunks packingCertificateNat187VertexChunks
+      190 7581553918526562678639516955332261730709526562620826707046627801351768262538416901567015815374396443921719806958390216394197236615277037321642366659047069373376078879204431976463358578367063271633922461958453360777584 = true := by rfl
+
+end Erdos302.Generated

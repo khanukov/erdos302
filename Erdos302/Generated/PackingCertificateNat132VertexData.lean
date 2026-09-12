@@ -1,0 +1,36 @@
+import Erdos302.Generated.PackingCertificateNat132VertexData0
+import Erdos302.Generated.PackingCertificateNat132VertexData1
+import Erdos302.Generated.PackingCertificateNat132VertexData2
+import Erdos302.Generated.PackingCertificateNat132VertexData3
+import Erdos302.Generated.PackingCertificateNat132VertexData4
+import Erdos302.Generated.PackingCertificateNat132VertexData5
+import Erdos302.Generated.PackingCertificateNat132VertexData6
+import Erdos302.Generated.PackingCertificateNat132VertexData7
+import Erdos302.Generated.PackingCertificateNat132VertexData8
+import Erdos302.Generated.PackingCertificateNat132VertexData9
+import Erdos302.Generated.PackingCertificateNat132VertexData10
+import Erdos302.Generated.PackingCertificateNat132VertexData11
+import Erdos302.Generated.PackingCertificateNat132VertexData12
+import Erdos302.Generated.PackingCertificateNat132VertexData13
+import Erdos302.Generated.PackingCertificateNat132VertexData14
+
+set_option maxRecDepth 1000
+set_option maxHeartbeats 0
+
+namespace Erdos302.Generated
+
+def packingCertificateNat132VertexChunks : List (List Erdos302.PackingTermNat) :=
+  [packingCertificateNat132VertexChunk0, packingCertificateNat132VertexChunk1, packingCertificateNat132VertexChunk2, packingCertificateNat132VertexChunk3, packingCertificateNat132VertexChunk4, packingCertificateNat132VertexChunk5, packingCertificateNat132VertexChunk6, packingCertificateNat132VertexChunk7, packingCertificateNat132VertexChunk8, packingCertificateNat132VertexChunk9, packingCertificateNat132VertexChunk10, packingCertificateNat132VertexChunk11, packingCertificateNat132VertexChunk12, packingCertificateNat132VertexChunk13, packingCertificateNat132VertexChunk14]
+
+def packingCertificateNat132VertexTerms := packingCertificateNat132VertexChunks.flatten
+
+def packingCertificateNat132 : Erdos302.PackingCertificateNat := {
+  prefixSize := 359
+  requiredCoverSize := 133
+  threshold := 11760
+  scale := 1
+  termChunks := packingCertificateNat132VertexChunks
+  unitStages := []
+}
+
+end Erdos302.Generated

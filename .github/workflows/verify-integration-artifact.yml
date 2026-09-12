@@ -1,0 +1,63 @@
+name: Verify published integration artifact
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Run containing integration-critical artifact"
+        required: true
+        type: string
+      artifact_sha:
+        description: "Exact proof commit named by the artifact"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: e9e0940b265d0ee88e81b3c95bd5e54c628a2d93
+          path: verifier-source
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.artifact_sha }}
+          path: proof-source
+      - name: Verify source-run provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          ARTIFACT_SHA: ${{ inputs.artifact_sha }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > source-run.json
+          python3 verifier-source/scripts/verify_github_run_provenance.py \
+            --run-json source-run.json \
+            --repository "$GITHUB_REPOSITORY" \
+            --expected-sha "$ARTIFACT_SHA" \
+            --workflow-file proof-source/.github/workflows/integration-critical-ci.yml
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: integration-critical-${{ inputs.artifact_sha }}
+          path: verified-download
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify exact published artifact
+        working-directory: proof-source
+        env:
+          ARTIFACT_SHA: ${{ inputs.artifact_sha }}
+        run: |
+          set -euo pipefail
+          zstd -t ../verified-download/integration-critical.tar.zst
+          zstd -dc ../verified-download/integration-critical.tar.zst > \
+            ../verified-download/integration-critical.tar
+          python3 ../verifier-source/scripts/verify_published_integration_artifact.py \
+            --tar ../verified-download/integration-critical.tar \
+            --extract-dir ../verified-download/extracted \
+            --expected-sha "$ARTIFACT_SHA"

@@ -22,15 +22,23 @@ for all sufficiently large \(N\), and that
 \approx0.860852266403232.
 \]
 
-The upper bound is supported by an exact rational certificate and
-dependency-free verification path. The qualitative lower improvement is
-Lean-checked through immutable pinned external formal developments; the
+The upper bound is supported by an exact rational certificate, a
+dependency-free verification path, and a source-closed Lean proof. All project
+sources are committed. CI recompiles 48 critical modules, then Lean4Checker
+replays declarations in the rebuilt integration and asymptotic modules against
+the imported environment. The cached 80,127-module SHA-256-verified `.olean`
+overlay and `.olean` serialization remain trusted; no cache-free full-project
+rebuild has completed yet.
+Compared with v0.1.1, this release adds the complete kernel-checked
+semantic-to-asymptotic upper chain, hardened exact-inventory proof artifacts,
+and deterministic source/provenance gates. The qualitative lower improvement
+is Lean-checked through immutable pinned external formal developments; the
 required push-to-`main` release-gating Verify run fresh-replays the stored
 dependency closure through Lean's kernel and separately reproduces its axiom
 report. The replay structurally trusts
-`.olean` serialization. The upper asymptotic passage remains a human proof and
-is not formalized end to end in Lean. Full trust-boundary and AI-assistance
-disclosures are included in the manuscript and repository.
+`.olean` serialization. Full trust-boundary and AI-assistance disclosures are
+included in the manuscript and repository. Neither formalization constitutes
+independent human review or a solution of Problem 302.
 
 This corrected version also cites Wang's May 2026 Problem 301 preprint and
 distinguishes its theorem from the \(2125/2418\) two-tail comparison used here.
@@ -50,12 +58,18 @@ Release evidence:
 - version DOI: @PREPRINT_DOI_REFERENCE@
 - Zenodo concept DOI: <@CONCEPT_DOI_URL@>
 
-Preceding immutable priority snapshot (historical provenance, not identifiers
+Preceding immutable preprint snapshots (historical provenance, not identifiers
 for the `@VERSION@` candidate):
 
-- GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
-- Zenodo version DOI for the source snapshot: <https://doi.org/10.5281/zenodo.21966591>
+- v0.1.1 GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint>
+- v0.1.1 Zenodo version DOI: <https://doi.org/10.5281/zenodo.21989077>
+- v0.1.0 GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
+- v0.1.0 Zenodo version DOI: <https://doi.org/10.5281/zenodo.21966591>
 - Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
+
+The Zenodo concept history also contains two technical staging archives (DOIs
+`10.5281/zenodo.22373181` and `10.5281/zenodo.22651029`); they are build
+artifacts, not mathematical preprint versions.
 
 Zenodo's enabled GitHub integration automatically creates the next archived
 source snapshot after this release. It assigns that snapshot's immutable

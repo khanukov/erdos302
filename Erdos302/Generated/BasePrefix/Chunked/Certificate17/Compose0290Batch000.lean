@@ -1,0 +1,63 @@
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Validity0290
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0026Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0027Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0071Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0129Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0209Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0234Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0235Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0277Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0280Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0283Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0284Root
+import Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0285Root
+
+set_option maxHeartbeats 20000000
+
+namespace Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0290Batch000
+open Erdos302.BasePrefixCoverChunk
+open Erdos302.Generated.BasePrefix
+open Erdos302.Generated.BasePrefix.Chunked.Certificate17
+
+def sources : List (Claim 146) := [Validity0026.steps[27].claim, Validity0027.steps[13].claim, Validity0071.steps[27].claim, Validity0129.steps[23].claim, Validity0129.steps[25].claim, Validity0209.steps[23].claim, Validity0209.steps[24].claim, Validity0234.steps[20].claim, Validity0235.steps[1].claim, Validity0277.steps[2].claim, Validity0280.steps[26].claim, Validity0283.steps[21].claim, Validity0284.steps[9].claim, Validity0284.steps[17].claim, Validity0285.steps[15].claim, Validity0285.steps[22].claim]
+theorem sources_match : SliceEq Validity0290.imports sources 0 := by decide
+theorem sources_hold : ClaimsHold sources support := by
+  intro claim h
+  simp only [sources, List.mem_cons, List.not_mem_nil, or_false] at h
+  rcases h with rfl | h
+  exact Compose0026Root.all_holds ⟨27, by decide⟩
+  rcases h with rfl | h
+  exact Compose0027Root.all_holds ⟨13, by decide⟩
+  rcases h with rfl | h
+  exact Compose0071Root.all_holds ⟨27, by decide⟩
+  rcases h with rfl | h
+  exact Compose0129Root.all_holds ⟨23, by decide⟩
+  rcases h with rfl | h
+  exact Compose0129Root.all_holds ⟨25, by decide⟩
+  rcases h with rfl | h
+  exact Compose0209Root.all_holds ⟨23, by decide⟩
+  rcases h with rfl | h
+  exact Compose0209Root.all_holds ⟨24, by decide⟩
+  rcases h with rfl | h
+  exact Compose0234Root.all_holds ⟨20, by decide⟩
+  rcases h with rfl | h
+  exact Compose0235Root.all_holds ⟨1, by decide⟩
+  rcases h with rfl | h
+  exact Compose0277Root.all_holds ⟨2, by decide⟩
+  rcases h with rfl | h
+  exact Compose0280Root.all_holds ⟨26, by decide⟩
+  rcases h with rfl | h
+  exact Compose0283Root.all_holds ⟨21, by decide⟩
+  rcases h with rfl | h
+  exact Compose0284Root.all_holds ⟨9, by decide⟩
+  rcases h with rfl | h
+  exact Compose0284Root.all_holds ⟨17, by decide⟩
+  rcases h with rfl | h
+  exact Compose0285Root.all_holds ⟨15, by decide⟩
+  rcases h with rfl
+  exact Compose0285Root.all_holds ⟨22, by decide⟩
+def slots : List Nat := List.range' 0 sources.length
+theorem holds : ImportsHold Validity0290.imports support slots := by
+  exact ImportsHold.ofSliceEq sources_match sources_hold
+
+end Erdos302.Generated.BasePrefix.Chunked.Certificate17.Compose0290Batch000

@@ -351,5 +351,9 @@ The defensible current claim is:
 > \]
 > The finite certificate uses a hierarchical packing of reciprocal triples and exactly verified divisor-prefix gadgets.
 
-Do not describe the result as fully Lean-verified: the finite certificate is
-checked externally and the upper asymptotic argument remains a human proof.
+This report predates the completed Lean integration. At the search milestone,
+the finite certificate was checked externally and the asymptotic argument was
+only a human proof. PR #14 subsequently connected the same exact certificate,
+finite semantics, omission argument, and asymptotic endpoint into an
+end-to-end source-closed Lean theorem. Current publication text must use the
+later verified status while retaining this paragraph as historical provenance.

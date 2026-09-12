@@ -1,46 +1,51 @@
 cff-version: 1.2.0
 message: >-
-  Cite version 0.1.1-preprint for the corrected preliminary, unrefereed
+  Cite version 0.2.0-preprint for the next corrected preliminary, unrefereed
   release. It is not independently verified. Zenodo assigns its immutable
   version DOI automatically after GitHub release ingestion; stable concept DOI
   10.5281/zenodo.21966590 identifies the complete version lineage.
 title: "Two-sided computer-assisted progress on Erdős Problem 302"
 type: software
-version: "0.1.1-preprint"
-date-released: "2026-08-18"
+version: "0.2.0-preprint"
+date-released: "2026-09-10"
 license: MIT
 authors:
   - family-names: Khanukov
     given-names: Dmitry
 repository-code: "https://github.com/khanukov/erdos302"
-repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint"
+repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint"
 url: "https://github.com/khanukov/erdos302"
 abstract: >-
-  Version 0.1.1-preprint is a preliminary, unrefereed corrected snapshot of
+  Version 0.2.0-preprint is a preliminary, unrefereed corrected snapshot of
   two-sided partial progress on Erdős Problem 302: a qualitative Lean-checked
-  lower improvement over density 5/8 and a computer-assisted exact upper
-  bound. It is not independently verified or peer reviewed and is not a
-  solution of Problem 302. The finite upper certificate is checked by exact
-  software, while the upper asymptotic passage is a human proof and is not
-  formalized end to end in Lean. The lower theorem is Lean-checked through
-  pinned external formal developments. AI systems assisted with search, code,
+  lower improvement over density 5/8 and the upper bound
+  140803024/163562355. It is not independently verified or peer reviewed and
+  is not a solution of Problem 302. The finite semantics, all exact packing
+  certificates, omission argument, and upper asymptotic endpoint are connected
+  by a source-closed Lean 4 development and cross-checked by exact
+  dependency-free software. Here source-closed means that every project module
+  has committed source, not that CI performs a cache-free rebuild. The theorem
+  closure imports 80,127 modules from a SHA-256-verified .olean overlay. CI
+  recompiles 48 modules in that closure, fresh-kernel-replays the imported
+  environment through the integration module, and separately replays the final
+  module while still structurally trusting .olean serialization. The
+  lower theorem is Lean-checked through pinned
+  external formal developments. AI systems assisted with search, code,
   formalization, and audits; the named author remains responsible for all
   claims. Software and verification material are MIT-licensed; the manuscript
   is CC BY 4.0 under the path-specific scope in LICENSE_SCOPE.md. Zenodo
   automatically archives the tagged source after the GitHub release; the
   complete verified release assets remain attached to the GitHub Release.
-  Historical version DOI 10.5281/zenodo.21966591 remains the immutable v0.1.0
-  priority snapshot and is not reused for this correction.
 identifiers:
   - type: doi
     value: 10.5281/zenodo.21966590
     description: "Zenodo concept DOI for all archived versions."
   - type: url
-    value: "https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint"
-    description: "Verified GitHub Release."
+    value: "https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint"
+    description: "Reserved v0.2.0 GitHub Release URL; live only after publication."
   - type: url
-    value: "https://github.com/khanukov/erdos302/releases/download/v0.1.1-corrected-preprint/erdos302-v0.1.1-preprint.pdf"
-    description: "Versioned manuscript PDF."
+    value: "https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf"
+    description: "Reserved v0.2.0 manuscript PDF URL; live only after publication."
 keywords:
   - Erdős problems
   - extremal number theory
@@ -50,20 +55,40 @@ keywords:
 preferred-citation:
   type: unpublished
   title: "Two-sided computer-assisted progress on Erdős Problem 302"
-  version: "0.1.1-preprint"
+  version: "0.2.0-preprint"
   authors:
     - family-names: Khanukov
       given-names: Dmitry
   year: 2026
-  date-released: "2026-08-18"
+  date-released: "2026-09-10"
   status: preprint
   license: CC-BY-4.0
-  url: "https://github.com/khanukov/erdos302/releases/download/v0.1.1-corrected-preprint/erdos302-v0.1.1-preprint.pdf"
+  url: "https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf"
   notes: >-
-    Preliminary and unrefereed; not independently verified. Zenodo assigns the
-    exact version DOI automatically after GitHub release ingestion; use the
-    concept DOI 10.5281/zenodo.21966590 to resolve the current archived version.
+    Preliminary and unrefereed; not independently verified. The PDF URL becomes
+    live after GitHub publication. Zenodo assigns the exact version DOI
+    automatically after GitHub release ingestion. The concept DOI
+    10.5281/zenodo.21966590 identifies the version lineage; use the automatically
+    assigned version DOI for this exact release after ingestion.
 references:
+  - type: software
+    title: "Erdős 302 corrected preprint source and verification snapshot"
+    version: "0.1.1-preprint"
+    authors:
+      - family-names: Khanukov
+        given-names: Dmitry
+    date-released: "2026-08-18"
+    doi: 10.5281/zenodo.21989077
+    license: MIT
+    repository-code: "https://github.com/khanukov/erdos302/tree/v0.1.1-corrected-preprint"
+    repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint"
+    identifiers:
+      - type: doi
+        value: 10.5281/zenodo.21966590
+        description: "Zenodo concept DOI for the archived version lineage."
+    notes: >-
+      Immutable historical v0.1.1 software/source snapshot. Preliminary and
+      unrefereed; its upper asymptotic passage was not yet formalized end to end.
   - type: software
     title: "Erdős 302 priority preprint source and verification snapshot"
     version: "0.1.0-preprint"

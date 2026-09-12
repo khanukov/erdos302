@@ -1,14 +1,16 @@
 # Upper-bound Lean formalization gate
 
-This document separates useful generated Lean data from an end-to-end formal
-proof of the released upper bound. It applies to the work begun in pull request
-[#10](https://github.com/khanukov/erdos302/pull/10) and to any successor.
+This document records the gate that separated useful generated Lean data from
+an end-to-end formal proof of the upper bound. It applies to the work begun in
+pull request [#10](https://github.com/khanukov/erdos302/pull/10) and completed
+for `140803024 / 163562355` in pull request #14.
 
-The published upper claim is established by the exact Python
-certificate plus the human asymptotic argument. Generated Lean declarations
-do not strengthen that trust boundary merely because they compile.
+The upper claim now has two verification routes: a dependency-free exact
+Python verifier and a source-closed Lean proof through the final asymptotic
+theorem. Generated Lean declarations count only where they are connected to
+that theorem by kernel-checked proof terms.
 
-## What the current WIP establishes
+## Historical WIP boundary
 
 The WIP layer contains useful reusable definitions and lemmas for reciprocal
 triples, finite maxima, scaling, fractional packing, valuation disjointness,
@@ -52,6 +54,8 @@ The following additional obligations must be formalized and connected:
 - a final theorem stated directly for `f302` with upper constant
   `140803024 / 163562355`.
 
-Until that final theorem compiles under the disclosed axiom and dependency
-boundary, the repository must continue to say that the upper asymptotic result
-is not formalized end to end in Lean.
+These obligations are now discharged by
+`Erdos302.Asymptotic.erdos_302_upper_140803024_163562355`. Publication still
+requires exact-commit CI, axiom auditing, artifact read-back, and human review;
+formal completion is not a claim of peer review or a full solution of Problem
+302.
