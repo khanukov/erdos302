@@ -1,0 +1,355 @@
+name: Cache-free full-project Lean rebuild
+
+on:
+  workflow_dispatch:
+    inputs:
+      proof_sha:
+        description: Exact 40-character commit SHA to rebuild
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  PUBLISH_READY: "false"
+  LEAN4CHECKER_COMMIT: 7df74851c95d9bd1bbb8fc9b51aeb291304faaf6
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      packing_a: ${{ steps.matrices.outputs.packing_a }}
+      packing_b: ${{ steps.matrices.outputs.packing_b }}
+      base_prefix: ${{ steps.matrices.outputs.base_prefix }}
+      semantic: ${{ steps.matrices.outputs.semantic }}
+      levels: ${{ steps.matrices.outputs.levels }}
+      adapter: ${{ steps.matrices.outputs.adapter }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.proof_sha }}
+          fetch-depth: 1
+      - name: Require the exact requested checkout
+        env:
+          PROOF_SHA: ${{ inputs.proof_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$PROOF_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$GITHUB_REF" = "refs/heads/main"
+          REMOTE_MAIN=$(git ls-remote origin refs/heads/main | cut -f1)
+          test "$REMOTE_MAIN" = "$PROOF_SHA"
+          test "$(git rev-parse HEAD)" = "$PROOF_SHA"
+      - name: Test and derive exact source graph
+        run: |
+          set -euo pipefail
+          python3 -I -S scripts/test_full_project_rebuild.py -v
+          python3 -I -S scripts/full_project_rebuild.py inventory
+      - name: Emit bounded shard matrices
+        id: matrices
+        run: |
+          set -euo pipefail
+          echo "packing_a=$(python3 -I -S scripts/full_project_rebuild.py matrix --family packing-a)" >> "$GITHUB_OUTPUT"
+          echo "packing_b=$(python3 -I -S scripts/full_project_rebuild.py matrix --family packing-b)" >> "$GITHUB_OUTPUT"
+          echo "base_prefix=$(python3 -I -S scripts/full_project_rebuild.py matrix --family base-prefix)" >> "$GITHUB_OUTPUT"
+          echo "semantic=$(python3 -I -S scripts/full_project_rebuild.py matrix --family semantic)" >> "$GITHUB_OUTPUT"
+          echo "levels=$(python3 -I -S scripts/full_project_rebuild.py matrix --family levels)" >> "$GITHUB_OUTPUT"
+          echo "adapter=$(python3 -I -S scripts/full_project_rebuild.py matrix --family adapter)" >> "$GITHUB_OUTPUT"
+
+  packing-a:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix: ${{ fromJSON(needs.prepare.outputs.packing_a) }}
+    steps: &shard_steps
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.proof_sha }}
+          fetch-depth: 1
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Require enough local disk for one source shard
+        run: |
+          python3 -c 'import shutil; free=shutil.disk_usage(".").free; required=45*1024**3; print(f"free_bytes={free} required_bytes={required}"); raise SystemExit(0 if free >= required else "insufficient disk for cache-free shard")'
+      - name: Fetch only the trusted pinned Mathlib cache
+        run: lake exe cache get
+      - name: Delete every project build output
+        run: rm -rf .lake/build/lib/lean/Erdos302 .lake/build/lib/lean/Erdos302.olean .lake/build/lib/lean/Erdos302.ilean
+      - name: Rebuild one closure from source
+        run: /usr/bin/time -v lake build "+${{ matrix.root }}:olean"
+      - name: Package only this root's source-derived ownership partition
+        env:
+          PROOF_SHA: ${{ inputs.proof_sha }}
+        run: |
+          set -euo pipefail
+          python3 -I -S scripts/full_project_rebuild.py pack-shard \
+            --root-module "${{ matrix.root }}" \
+            --archive "shard-${{ matrix.slug }}.tar" \
+            --commit "$PROOF_SHA"
+          zstd -T0 -6 --rm "shard-${{ matrix.slug }}.tar"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rebuild-shard-${{ matrix.slug }}-${{ inputs.proof_sha }}
+          path: shard-${{ matrix.slug }}.tar.zst
+          if-no-files-found: error
+          retention-days: 3
+
+  packing-b:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix: ${{ fromJSON(needs.prepare.outputs.packing_b) }}
+    steps: *shard_steps
+
+  base-prefix:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix: ${{ fromJSON(needs.prepare.outputs.base_prefix) }}
+    steps: *shard_steps
+
+  semantic:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix: ${{ fromJSON(needs.prepare.outputs.semantic) }}
+    steps: *shard_steps
+
+  levels:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix: ${{ fromJSON(needs.prepare.outputs.levels) }}
+    steps: *shard_steps
+
+  adapter:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.prepare.outputs.adapter) }}
+    steps: *shard_steps
+
+  aggregate:
+    needs: [packing-a, packing-b, base-prefix, semantic, levels, adapter]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.proof_sha }}
+          fetch-depth: 1
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          build: false
+          use-github-cache: false
+      - name: Require measured aggregate disk headroom
+        run: |
+          python3 -c 'import shutil; free=shutil.disk_usage(".").free; required=60*1024**3; print(f"free_bytes={free} required_bytes={required}"); raise SystemExit(0 if free >= required else "aggregate requires at least 60 GiB free")'
+      - name: Fetch Mathlib cache then remove all project outputs
+        run: |
+          set -euo pipefail
+          lake exe cache get
+          rm -rf .lake/build/lib/lean/Erdos302 .lake/build/lib/lean/Erdos302.olean .lake/build/lib/lean/Erdos302.ilean
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: rebuild-shard-*-${{ inputs.proof_sha }}
+          path: shard-download
+          merge-multiple: true
+      - name: Decompress and independently install all 80,127 cached modules
+        env:
+          PROOF_SHA: ${{ inputs.proof_sha }}
+        run: |
+          set -euo pipefail
+          mkdir shard-tars
+          for archive in shard-download/*.tar.zst; do
+            name=$(basename "$archive" .zst)
+            zstd -t "$archive"
+            zstd -dc "$archive" > "shard-tars/$name"
+          done
+          python3 -I -S scripts/full_project_rebuild.py install-shards \
+            --archives-dir shard-tars --install-root . --expected-sha "$PROOF_SHA"
+          rm -rf shard-download shard-tars
+      - name: Compile the verifier-owned 48 critical modules
+        run: |
+          set -euo pipefail
+          python3 -I -S scripts/full_project_rebuild.py critical-sources > critical-sources.txt
+          test "$(wc -l < critical-sources.txt)" -eq 48
+          while IFS= read -r source; do
+            stem=${source%.lean}
+            mkdir -p ".lake/build/lib/lean/$(dirname "$stem")"
+            /usr/bin/time -v lake env lean -s 1048576 "$source" \
+              -o ".lake/build/lib/lean/$stem.olean" \
+              -i ".lake/build/lib/lean/$stem.ilean"
+          done < critical-sources.txt
+      - name: Compile all six project modules outside the theorem closure
+        run: |
+          set -euo pipefail
+          python3 -I -S scripts/full_project_rebuild.py extra-sources > extra-sources.txt
+          test "$(wc -l < extra-sources.txt)" -eq 6
+          while IFS= read -r source; do
+            stem=${source%.lean}
+            mkdir -p ".lake/build/lib/lean/$(dirname "$stem")"
+            /usr/bin/time -v lake env lean -s 1048576 "$source" \
+              -o ".lake/build/lib/lean/$stem.olean" \
+              -i ".lake/build/lib/lean/$stem.ilean"
+          done < extra-sources.txt
+      - name: Require exact 80,181-source and 160,362-output inventory
+        run: python3 -I -S scripts/full_project_rebuild.py verify-build
+      - name: Kernel replay at the integration and final roots
+        run: |
+          set -euo pipefail
+          checker="$RUNNER_TEMP/lean4checker"
+          git init -q "$checker"
+          git -C "$checker" remote add origin https://github.com/leanprover/lean4checker
+          git -C "$checker" fetch -q --depth 1 origin "$LEAN4CHECKER_COMMIT"
+          git -C "$checker" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$checker" rev-parse HEAD)" = "$LEAN4CHECKER_COMMIT"
+          cp lean-toolchain "$checker/lean-toolchain"
+          lake -d "$checker" build
+          (cd "$checker" && lake test)
+          : > Lean4CheckerReplay.log
+          lake env "$checker/.lake/build/bin/lean4checker" --num-workers=1 \
+            Erdos302.Asymptotic.Integration 2>&1 | tee -a Lean4CheckerReplay.log
+          echo INTEGRATION_MODULE_REPLAY_OK | tee -a Lean4CheckerReplay.log
+          lake env "$checker/.lake/build/bin/lean4checker" --num-workers=1 \
+            Erdos302.Asymptotic 2>&1 | tee -a Lean4CheckerReplay.log
+          echo FINAL_MODULE_REPLAY_OK | tee -a Lean4CheckerReplay.log
+      - name: Audit exact final theorem axioms
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            'import Erdos302.Asymptotic' \
+            '#print axioms Erdos302.Generated.repeatedThresholdLevelAt' \
+            '#print axioms Erdos302.Packing.prefix_omission_certificate' \
+            '#print axioms Erdos302.Asymptotic.erdos302Certificate_holds' \
+            '#print axioms Erdos302.Asymptotic.erdos_302_upper_140803024_163562355' \
+            '#print axioms Erdos302.Asymptotic.f302_upper_140803024_163562355' \
+            > AxiomAudit.lean
+          lake env lean -s 1048576 AxiomAudit.lean 2>&1 | tee AxiomAudit.log
+      - name: Package the complete cache-free rebuild
+        env:
+          PROOF_SHA: ${{ inputs.proof_sha }}
+        run: |
+          set -euo pipefail
+          python3 -I -S scripts/full_project_rebuild.py pack-final \
+            --archive full-project-rebuild.tar \
+            --commit "$PROOF_SHA" \
+            --axiom-log AxiomAudit.log \
+            --replay-log Lean4CheckerReplay.log
+          zstd -T0 -10 --rm full-project-rebuild.tar
+          zstd -t full-project-rebuild.tar.zst
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: cache-free-full-rebuild-${{ inputs.proof_sha }}
+          path: full-project-rebuild.tar.zst
+          if-no-files-found: error
+          retention-days: 90
+
+  read-back:
+    needs: aggregate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: verifier-source
+          fetch-depth: 1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.proof_sha }}
+          path: exact-source
+          fetch-depth: 1
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          lake-package-directory: exact-source
+          build: false
+          use-github-cache: false
+      - name: Require measured read-back disk headroom
+        run: |
+          python3 -c 'import shutil; free=shutil.disk_usage(".").free; required=45*1024**3; print(f"free_bytes={free} required_bytes={required}"); raise SystemExit(0 if free >= required else "read-back requires at least 45 GiB free")'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: cache-free-full-rebuild-${{ inputs.proof_sha }}
+          path: readback-download
+      - name: Independently derive inventory and verify downloaded bytes
+        env:
+          PROOF_SHA: ${{ inputs.proof_sha }}
+        run: |
+          set -euo pipefail
+          zstd -t readback-download/full-project-rebuild.tar.zst
+          zstd -dc readback-download/full-project-rebuild.tar.zst > readback-download/full-project-rebuild.tar
+          rm readback-download/full-project-rebuild.tar.zst
+          python3 -I -S verifier-source/scripts/verify_full_project_rebuild.py verify-final \
+            --source-root exact-source \
+            --archive readback-download/full-project-rebuild.tar \
+            --expected-sha "$PROOF_SHA"
+      - name: Restore independently verified compiled outputs
+        env:
+          PROOF_SHA: ${{ inputs.proof_sha }}
+        run: |
+          set -euo pipefail
+          rm -rf exact-source/.lake/build/lib/lean/Erdos302 \
+            exact-source/.lake/build/lib/lean/Erdos302.olean \
+            exact-source/.lake/build/lib/lean/Erdos302.ilean
+          python3 -I -S verifier-source/scripts/verify_full_project_rebuild.py install-final \
+            --source-root exact-source \
+            --archive readback-download/full-project-rebuild.tar \
+            --install-root exact-source \
+            --expected-sha "$PROOF_SHA"
+          rm readback-download/full-project-rebuild.tar
+      - name: Independently replay restored integration and final modules
+        working-directory: exact-source
+        run: |
+          set -euo pipefail
+          checker="$RUNNER_TEMP/readback-lean4checker"
+          git init -q "$checker"
+          git -C "$checker" remote add origin https://github.com/leanprover/lean4checker
+          git -C "$checker" fetch -q --depth 1 origin "$LEAN4CHECKER_COMMIT"
+          git -C "$checker" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$checker" rev-parse HEAD)" = "$LEAN4CHECKER_COMMIT"
+          cp lean-toolchain "$checker/lean-toolchain"
+          lake -d "$checker" build
+          (cd "$checker" && lake test)
+          lake env "$checker/.lake/build/bin/lean4checker" --num-workers=1 Erdos302.Asymptotic.Integration
+          echo READBACK_INTEGRATION_REPLAY_OK
+          lake env "$checker/.lake/build/bin/lean4checker" --num-workers=1 Erdos302.Asymptotic
+          echo READBACK_FINAL_REPLAY_OK
+      - name: Independently rerun exact axiom audit
+        working-directory: exact-source
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            'import Erdos302.Asymptotic' \
+            '#print axioms Erdos302.Generated.repeatedThresholdLevelAt' \
+            '#print axioms Erdos302.Packing.prefix_omission_certificate' \
+            '#print axioms Erdos302.Asymptotic.erdos302Certificate_holds' \
+            '#print axioms Erdos302.Asymptotic.erdos_302_upper_140803024_163562355' \
+            '#print axioms Erdos302.Asymptotic.f302_upper_140803024_163562355' \
+            > ReadbackAxiomAudit.lean
+          lake env lean -s 1048576 ReadbackAxiomAudit.lean 2>&1 | tee ReadbackAxiomAudit.log
+          python3 -I -S ../verifier-source/scripts/verify_full_project_rebuild.py verify-axiom-log \
+            --source-root . --axiom-log ReadbackAxiomAudit.log
+          echo READBACK_AXIOM_AUDIT_OK
