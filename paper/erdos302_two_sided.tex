@@ -270,7 +270,8 @@ Theorem~\ref{thm:main} in that conventional notation.  Separate examples
 verify that $\{2,3,6\}$ and every full interval with $N\geq6$ violate the
 literal predicate, so the formal statement is not vacuously true.
 
-Readers checking the formalization should go to a single declaration, namely
+Readers checking the lower formalization should go to a single declaration,
+namely
 \[
  \texttt{Erdos302Lower.erdos302\_f302\_lower\_five\_eighths\_plus}
 \]
@@ -574,8 +575,22 @@ cross-check: it is run under normal and optimized Python, regenerates the
 complete finite instance, pins its digest and target sequence, and includes
 deliberate corruption tests.  The Lean development checks the finite semantic
 data, all 271 natural-number packing certificates, the 274-level ledger, the
-prefix-omission certificate, and the asymptotic endpoint.  The final theorem
-has no certificate hypothesis; its transitive axiom report contains only
+prefix-omission certificate, and the asymptotic endpoint.  Readers checking
+the upper formalization should go to the declaration
+\[
+ \texttt{Erdos302.Asymptotic.f302\_upper\_140803024\_163562355}
+\]
+in the file \texttt{Erdos302/Asymptotic/\allowbreak Integration.lean}.  It
+states that for every $\varepsilon>0$,
+\[
+ f(N)\leq\left(\frac{140803024}{163562355}+\varepsilon\right)N
+\]
+for all sufficiently large $N$, where $f$ is the literal finite maximum
+defined in \texttt{Erdos302/\allowbreak Problem.lean}; it is the
+specialization to that maximum of a theorem proved for every function
+satisfying the interface predicate \texttt{IsMaxNoTripleCard}.  The final
+theorem has no certificate hypothesis; its transitive axiom report contains
+only
 \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.  Its
 predicates \texttt{NoUnitFractionTriple} and \texttt{IsMaxNoTripleCard} match
 the corresponding Erd\H{o}s-302 definitions in

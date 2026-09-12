@@ -203,6 +203,11 @@ hierarchical certificate.
 
 ## What the Lean files prove
 
+Two separate Lean projects carry the two bounds, and each ends in one
+declaration to read.
+
+### Lower bound
+
 The single statement to read is
 `Erdos302Lower.erdos302_f302_lower_five_eighths_plus`, in
 [`lower-lean/Erdos302Lower/Maximum.lean`](lower-lean/Erdos302Lower/Maximum.lean).
@@ -258,12 +263,47 @@ report is clean; but its mathematical content rests entirely on that
 unrefereed external work. See [dependence on Problem 301](#dependence-on-problem-301)
 below.
 
-The upper-bound theorem is not formalized end to end in Lean. The root Lean
-project checks only reusable arithmetic components of it: the implication
-`b * c = a * (b + c) → 1/a = 1/b + 1/c`, invariance of a reciprocal relation
-under scaling, the two final rational identities, and the numerical chain
-comparing the certified bound with its predecessors. None of these establish
-the finite certificate or the asymptotic passage.
+### Upper bound
+
+The single statement to read is
+`Erdos302.Asymptotic.f302_upper_140803024_163562355`, in
+[`Erdos302/Asymptotic/Integration.lean`](Erdos302/Asymptotic/Integration.lean):
+
+```lean
+theorem f302_upper_140803024_163562355
+    (epsilon : ℝ) (positivity : 0 < epsilon) :
+    ∀ᶠ N : ℕ in (Filter.atTop : Filter ℕ),
+      (f302 N : ℝ) ≤
+        ((140803024 : ℝ) / (163562355 : ℝ) + epsilon) * (N : ℝ)
+```
+
+Here `Erdos302.f302 N` is the finite maximum of `Finset.card` over the
+`TripleFree` subsets of `Finset.Icc 1 N`, and `TripleFree` forbids every
+`ReciprocalTriple`: three positive, pairwise-distinct naturals with
+`1/a = 1/b + 1/c` over `ℚ`. All three are defined in
+[`Erdos302/Problem.lean`](Erdos302/Problem.lean). The theorem specializes
+`erdos_302_upper_140803024_163562355`, which proves the same eventual bound
+for any `f` with `IsMaxNoTripleCard N (f N)` for all `N`; that predicate and
+`NoUnitFractionTriple` are defined in
+[`Erdos302/Asymptotic/Interface.lean`](Erdos302/Asymptotic/Interface.lean)
+in the `google-deepmind/formal-conjectures` style and bridged to `f302`
+there. Neither theorem takes a certificate hypothesis: the finite packing
+input is the proved theorem `Erdos302.Packing.prefix_omission_certificate`.
+
+This closure is not compiled by the ordinary `lake build` of the root
+project, whose default target is the small reusable library behind
+`Erdos302.lean`. It is compiled by the high-memory
+[`integration-critical-ci.yml`](.github/workflows/integration-critical-ci.yml)
+workflow, which recompiles 48 critical modules, has Lean4Checker replay the
+rebuilt integration and asymptotic modules against the imported environment,
+and requires the five declarations audited in
+[`Erdos302/Axioms.lean`](Erdos302/Axioms.lean) to report only
+`[propext, Classical.choice, Quot.sound]`. What that run trusts, in
+particular the cached `.olean` overlay and `.olean` serialization, is stated
+in the verification-status table above and under
+[Scope and disclosure](#scope-and-disclosure);
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md) explains how to request the run for
+a branch or commit.
 
 ## Verify the lower bound
 
@@ -338,8 +378,9 @@ What it cannot do without the upstream construction is deliver the
 `N/8 - O(1)` elements to a set whose `(1/2 + ρ_L/24)N` bulk comes entirely
 from upstream.
 
-The upper bound has no such dependency: it rests on the exact certificate and
-the asymptotic argument in the manuscript, both self-contained.
+The upper bound has no such dependency: the exact certificate, the asymptotic
+argument in the manuscript, and the root Lean proof import nothing beyond the
+pinned Mathlib release.
 
 As of 15 August 2026 the pinned Problem 327 base carries an open upstream pull
 request, which corrects manuscript and finite-certificate exposition only and
