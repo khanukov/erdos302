@@ -17,6 +17,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
@@ -343,11 +344,26 @@ class Publisher:
         controls: ReleaseControls,
         context: PublicationContext,
         runner: CommandRunner | None = None,
+        utc_day_provider: Callable[[], str] | None = None,
     ) -> None:
         self.controls = controls
         self.context = context
         self.runner = runner or CommandRunner()
+        self.utc_day_provider = utc_day_provider or (
+            lambda: datetime.now(timezone.utc).date().isoformat()
+        )
         self.artifact = f"erdos302-v{controls.version}-candidate"
+
+    def require_current_publication_day(self) -> None:
+        """Refuse a first publication whose immutable date is already stale."""
+        current_day = self.utc_day_provider()
+        if re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", current_day) is None:
+            raise PublicationError(f"invalid UTC publication day: {current_day!r}")
+        if release_builder.RELEASE_DATE != current_day:
+            raise PublicationError(
+                f"release date {release_builder.RELEASE_DATE} does not match "
+                f"UTC publication day {current_day}"
+            )
 
     def gh(self, arguments: Sequence[str]) -> str:
         return self.runner.run(["gh", *arguments], cwd=REPOSITORY_ROOT)
@@ -675,6 +691,7 @@ class Publisher:
             state = self.release_state()
             existing_draft = state.get("isDraft")
             if existing_draft is True:
+                self.require_current_publication_day()
                 self.validate_integration_run(
                     self.context.integration_run_id, self.context.verified_sha
                 )
@@ -704,6 +721,7 @@ class Publisher:
         if match_count != 0:
             raise PublicationError(f"multiple GitHub releases claim tag {self.controls.tag}")
 
+        self.require_current_publication_day()
         self.validate_integration_run(
             self.context.integration_run_id, self.context.verified_sha
         )

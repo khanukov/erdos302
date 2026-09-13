@@ -244,6 +244,27 @@ class WorkflowGateTests(unittest.TestCase):
 
 
 class ProvenanceMessagingTests(unittest.TestCase):
+    def test_open_gate_surface_uses_the_actual_publication_day(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual(
+            (root / "release" / "PUBLISH_READY").read_text(encoding="utf-8"),
+            "true\n",
+        )
+        self.assertEqual(
+            (root / "release" / "PREPRINT_DATE").read_text(encoding="utf-8"),
+            "2026-09-13\n",
+        )
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        normalized_readme = " ".join(readme.split())
+        self.assertIn("publication gate is open", normalized_readme)
+        self.assertNotIn("gate remains closed", normalized_readme)
+        procedure = (root / "docs" / "PREPRINT_RELEASE.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("release date:  2026-09-13", procedure)
+        self.assertIn("PUBLISH_READY: true", procedure)
+        self.assertNotIn("This PR intentionally keeps `PUBLISH_READY=false`", procedure)
+
     def test_publication_names_exact_upper_declarations_and_sources(self) -> None:
         root = Path(__file__).resolve().parents[1]
         readme = (root / "README.md").read_text(encoding="utf-8")
@@ -831,11 +852,17 @@ class OrchestrationRunner:
 
 
 class NewReleasePublisher(publisher.Publisher):
-    def __init__(self, context: publisher.PublicationContext, events: list[str]) -> None:
+    def __init__(
+        self,
+        context: publisher.PublicationContext,
+        events: list[str],
+        publication_day: str = publisher.release_builder.RELEASE_DATE,
+    ) -> None:
         super().__init__(
             FINAL_CONTROLS,
             context,
             runner=OrchestrationRunner(events),  # type: ignore[arg-type]
+            utc_day_provider=lambda: publication_day,
         )
         self.events = events
 
@@ -894,6 +921,26 @@ class NewReleasePublisher(publisher.Publisher):
     ) -> None:
         if expected_manifest is None:
             raise AssertionError("new release validation lost its source manifest anchor")
+        self.events.append(f"validate-release:{expected_draft}")
+
+
+class ExistingDraftPublisher(NewReleasePublisher):
+    def release_count(self) -> int:
+        self.events.append("release-count:1")
+        return 1
+
+    def release_state(self) -> dict[str, object]:
+        self.events.append("release-state:True")
+        return {
+            "isDraft": True,
+            "isPrerelease": True,
+            "tagName": FINAL_CONTROLS.tag,
+        }
+
+    def validate_release(
+        self, expected_draft: bool, expected_manifest: Path | None = None
+    ) -> None:
+        del expected_manifest
         self.events.append(f"validate-release:{expected_draft}")
 
 
@@ -1009,6 +1056,32 @@ class OrchestrationTests(unittest.TestCase):
                     "validate-release:False",
                 ],
             )
+
+    def test_new_release_rejects_a_stale_publication_date_before_evidence_or_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            context = self.context(Path(raw))
+            instance = NewReleasePublisher(
+                context, events, publication_day="2026-09-14"
+            )
+            with self.assertRaisesRegex(
+                publisher.PublicationError, "release date .* UTC publication day"
+            ):
+                instance.publish()
+            self.assertEqual(events, ["release-count:0"])
+
+    def test_existing_draft_rejects_a_stale_publication_date_before_evidence_or_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            context = self.context(Path(raw))
+            instance = ExistingDraftPublisher(
+                context, events, publication_day="2026-09-14"
+            )
+            with self.assertRaisesRegex(
+                publisher.PublicationError, "release date .* UTC publication day"
+            ):
+                instance.publish()
+            self.assertEqual(events, ["release-count:1", "release-state:True"])
 
     def evidence_instance(
         self,

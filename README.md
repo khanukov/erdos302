@@ -1,11 +1,11 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.2.0-preprint` is prepared as the next corrected preprint.
+**Version `0.2.0-preprint` is the corrected preprint candidate.
 Preliminary and unrefereed; it is not independently verified.** Its publication
-gate remains closed pending merge, exact-SHA successful `Verify`,
-`Integration critical CI`, and `Cache-free full-project Lean rebuild` runs
-(including successful `aggregate` and `read-back` jobs), and final author
+gate is open, but publication still requires exact-SHA successful `Verify`,
+`Integration critical CI`, and `Cache-free full-project Lean rebuild` runs,
+including successful `aggregate` and `read-back` jobs, plus final author
 approval. The reserved tag and release URL are
 [`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint).
 Zenodo will archive the tagged source automatically under concept DOI

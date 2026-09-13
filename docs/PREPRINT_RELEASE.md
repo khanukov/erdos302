@@ -9,10 +9,10 @@ Current v0.2.0 release-candidate controls:
 ```text
 version:       0.2.0-preprint
 tag:           v0.2.0-corrected-preprint
-release date:  2026-09-12
+release date:  2026-09-13
 version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
-PUBLISH_READY: false
+PUBLISH_READY: true
 ```
 
 Published immutable preprint identifiers:
@@ -134,13 +134,13 @@ The command refuses a tracked dirty worktree and emits:
 
 ## 4. Create the GitHub prerelease
 
-This PR intentionally keeps `PUBLISH_READY=false`; merging it cannot create a
-tag or release. After the merge, wait for the exact push-to-`main` Verify run,
-download and inspect its v0.2.0 PDF and candidate bundle, and obtain the named
-author's approval. Then make a separate reviewed commit changing only
-`release/PUBLISH_READY` to `true`. Its exact-SHA push-to-`main` Verify and
-Integration critical CI runs must pass, and the cache-free full-project rebuild
-must be manually dispatched and pass for that same commit. If the first
+The preparation commit kept `PUBLISH_READY=false`, so merging it could not
+create a tag or release. After its exact-main evidence and candidate artifacts
+were inspected, a separately reviewed gate-opening change set
+`release/PUBLISH_READY` to `true` and synchronized the release-facing date and
+state. Its exact-SHA push-to-`main` Verify and Integration critical CI runs must
+pass, and the cache-free full-project rebuild must be manually dispatched and
+pass for that same commit. If the first
 Integration run finishes before the cache-free rebuild, rerun that exact
 push-triggered Integration run after the rebuild succeeds so publication is
 re-evaluated. Main-branch integration runs are never cancelled by a later push.
