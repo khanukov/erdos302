@@ -1,0 +1,11 @@
+import BoundaryABIProfile
+import BoundaryMainSmallnessABI
+import BoundaryErrorSmallnessABI
+
+namespace Erdos302ResidualBoundary
+
+#print axioms explicitLogAbsorptionHyp_lightweight
+#print axioms explicitMainSmallHyp_commonL
+#print axioms explicitErrorSmallHyp_commonL
+
+end Erdos302ResidualBoundary

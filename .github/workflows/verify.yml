@@ -205,6 +205,22 @@ jobs:
         run: |
           cd lower-lean
           lake build
+      - name: Rebuild and verify the explicit endpoint overlay
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          cd lower-lean
+          python3 explicit-overlay/rebuild_explicit_endpoint.py | tee /tmp/explicit-endpoint-build.log
+          ! grep -Fq sorryAx /tmp/explicit-endpoint-build.log
+          grep -Fq "'Erdos302ExplicitEndpoint.f302_explicit_pointwise' depends on axioms: [propext, Classical.choice, Quot.sound]" /tmp/explicit-endpoint-build.log
+          grep -Fq "'Erdos302ExplicitEndpoint.f302_explicit_liminf_lower' depends on axioms: [propext, Classical.choice, Quot.sound]" /tmp/explicit-endpoint-build.log
+          grep -Fq "'Erdos302ExplicitEndpoint.five_eighths_lt_explicit_liminf' depends on axioms: [propext, Classical.choice, Quot.sound]" /tmp/explicit-endpoint-build.log
+          python3 explicit-overlay/verify_explicit_endpoint.py > /tmp/explicit-normal.out
+          python3 -O explicit-overlay/verify_explicit_endpoint.py > /tmp/explicit-opt.out
+          cmp /tmp/explicit-normal.out /tmp/explicit-opt.out
+          python3 explicit-overlay/verify_explicit_endpoint.py --self-test > /tmp/explicit-self-normal.out
+          python3 -O explicit-overlay/verify_explicit_endpoint.py --self-test > /tmp/explicit-self-opt.out
+          cmp /tmp/explicit-self-normal.out /tmp/explicit-self-opt.out
       - name: Replay through Lean's kernel into a fresh environment
         if: github.event_name != 'pull_request'
         run: |
