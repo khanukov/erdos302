@@ -314,6 +314,45 @@ jobs:
           path: paper/erdos302_two_sided.pdf
           if-no-files-found: error
 
+  optimizer-compression-notes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Replay primary and independent obstruction checks
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          cd docs/research/optimizer-compression
+          for script in \
+            verify_prefix_lift_obstruction.py \
+            independent_verify_prefix_lift.py \
+            verify_finite_state_boundary_obstruction.py \
+            verify_finite_state_boundary_independent.py \
+            verify_approximate_boundary_contraction.py \
+            verify_approximate_boundary_independent.py
+          do
+            python3 -I -S "${script}" > "/tmp/${script}.normal"
+            python3 -I -S -O "${script}" > "/tmp/${script}.opt"
+            cmp "/tmp/${script}.normal" "/tmp/${script}.opt"
+            stem="${script%.py}"
+            case "${stem}" in
+              verify_prefix_lift_obstruction|independent_verify_prefix_lift)
+                cmp "/tmp/${script}.normal" "${stem}.out"
+                cmp "/tmp/${script}.opt" "${stem}.-O.out"
+                ;;
+              *)
+                cmp "/tmp/${script}.normal" "${stem}.out"
+                cmp "/tmp/${script}.opt" "${stem}.opt.out"
+                ;;
+            esac
+          done
+          sha256sum -c MANIFEST.sha256
+      - run: test -z "$(git status --porcelain)"
+
   preprint-bundle:
     # PR bundles are development evidence; non-PR bundles include fresh replay.
     needs:

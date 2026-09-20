@@ -1,0 +1,4 @@
+PASS finite-state boundary obstruction
+m_range=3..5000 crossing_edges=4165833 vertex_controls=12497499
+equal_weight_pairs=575682 max_t=12
+predecessor_checkpoint=c4c7ac654a71c86ce1f319c02e178308761ed5c38c2577a736b8f77b90e65ada

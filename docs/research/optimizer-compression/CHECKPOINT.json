@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "scope": "optimizer-compression-route-kills",
+  "status": "independently-reviewed-scoped-negative-results",
+  "acceptance_gate_met": false,
+  "certified_endpoint_movement": "0",
+  "predecessor_effective_bridge_sha256": "c4c7ac654a71c86ce1f319c02e178308761ed5c38c2577a736b8f77b90e65ada"
+}
