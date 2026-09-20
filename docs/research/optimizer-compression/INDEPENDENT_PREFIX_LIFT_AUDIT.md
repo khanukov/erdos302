@@ -18,7 +18,7 @@ The independent verifier was written separately from the primary replay. It:
 
 - pins the theorem report, primary verifier, and approved checkpoint;
 - independently expands and sign-controls all 286 reciprocal residuals;
-- exhaustively solves both 13-vertex cover programs over all 8192 subsets;
+- exhaustively enumerates all 8192 vertex subsets for each of the two 13-vertex cover programs, deriving both exact optima only after the complete scans;
 - stress-checks cutoff, gcd, and smooth-factor arithmetic through `t=4000` (the uniform claims themselves rest on the symbolic algebra in the report);
 - mutation-tests the primary edge classifier under normal and optimized Python, requiring the unique failure sentinel.
 
@@ -26,6 +26,6 @@ Normal and `python -O` outputs are byte-identical. The review found no reversed 
 
 ## Scope and redirect
 
-The result kills only the proposed local-core/confined-charge lift. A global dual certificate could still exist, but it must beat the explicit `B1` and `B3` exchanges. Under the campaign gate, the next admissible route is finite-state or renormalization contraction with a certified optimizer state that records boundary exchange debt; the bare nine-vertex deficit is not a state invariant.
+The result kills only the proposed local-core/confined-charge lift. A global dual certificate could still exist, but it must beat the explicit `B1` and `B3` exchanges. Finite-state or renormalization routes remain open and must account for the full induced reciprocal-edge closure of every proposed continuation; the bare nine-vertex deficit is not a state invariant.
 
 No `POSITIVE_RESULT.md` is justified.

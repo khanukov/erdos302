@@ -329,26 +329,14 @@ jobs:
           cd docs/research/optimizer-compression
           for script in \
             verify_prefix_lift_obstruction.py \
-            independent_verify_prefix_lift.py \
-            verify_finite_state_boundary_obstruction.py \
-            verify_finite_state_boundary_independent.py \
-            verify_approximate_boundary_contraction.py \
-            verify_approximate_boundary_independent.py
+            independent_verify_prefix_lift.py
           do
             python3 -I -S "${script}" > "/tmp/${script}.normal"
             python3 -I -S -O "${script}" > "/tmp/${script}.opt"
             cmp "/tmp/${script}.normal" "/tmp/${script}.opt"
             stem="${script%.py}"
-            case "${stem}" in
-              verify_prefix_lift_obstruction|independent_verify_prefix_lift)
-                cmp "/tmp/${script}.normal" "${stem}.out"
-                cmp "/tmp/${script}.opt" "${stem}.-O.out"
-                ;;
-              *)
-                cmp "/tmp/${script}.normal" "${stem}.out"
-                cmp "/tmp/${script}.opt" "${stem}.opt.out"
-                ;;
-            esac
+            cmp "/tmp/${script}.normal" "${stem}.out"
+            cmp "/tmp/${script}.opt" "${stem}.-O.out"
           done
           sha256sum -c MANIFEST.sha256
       - run: test -z "$(git status --porcelain)"

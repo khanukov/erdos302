@@ -1,4 +1,0 @@
-PASS approximate boundary contraction obstruction
-m_range=3..6000 crossing_edges=5999000
-equal_weight_pairs=2047152 max_t=13
-predecessor_checkpoint=c4c7ac654a71c86ce1f319c02e178308761ed5c38c2577a736b8f77b90e65ada

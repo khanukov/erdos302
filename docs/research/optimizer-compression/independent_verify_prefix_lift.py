@@ -21,8 +21,8 @@ ck(sha('verify_prefix_lift_obstruction.py') == PRIMARY_SHA, 'primary hash')
 checkpoint=json.loads(Path('CHECKPOINT.json').read_text())
 ck(checkpoint=={
     'schema': 1,
-    'scope': 'optimizer-compression-route-kills',
-    'status': 'independently-reviewed-scoped-negative-results',
+    'scope': 'optimizer-compression-prefix-lift-route-kill',
+    'status': 'independently-reviewed-scoped-negative-result',
     'acceptance_gate_met': False,
     'certified_endpoint_movement': '0',
     'predecessor_effective_bridge_sha256': 'c4c7ac654a71c86ce1f319c02e178308761ed5c38c2577a736b8f77b90e65ada',
@@ -88,13 +88,19 @@ idx={name:i for i,name in enumerate(order)}
 Tedges=[{'A1','A2','A3'},{'D1-','D1+','B1'},{'D3-','D3+','B3'}]
 Fedges=Tedges+[{f'A{i}',f'B{i}',f'C{i}'} for i in (1,2,3)]
 def cover_number(edges):
+    best = None
+    checked = 0
     for size in range(14):
         for C in combinations(order,size):
-            S=set(C)
-            if all(S & e for e in edges):
-                return size, frozenset(S)
-    raise RuntimeError('HOSTILE_CHECK:no cover')
-tauT,coverT=cover_number(Tedges); tauF,coverF=cover_number(Fedges)
+            checked += 1
+            S=frozenset(C)
+            if all(S & e for e in edges) and best is None:
+                best = (size, S)
+    ck(best is not None, 'no cover')
+    return best[0], best[1], checked
+tauT,coverT,checkedT=cover_number(Tedges)
+tauF,coverF,checkedF=cover_number(Fedges)
+ck((checkedT,checkedF)==(8192,8192), 'cover subset counts')
 ck((tauT,tauF)==(3,3), 'cover optima')
 ck(coverF == frozenset(('B1','A2','B3')), 'lexicographic full cover')
 ck(all(Fedges[i].isdisjoint(Fedges[j]) for i,j in combinations(range(3,6),2)), 'packing')
@@ -122,5 +128,6 @@ with tempfile.TemporaryDirectory() as td:
            'mutation accepted '+('optimized' if opt else 'normal'))
 
 print({'verified':True,'report_bound':True,'symbolic_residuals':286,
-       'exact_cover_subsets':8192,'tau_truncated':tauT,'tau_full':tauF,
+       'cover_subsets_per_program':checkedT,'cover_subsets_total':checkedT+checkedF,
+       'tau_truncated':tauT,'tau_full':tauF,
        'gap':0,'arithmetic_t_through':4000,'fail_closed_modes':2})
