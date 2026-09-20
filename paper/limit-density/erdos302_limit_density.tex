@@ -1,0 +1,1327 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdftitle={A limiting density for the distinct-variable Erdos Problem 302}
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\numberwithin{equation}{section}
+
+\newcommand{\N}{\mathbb N}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\ind}{\mathbf 1}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\supp}{\operatorname{supp}}
+
+\title{A limiting density for the distinct-variable\\ Erd\H{o}s Problem 302}
+\author{Dmitry Khanukov}
+\date{17 September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let \(f(N)\) be the largest cardinality of a subset of
+\(\{1,\ldots,N\}\) containing no pairwise distinct \(a,b,c\) with
+\(1/a=1/b+1/c\). We prove that \(f(N)/N\) has a limit. The main
+estimate is a uniform vertex cover for solutions whose larger primitive
+parameter \(v\) exceeds a prescribed cutoff: its size is
+\(O(N(\log R)^{-1/1000})\), for every \(N\). The proof combines a
+simultaneous small-prime-factor exceptional-set estimate, a uniform
+Selberg upper bound for arbitrary marked sets of primes, and an
+upper-bound specialization of Kevin Ford's divisor-in-an-interval
+theorem. Finite-prime decompositions then give an exact variational
+characterization and quantitative finite truncation bounds for the limiting
+density. The present argument does not determine the value of the density
+and therefore does not completely solve Problem 302.
+\end{abstract}
+
+\section{Introduction and main statement}
+
+We consider the distinct-variable extremal question posed by Erd\H{o}s and
+Graham \cite{EG1980} and recorded as Erd\H{o}s Problem 302
+\cite{EP302}. Throughout,
+\(\N=\{1,2,\ldots\}\), \([N]=\{1,\ldots,N\}\) for \(N\in\N\), and
+all logarithms are natural.
+
+A set \(A\subseteq\N\) is \emph{reciprocal-triple-free} if it contains
+no pairwise distinct positive integers satisfying
+\begin{equation}\label{eq:reciprocal}
+ \frac1a=\frac1b+\frac1c.
+\end{equation}
+In any such solution, \(a\) is the smallest entry; interchanging
+\(b,c\) permits the ordering \(a<b<c\). Define
+\[
+ f(N)=\max\{|A|:A\subseteq[N]\text{ is reciprocal-triple-free}\}.
+\]
+The restriction to pairwise distinct entries is part of this
+definition.
+
+The problem page records the elementary lower bound \(5N/8+o(N)\)
+and an upper bound \(9N/10+o(N)\) \cite{EP302}. A recent preliminary
+preprint gives a qualitative improvement above \(5/8\) and the upper
+constant \(140803024/163562355\) \cite{Khanukov2026}. Those bounds do
+not imply convergence of \(f(N)/N\). The purpose of the present paper
+is only to establish that convergence and to give the variational
+description below.
+
+Every ordered solution \(a<b<c\) has a unique representation
+\begin{equation}\label{eq:param-intro}
+ a=kuv,\qquad b=ku(u+v),\qquad c=kv(u+v),
+ \qquad k\in\N,\quad 1\le u<v,\quad (u,v)=1;
+\end{equation}
+see Lemma~\ref{lem:param}. For an integer \(R\ge2\), let \(f_R(N)\)
+be the largest size of a subset of \([N]\) avoiding only the
+solutions \eqref{eq:param-intro} with \(v\le R\). Thus
+\[
+ f(N)\le f_{R+1}(N)\le f_R(N)\le N.
+\]
+
+\begin{theorem}\label{thm:main}
+The following assertions hold.
+\begin{enumerate}
+\item For every integer \(R\ge2\), the limit
+\[
+ \alpha_R=\lim_{\substack{N\to\infty\\N\in\N}}\frac{f_R(N)}N
+\]
+exists.
+\item There are absolute constants \(C>0\) and
+\(R_0\in\N\), with \(R_0\ge2\), such that for every integer
+\(R\ge R_0\) and every \(N\in\N\),
+\begin{equation}\label{eq:uniform-comparison-main}
+ 0\le f_R(N)-f(N)\le CN(\log R)^{-1/1000}.
+\end{equation}
+\item The limit
+\[
+ \alpha=\lim_{\substack{N\to\infty\\N\in\N}}\frac{f(N)}N
+\]
+exists, and
+\begin{equation}\label{eq:alpha-inf-main}
+ \alpha=\inf_{\substack{R\ge2\\R\in\N}}\alpha_R,
+ \qquad
+ 0\le\alpha_R-\alpha\le C(\log R)^{-1/1000}
+ \quad(R\ge R_0).
+\end{equation}
+\item An exact variational characterization and quantitative finite
+truncation bounds are given in Theorem~\ref{thm:effective}.
+\end{enumerate}
+\end{theorem}
+
+
+The substantive approximation statement is
+\eqref{eq:uniform-comparison-main}. We prove the stronger assertion
+that all solutions with \(v>R\) have a vertex cover of the stated
+size, independently of the choice of a truncated independent set.
+For the analytic argument, large values of the scaling parameter
+\(k\) are treated by a weighted sieve, while small values are treated
+by Ford's theorem \cite[Theorem~1]{Ford2008}. The precise
+divisor-interval range used from that theorem is stated in
+Theorem~\ref{thm:ford}.
+
+The Selberg construction used below is classical; see, for example,
+\cite{HR}. We include its quadratic-form proof and all remainder
+estimates because uniformity over arbitrary marked sets of primes
+is essential. Ford's theorem supplies the divisor-distribution
+input, not a result about the extremal function \(f\).
+
+The finite-prime part of the argument involves fibers between which
+no edge can pass. These fibers are \emph{edge-separated blocks};
+they need not be connected components. The resulting formula is an
+exact characterization, not an evaluation of \(\alpha\) as a
+particular numerical constant. In particular, the present argument
+does not determine that value and does not completely solve Problem 302.
+
+\section{Parametrization and notation}
+
+\begin{lemma}\label{lem:param}
+For every solution of \eqref{eq:reciprocal} in integers
+\(a<b<c\), there is a unique triple
+\[
+ (k,u,v)\in\N^3,\qquad u<v,\qquad (u,v)=1,
+\]
+for which \eqref{eq:param-intro} holds. Conversely, every such
+triple gives a solution with \(a<b<c\).
+\end{lemma}
+
+\begin{proof}
+Write \(d=(b,c)\), \(b=du\), and \(c=dv\), where \(u<v\) and
+\((u,v)=1\). Equation \eqref{eq:reciprocal} gives
+\[
+ a=\frac{duv}{u+v}.
+\]
+Since \((uv,u+v)=1\), integrality implies \(u+v\mid d\).
+Putting \(k=d/(u+v)\) proves the representation and its uniqueness.
+Conversely, substitution verifies the equation, while
+\[
+ b-a=ku^2>0,\qquad c-b=k(v-u)(u+v)>0.
+\]
+\end{proof}
+
+We regard a solution as the three-element edge \(\{a,b,c\}\).
+The full hypergraph on \([N]\) has all such edges, and the truncated
+hypergraph has those with \(v\le R\). A \emph{vertex cover} of a
+specified family of edges is a subset of the vertex set meeting
+every edge in that family.
+
+For a real number \(x\ge2\) and \(n\in\N\), write
+\[
+ \Omega_x(n)=\sum_{\substack{p\le x\\p\ {\rm prime}}}v_p(n),
+ \qquad
+ \omega(n)=\#\{p:p\mid n\}.
+\]
+Here \(v_p(n)\) is the exponent of \(p\) in \(n\). Thus
+\(\Omega_x\) counts prime factors with multiplicity. It is
+completely additive:
+\[
+ \Omega_x(mn)=\Omega_x(m)+\Omega_x(n)
+ \qquad(m,n\in\N).
+\]
+We use \(\mu\), \(\varphi\), and \(\pi\) for the M\"obius function,
+Euler's totient function, and the prime-counting function,
+respectively. A subscript indicates the allowed dependence of an
+implied constant.
+
+\section{A uniform Selberg marked-prime lemma}
+
+We first record the elementary prime estimates needed in the sieve
+argument.
+
+\begin{lemma}\label{lem:prime-estimates}
+Uniformly for every real \(x\ge3\),
+\begin{equation}\label{eq:prime-estimates}
+ \sum_{p\le x}\frac{\log p}{p}\ll\log x,
+ \qquad
+ \sum_{p\le x}\frac1p=\log\log x+O(1).
+\end{equation}
+The constants are effective and absolute.
+\end{lemma}
+
+\begin{proof}
+The usual central-binomial-coefficient argument gives
+\(\vartheta(x)=\sum_{p\le x}\log p\ll x\), with an effective
+constant: for an integer \(n\ge1\),
+\[
+ \vartheta(2n)-\vartheta(n)
+ \le \log\binom{2n}{n}\le 2n\log2,
+\]
+and summation over powers of two suffices. Partial summation gives
+the first estimate in \eqref{eq:prime-estimates}.
+
+For the upper bound in the second estimate, put
+\(\sigma=1+1/\log x\). Then
+\[
+ \sum_{p\le x}\left(\frac1p-\frac1{p^\sigma}\right)
+ \le \frac1{\log x}\sum_{p\le x}\frac{\log p}{p}\ll1.
+\]
+The Euler product and the integral bound for the zeta series give
+\[
+ \sum_{p\le x}p^{-\sigma}
+ \le\log\zeta(\sigma)
+ \le\log(1+\log x)=\log\log x+O(1).
+\]
+For the reverse inequality,
+\[
+ \prod_{p\le x}(1-p^{-1})^{-1}
+ \ge \sum_{n\le x}\frac1n\ge\log x.
+\]
+Taking logarithms and using the absolute convergence of
+\(\sum_p p^{-2}\) gives
+\[
+ \log\log x\le\sum_{p\le x}\frac1p+O(1).
+\]
+All bounds in this argument are effective.
+\end{proof}
+
+For primes \(p\ge7\), define
+\[
+ g_1(p)=\frac1p,\qquad
+ g_2(p)=\frac{3p-2}{p^2}.
+\]
+Both satisfy
+\begin{equation}\label{eq:g-bounds}
+ 0<g_i(p)<\frac12,\qquad g_i(p)\le\frac3p.
+\end{equation}
+
+\begin{lemma}[Uniform Selberg bound for arbitrary marked sets]
+\label{lem:selberg-marked}
+There exist effective absolute constants \(\theta>0\) and
+\(C_S>0\) with the following properties.
+
+Let \(x\ge3\) be real, let \(\mathcal P\) be any subset of the primes
+in \([7,x]\), and put \(P=\prod_{p\in\mathcal P}p\), with the empty
+product interpreted as \(1\).
+\begin{enumerate}
+\item For every real \(K\ge1\) satisfying \(x\le K^\theta\),
+\begin{equation}\label{eq:marked-one}
+ \#\{k\in\N:k\le K,\ (k,P)=1\}
+ \le C_S K\prod_{p\in\mathcal P}(1-g_1(p)).
+\end{equation}
+\item For every real \(V\ge1\) satisfying \(x\le V^\theta\),
+\begin{align}
+ &\#\{(u,v)\in\N^2:1\le u\le2V,\ V\le v\le2V,\
+                   (uv(u+v),P)=1\} \notag\\
+ &\hspace{35mm}\le
+ C_S V^2\prod_{p\in\mathcal P}(1-g_2(p)).
+ \label{eq:marked-two}
+\end{align}
+\end{enumerate}
+In particular, neither constant depends on the marked set
+\(\mathcal P\).
+\end{lemma}
+
+\begin{proof}
+Fix either local density \(g=g_i\), extend it multiplicatively to
+squarefree divisors of \(P\), and set
+\[
+ h(p)=\frac{g(p)}{1-g(p)},\qquad
+ h(d)=\prod_{p\mid d}h(p),\qquad
+ G(D)=\sum_{\substack{d\mid P\\d\le D}}h(d)
+ \quad(D\ge1).
+\]
+
+\paragraph{The Selberg quadratic form.}
+There are real coefficients \(\lambda_d\), supported on
+\(d\mid P\), \(d\le D\), such that \(\lambda_1=1\) and
+\begin{equation}\label{eq:selberg-minimum}
+ \sum_{d,e}\lambda_d\lambda_e g(\lcm(d,e))
+ =\frac1{G(D)}.
+\end{equation}
+Indeed, put
+\[
+ y_r=\sum_{\substack{d\mid P\\r\mid d}}\lambda_d g(d).
+\]
+For squarefree \(d,e\),
+\[
+ g(\lcm(d,e))
+ =g(d)g(e)\sum_{r\mid(d,e)}\frac1{h(r)}.
+\]
+Consequently,
+\begin{equation}\label{eq:diagonalization}
+ \sum_{d,e}\lambda_d\lambda_e g(\lcm(d,e))
+ =\sum_{\substack{r\mid P\\r\le D}}\frac{y_r^2}{h(r)},
+ \qquad
+ \lambda_1=\sum_{\substack{r\mid P\\r\le D}}\mu(r)y_r.
+\end{equation}
+Cauchy--Schwarz gives the lower bound \(1/G(D)\) when
+\(\lambda_1=1\), and equality is attained by
+\[
+ y_r=\frac{\mu(r)h(r)}{G(D)}
+ \quad(r\mid P,\ r\le D),
+ \qquad y_r=0\quad(r>D).
+\]
+M\"obius inversion gives the corresponding coefficients:
+\begin{equation}\label{eq:lambda-formula}
+ \lambda_d=
+ \frac{\mu(d)}{G(D)}
+ \prod_{p\mid d}(1-g(p))^{-1}
+ \sum_{\substack{m\le D/d\\m\mid P\\(m,d)=1}}h(m)
+ \quad(d\mid P,\ d\le D).
+\end{equation}
+This also proves directly that \(\lambda_1=1\). By positivity of
+\(h\) and \eqref{eq:g-bounds},
+\begin{equation}\label{eq:lambda-size}
+ |\lambda_d|
+ \le\prod_{p\mid d}(1-g(p))^{-1}
+ \le2^{\omega(d)}\le d.
+\end{equation}
+
+\paragraph{A lower bound for \(G(D)\), uniform in \(\mathcal P\).}
+Let
+\[
+ W=\sum_{d\mid P}h(d)
+   =\prod_{p\in\mathcal P}(1-g(p))^{-1}.
+\]
+Give the divisors \(d\mid P\) the probability distribution
+\(h(d)/W\). Under this distribution the prime factors of \(d\)
+are independently selected, and \(p\) is selected with probability
+\(g(p)\). Hence, by Lemma~\ref{lem:prime-estimates},
+\[
+ \mathbb E(\log d)
+ =\sum_{p\in\mathcal P}g(p)\log p
+ \le3\sum_{p\le x}\frac{\log p}{p}
+ \le C_0\log x
+\]
+for an effective absolute \(C_0\).
+
+Choose a fixed effective real \(A>\max(1,2C_0)\), and put
+\(D=x^A\). Markov's inequality yields
+\[
+ \mathbb P(d>D)\le\frac{C_0}{A}<\frac12.
+\]
+Therefore
+\begin{equation}\label{eq:G-uniform}
+ G(D)\ge\frac12W,\qquad
+ \frac1{G(D)}
+ \le2\prod_{p\in\mathcal P}(1-g(p)).
+\end{equation}
+This is the required uniformity with respect to the marked set.
+Fix from now on
+\begin{equation}\label{eq:theta}
+ \theta=\frac1{20A}.
+\end{equation}
+
+\paragraph{The one-dimensional remainder.}
+For every positive integer \(m\), the Selberg majorant is
+\begin{equation}\label{eq:selberg-majorant}
+ \ind_{\{(m,P)=1\}}
+ \le
+ \left(\sum_{\substack{d\mid P\\d\le D\\d\mid m}}\lambda_d\right)^2.
+\end{equation}
+Apply this with \(m=k\), use \(g=g_1\), and use
+\[
+ \#\{k\in\N:k\le K,\ l\mid k\}=\frac Kl+O(1).
+\]
+Equations \eqref{eq:selberg-minimum} and
+\eqref{eq:lambda-size} give
+\begin{equation}\label{eq:one-remainder}
+ \#\{k\le K:(k,P)=1\}
+ \le\frac K{G(D)}+O(D^4),
+\end{equation}
+because \(\sum_{d\le D}|\lambda_d|\ll D^2\).
+
+If \(x\le K^\theta\), then \(D\le K^{1/20}\), so the remainder
+is \(O(K^{1/5})\). Moreover,
+\[
+ \prod_{p\in\mathcal P}(1-g_1(p))
+ \ge\prod_{7\le p\le x}(1-p^{-1})
+ \gg(\log x)^{-1}.
+\]
+The last estimate follows from Lemma~\ref{lem:prime-estimates}.
+Since \(\log x\le\theta\log K\), the error in
+\eqref{eq:one-remainder} is absorbed by a constant multiple of
+the right side of \eqref{eq:marked-one}: for all sufficiently large
+\(K\), \(K^{1/5}\log x\le K\), and the remaining bounded range is
+absorbed by enlarging the absolute constant. This proves
+\eqref{eq:marked-one} with an absolute constant.
+
+\paragraph{The two-dimensional remainder.}
+Over \(\mathbb F_p^2\), the union of the three lines
+\[
+ u=0,\qquad v=0,\qquad u+v=0
+\]
+has \(3p-2\) points. Thus, for squarefree \(l\mid P\), the number
+of residue pairs satisfying \(l\mid uv(u+v)\) is
+\[
+ \varrho(l)=\prod_{p\mid l}(3p-2),
+ \qquad \frac{\varrho(l)}{l^2}=g_2(l).
+\]
+Counting each residue pair in the rectangle gives
+\begin{align}
+ &\#\{(u,v)\in\N^2:1\le u\le2V,\ V\le v\le2V,\
+                     l\mid uv(u+v)\} \notag\\
+ &\hspace{15mm}
+ =2V^2\frac{\varrho(l)}{l^2}
+  +O\left(\varrho(l)\left(\frac Vl+1\right)\right).
+ \label{eq:lattice-remainder}
+\end{align}
+The displayed error also includes the effects of nonintegral
+endpoints and closed boundaries, so the nominal area \(2V^2\) is
+valid for real \(V\).
+
+Apply \eqref{eq:selberg-majorant} to \(m=uv(u+v)\) with
+\(g=g_2\). Since \(\varrho(l)\le l^2\) and
+\(\lcm(d,e)\le D^2\), the total error after expansion is
+\[
+ \ll
+ \sum_{d,e\le D}|\lambda_d\lambda_e|
+ \left(V\lcm(d,e)+\lcm(d,e)^2\right)
+ \ll VD^6+D^8.
+\]
+It follows that the left side of \eqref{eq:marked-two} is at most
+\begin{equation}\label{eq:two-remainder}
+ \frac{2V^2}{G(D)}+O(VD^6+D^8).
+\end{equation}
+If \(x\le V^\theta\), then \(D\le V^{1/20}\), and the error is
+\[
+ O(V^{13/10}+V^{2/5}).
+\]
+Finally,
+\[
+ \prod_{p\in\mathcal P}(1-g_2(p))
+ \ge\prod_{7\le p\le x}(1-g_2(p))
+ \gg(\log x)^{-3},
+\]
+because \(g_2(p)=3/p+O(p^{-2})\). The error in
+\eqref{eq:two-remainder} is therefore absorbed into
+\(O(V^2\prod_{p\in\mathcal P}(1-g_2(p)))\): for all sufficiently
+large \(V\), \((V^{13/10}+V^{2/5})(\log x)^3\le V^2\), and the
+remaining bounded range is absorbed by the absolute constant.
+Together with \eqref{eq:G-uniform}, this proves
+\eqref{eq:marked-two}. All constants used above are independent
+of \(\mathcal P\).
+\end{proof}
+
+\begin{corollary}[Weighted sieve estimates]\label{cor:weighted}
+Let \(\theta>0\) be as in Lemma~\ref{lem:selberg-marked}.
+For every fixed real \(q\in(0,1)\), there is an effective constant
+\(C_q>0\) such that
+\begin{equation}\label{eq:weighted-one}
+ \sum_{\substack{k\in\N\\k\le K}}q^{\Omega_x(k)}
+ \le C_qK(\log x)^{q-1}
+ \qquad(K\ge1,\ 3\le x\le K^\theta),
+\end{equation}
+and
+\begin{equation}\label{eq:weighted-two}
+ \sum_{\substack{(u,v)\in\N^2\\1\le u\le2V\\V\le v\le2V}}
+ q^{\Omega_x(uv(u+v))}
+ \le C_qV^2(\log x)^{3(q-1)}
+ \qquad(V\ge1,\ 3\le x\le V^\theta).
+\end{equation}
+Here \(K,V,x\) may be real. No coprimality condition on \(u,v\)
+is imposed.
+\end{corollary}
+
+\begin{proof}
+Independently mark each prime in \([7,x]\) with probability \(1-q\),
+and let \(\mathcal P\) be the random marked set. For every
+\(m\in\N\),
+\[
+ q^{\Omega_x(m)}
+ \le q^{\#\{p\in[7,x]:p\mid m\}}
+ =\mathbb P\bigl((m,\prod_{p\in\mathcal P}p)=1\bigr).
+\]
+The inequality uses \(0<q<1\); omitting the primes \(2,3,5\)
+and ignoring multiplicities can only increase the weight.
+
+Average \eqref{eq:marked-one} or \eqref{eq:marked-two}. Their
+constants are independent of \(\mathcal P\), and independence
+of the marks gives
+\[
+ \mathbb E\prod_{p\in\mathcal P}(1-g_i(p))
+ =\prod_{7\le p\le x}\bigl(1-(1-q)g_i(p)\bigr).
+\]
+Writing \(\kappa_1=1\), \(\kappa_2=3\), we have
+\(g_i(p)=\kappa_i/p+O(p^{-2})\). Lemma~\ref{lem:prime-estimates}
+therefore gives
+\[
+ \prod_{7\le p\le x}\bigl(1-(1-q)g_i(p)\bigr)
+ \asymp_q(\log x)^{-\kappa_i(1-q)}.
+\]
+This proves both assertions.
+\end{proof}
+
+\section{Divisor intervals and a simultaneous exceptional set}
+
+\subsection{The input from Ford's theorem}
+
+For real \(X\ge1\) and \(1<y<z\), let
+\[
+ H(X,y,z)=
+ \#\{n\in\N:n\le X,\ \text{there exists }d\mid n
+                         \text{ with }y<d\le z\}.
+\]
+Put
+\begin{equation}\label{eq:delta}
+ \delta=
+ 1-\frac{1+\log\log2}{\log2}
+ =0.08607\ldots.
+\end{equation}
+
+\begin{theorem}[Ford, upper-bound specialization]\label{thm:ford}
+There exist absolute constants \(C_F>0\) and \(y_F\ge3\)
+such that, for all real \(X,y,z\) satisfying
+\[
+ y\ge y_F,\qquad 2y\le z\le\min(y^2,\sqrt X),
+\]
+one has
+\begin{equation}\label{eq:ford}
+ H(X,y,z)
+ \le C_F X
+       u^\delta\bigl(\log(2/u)\bigr)^{-3/2},
+ \qquad
+ u=\frac{\log(z/y)}{\log y}.
+\end{equation}
+\end{theorem}
+
+This is the indicated subrange of Kevin Ford,
+\emph{The distribution of integers with a divisor in a given
+interval}, \emph{Annals of Mathematics} \textbf{168} (2008),
+367--433, Theorem~1(v), p.~371, DOI
+\href{https://doi.org/10.4007/annals.2008.168.367}
+{10.4007/annals.2008.168.367}.
+Only the upper bound \eqref{eq:ford}, with its uniform constants, is
+used here. In particular, the application is not
+restricted to intervals with fixed ratio \(z/y\).
+In Ford's notation, the middle case of Theorem~1(v) assumes
+\(X>100000\), \(100\le y\le z-1\), \(y\le\sqrt X\), and
+\(2y\le z\le y^2\). Enlarging \(y_F\) absorbs the fixed lower
+thresholds on \(X\) and \(y\), while our hypotheses retain
+\(y\le z/2\le z-1\), \(z\le\sqrt X\), and the same middle-case
+range. Thus the displayed specialization is a direct restriction of
+Ford's theorem.
+
+\begin{corollary}\label{cor:ford-window}
+There are absolute constants \(M_F\ge1\) and \(C_D>0\)
+such that for every \(N\in\N\) and every real
+\(0<\eta\le1/16\) satisfying \(\eta\log N\ge M_F\), the set
+\[
+ \mathcal D_\eta(N)=
+ \left\{n\in[N]:
+   \text{there exists }d\mid n,\quad
+   N^{1/2-2\eta}\le d\le N^{1/2}
+ \right\}
+\]
+satisfies
+\begin{equation}\label{eq:ford-window}
+ |\mathcal D_\eta(N)|\le C_DN\eta^\delta.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Set \(y=N^{1/2-2\eta}\), \(z=N^{1/2}\). Then
+\[
+ \frac zy=N^{2\eta},\qquad
+ z\le y^2,\qquad
+ u=\frac{4\eta}{1-4\eta}.
+\]
+Here \(z\le y^2\) follows from \(\eta\le1/16\). Choose \(M_F\)
+large enough that \(\eta\log N\ge M_F\) implies both \(2y\le z\)
+and \(y\ge y_F\). Such a choice is absolute: indeed,
+\[
+ \log y\ge\frac38\log N\ge6M_F.
+\]
+Moreover,
+\[
+ 4\eta\le u\le\frac{16}3\eta\le\frac13.
+\]
+Theorem~\ref{thm:ford} now gives
+\(H(N,y,z)\ll N\eta^\delta\), after discarding the favorable
+logarithmic factor.
+
+The definition of \(\mathcal D_\eta(N)\) also permits \(d=y\).
+If \(y\) is an integer, these additional integers number at most
+\(N/y\le N^{5/8}\). Since \(M_F\ge1\), the hypothesis gives
+\(\eta\ge1/\log N\), and
+\[
+ N^{5/8}\ll N(\log N)^{-\delta}\le N\eta^\delta.
+\]
+If \(y\) is not an integer, there is no endpoint contribution.
+This proves \eqref{eq:ford-window}.
+\end{proof}
+
+\subsection{Simultaneous control of small prime factors}
+
+Fix the absolute parameters
+\begin{equation}\label{eq:fixed-parameters}
+ \eps=\frac2{25}=0.08,\qquad
+ t=\frac{26}{25}=1.04,\qquad
+ c_*=(1+\eps)\log t-(t-1)>0.
+\end{equation}
+
+\begin{lemma}\label{lem:exceptional}
+For real \(T\ge3\) and \(N\in\N\), define
+\[
+ \mathcal B_T(N)=
+ \left\{n\in[N]:
+   \Omega_x(n)>(1+\eps)\log\log x
+   \text{ for some real }x\ge T
+ \right\}.
+\]
+There is an effective absolute constant \(C_B>0\) such that
+\begin{equation}\label{eq:exceptional}
+ |\mathcal B_T(N)|
+ \le C_BN(\log T)^{-c_*}
+ \qquad(T\ge3,\ N\in\N).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+We first prove, uniformly for real \(x\ge3\) and \(N\in\N\),
+\begin{equation}\label{eq:positive-moment}
+ \frac1N\sum_{n\le N}t^{\Omega_x(n)}
+ \ll_t(\log x)^{t-1}.
+\end{equation}
+Define a nonnegative multiplicative function \(\gamma_x\) by
+\[
+ \gamma_x(p^a)=
+ \begin{cases}
+  (t-1)t^{a-1},&p\le x,\ a\ge1,\\
+  0,&p>x,\ a\ge1.
+ \end{cases}
+\]
+Then
+\[
+ t^{\Omega_x(n)}=\sum_{d\mid n}\gamma_x(d).
+\]
+Because \(1<t<2\), every local series below converges, and
+positivity gives
+\begin{align*}
+ \frac1N\sum_{n\le N}t^{\Omega_x(n)}
+ &\le\sum_{d\ge1}\frac{\gamma_x(d)}d\\
+ &=\prod_{p\le x}\frac{1-1/p}{1-t/p}
+ \ll_t(\log x)^{t-1}.
+\end{align*}
+For the last estimate, take logarithms and apply
+Lemma~\ref{lem:prime-estimates}. This proves
+\eqref{eq:positive-moment}, even when \(x>N\).
+
+Let \(x_j=\exp(e^j)\) for integers \(j\ge0\), and put
+\(j_0=\lfloor\log\log T\rfloor\), which is nonnegative.
+If \(x\in[x_j,x_{j+1}]\) witnesses membership in
+\(\mathcal B_T(N)\), then
+\[
+ \Omega_{x_{j+1}}(n)>(1+\eps)j.
+\]
+By Markov's inequality and \eqref{eq:positive-moment}, the number
+of integers with this property is at most
+\[
+ \ll N t^{-(1+\eps)j}
+          (\log x_{j+1})^{t-1}
+ =O\left(N e^{-c_*j}\right).
+\]
+Summing over all \(j\ge j_0\) gives
+\[
+ |\mathcal B_T(N)|
+ \ll N e^{-c_*j_0}
+ \ll N(\log T)^{-c_*}.
+\]
+The infinite grid is legitimate because the moment estimate is
+uniform in both \(N\) and \(x\).
+\end{proof}
+
+\section{A uniform cover for the primitive tail}
+
+Fix
+\begin{equation}\label{eq:z-beta}
+ z=\frac{\sqrt5-1}{2},\qquad
+ \beta=4-3z^2-z^3+3(1+\eps)\log z.
+\end{equation}
+The following rationally certified numerical inequalities will suffice:
+\begin{equation}\label{eq:numeric}
+ \delta>0.086,\qquad c_*>0.0023,\qquad \beta>1.058.
+\end{equation}
+In particular, \(\beta>1\). For completeness, the following explicit
+intervals certify the displayed inequalities:
+\[
+\begin{gathered}
+ 2.236067977<\sqrt5<2.236067978,\\
+ 0.6931471805<\log2<0.6931471806,\\
+ -0.3665129210<\log\log2<-0.3665129203,\\
+ -0.481211826<\log z<-0.481211824,\\
+ 0.0392207131<\log(26/25)<0.0392207132.
+\end{gathered}
+\]
+Substitution with outward rounding gives
+\[
+ 0.08607<\delta<0.08608,\qquad
+ 0.00235<c_*<0.00237,\qquad
+ 1.0588<\beta<1.0590.
+\]
+Each logarithmic interval follows by taking \(M=20\) in
+\[
+ \log a=
+ 2\sum_{m=0}^{M-1}\frac{w^{2m+1}}{2m+1}
+ +\mathcal R_M,\qquad
+ w=\frac{a-1}{a+1},\qquad
+ |\mathcal R_M|
+ \le\frac{2|w|^{2M+1}}{(2M+1)(1-w^2)}
+ \quad(a>0).
+\]
+For \(\log\log2\), first enclose \(\log2\) by the same formula
+and then apply it once more with interval arithmetic. The square-root
+interval follows by squaring its rational endpoints.
+
+\begin{proposition}[Parameterized tail cover]\label{prop:param-cover}
+Let \(\theta\) be as in Corollary~\ref{cor:weighted} and
+\(M_F\) as in Corollary~\ref{cor:ford-window}. There is an absolute
+constant \(C_1>0\) with the following property.
+
+For every integer \(R\ge2\), every \(N\in\N\), and every real
+\(0<\eta\le1/16\) satisfying
+\begin{equation}\label{eq:cover-hypotheses}
+ T:=R^{2\eta\theta}\ge3,\qquad
+ \eta\log N\ge M_F,\qquad
+ N\ge\eta^{-1/\eta},
+\end{equation}
+there exists a set \(\mathcal T_{R,\eta}(N)\subseteq[N]\)
+meeting every solution \eqref{eq:param-intro} with \(v>R\) and
+\(c\le N\), such that
+\begin{align}
+ \frac{|\mathcal T_{R,\eta}(N)|}{N}
+ \le C_1\bigl(
+   \eta+\eta^\delta
+   +(\eta\log R)^{-c_*}
+   +\eta^{-\beta}(\log R)^{1-\beta}
+ \bigr).
+ \label{eq:param-cover}
+\end{align}
+The constant \(C_1\) is independent of \(R,N,\eta\).
+\end{proposition}
+
+\begin{proof}
+Begin by deleting
+\[
+ \mathcal T_0=
+ \{n\in[N]:n\le\eta N\}
+ \ \cup\ \mathcal D_\eta(N)
+ \ \cup\ \mathcal B_T(N).
+\]
+Corollary~\ref{cor:ford-window} and
+Lemma~\ref{lem:exceptional} give
+\begin{equation}\label{eq:initial-cost}
+ \frac{|\mathcal T_0|}{N}
+ \ll \eta+\eta^\delta+(\eta\log R)^{-c_*},
+\end{equation}
+where \(\log T=2\eta\theta\log R\), and \(\theta\) is fixed.
+
+\paragraph{Solutions with \(k<N^\eta\).}
+Suppose that a solution survives deletion of the first two sets
+in \(\mathcal T_0\), and that \(k<N^\eta\).
+Since \(a>\eta N\) and
+\[
+ v^2<kv(u+v)=c\le N,
+\]
+we have
+\[
+ u=\frac a{kv}>\eta N^{1/2-\eta}.
+\]
+The hypothesis \(N\ge\eta^{-1/\eta}\) is equivalent to
+\(\eta\ge N^{-\eta}\). Hence
+\[
+ N^{1/2-2\eta}<u<v<N^{1/2}.
+\]
+But \(u\mid a\), so \(a\in\mathcal D_\eta(N)\), a contradiction.
+Thus no solution with \(k<N^\eta\) survives \(\mathcal T_0\).
+
+\paragraph{Solutions with \(k\ge N^\eta\).}
+Consider a dyadic range
+\[
+ V\le v<2V,\qquad V=2^jR,\quad j\in\mathbb Z_{\ge0},
+\]
+which contains at least one surviving solution with
+\(k\ge N^\eta\). Put
+\begin{equation}\label{eq:scale}
+ K=\frac N{V^2},\qquad x=\min(V,K)^\theta.
+\end{equation}
+For any solution in this range,
+\[
+ c=kv(u+v)>kV^2,
+\]
+so \(k<K\). Nonemptiness therefore gives
+\[
+ K\ge N^\eta,\qquad N>V^2,\qquad
+ K\ge V^{2\eta}.
+\]
+Since \(2\eta\le1\),
+\begin{equation}\label{eq:x-range}
+ x\ge V^{2\eta\theta}\ge R^{2\eta\theta}=T,
+ \qquad x\le V^\theta,\qquad x\le K^\theta.
+\end{equation}
+Both weighted sieve estimates apply at this same value of \(x\).
+
+All three vertices of a surviving solution lie outside
+\(\mathcal B_T(N)\). By complete additivity of \(\Omega_x\),
+\begin{align}
+ S&:=\Omega_x(a)+\Omega_x(b)+\Omega_x(c)\notag\\
+  &=3\Omega_x(k)+2\Omega_x(uv(u+v))\notag\\
+  &\le 3(1+\eps)\log\log x.
+ \label{eq:normal-edge}
+\end{align}
+This identity does not require any coprimality between the
+displayed factors.
+
+If \(0<z<1\) and \(S\le A\), then \(1\le z^{S-A}\).
+Consequently, the number of surviving solutions in the range
+under consideration is at most
+\begin{align}
+ &(\log x)^{3(1+\eps)\log(1/z)}
+ \left(\sum_{k\le K}(z^3)^{\Omega_x(k)}\right)
+ \left(
+ \sum_{\substack{1\le u\le2V\\V\le v\le2V}}
+ (z^2)^{\Omega_x(uv(u+v))}
+ \right).
+ \label{eq:weighted-edge-count}
+\end{align}
+We have enlarged the parameter range, dropping both \(u<v\)
+and \((u,v)=1\), which is valid for this upper bound.
+
+Apply Corollary~\ref{cor:weighted} with \(q=z^3\) and \(q=z^2\).
+The expression in \eqref{eq:weighted-edge-count} is
+\begin{align}
+ &\ll KV^2
+ (\log x)^{3(1+\eps)\log(1/z)+(z^3-1)+3(z^2-1)}
+ \notag\\
+ &=N(\log x)^{-\beta}
+ \ll N\eta^{-\beta}(\log V)^{-\beta}.
+ \label{eq:dyadic-bound}
+\end{align}
+The last inequality follows from \eqref{eq:x-range}. Its implied
+constant is absolute because \(\theta,z,\eps\) are fixed.
+
+The relevant dyadic ranges are finite, but we may sum over all
+\(j\ge0\). Since \(\beta>1\),
+\[
+ \sum_{j\ge0}(\log R+j\log2)^{-\beta}
+ \ll(\log R)^{1-\beta}
+ \qquad(R\ge2).
+\]
+Thus the number of all surviving tail edges is at most
+\begin{equation}\label{eq:surviving-edges}
+ \ll N\eta^{-\beta}(\log R)^{1-\beta}.
+\end{equation}
+Choose one vertex from every such edge and adjoin all chosen
+vertices to \(\mathcal T_0\). The union meets every tail edge,
+and its additional size is at most the number in
+\eqref{eq:surviving-edges}. Combining this with
+\eqref{eq:initial-cost} proves \eqref{eq:param-cover}.
+\end{proof}
+
+\begin{theorem}[Uniform tail cover]\label{thm:tail}
+There exist absolute constants \(C>0\) and
+\(R_0\in\N\), \(R_0\ge2\), such that for every integer \(R\ge R_0\)
+and every \(N\in\N\), there is a set
+\(\mathcal T_R(N)\subseteq[N]\) meeting every solution
+\eqref{eq:param-intro} with \(v>R\) and \(c\le N\), and satisfying
+\begin{equation}\label{eq:tail-cover}
+ |\mathcal T_R(N)|\le CN(\log R)^{-1/1000}.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+If \(N\le R^2\), no tail edge exists, because every such edge
+satisfies \(c>v^2>R^2\). In this case take
+\(\mathcal T_R(N)=\varnothing\).
+
+Suppose \(N>R^2\), put \(L=\log R\), and choose
+\[
+ \eta=L^{-1/40}.
+\]
+For all sufficiently large \(R\), uniformly over
+\(N>R^2\), the hypotheses of Proposition~\ref{prop:param-cover}
+hold. Indeed,
+\[
+ \eta\le\frac1{16},\qquad
+ \log T=2\theta L^{39/40}\longrightarrow\infty,
+ \qquad
+ \eta\log N>2L^{39/40}\longrightarrow\infty,
+\]
+and
+\[
+ \log(\eta^{-1/\eta})
+ =\frac1{40}L^{1/40}\log L=o(L)<\log N.
+\]
+The thresholds can be chosen to hold for every larger \(R\).
+
+The four terms in \eqref{eq:param-cover} now become
+\[
+ L^{-1/40},\qquad
+ L^{-\delta/40},\qquad
+ L^{-(39/40)c_*},\qquad
+ L^{-(\beta-1-\beta/40)}.
+\]
+By \eqref{eq:numeric}, every displayed decay exponent is greater
+than \(1/1000\). For the last one, for example,
+\[
+ \beta-1-\frac{\beta}{40}
+ =\frac{39}{40}\beta-1
+ >\frac{39}{40}(1.058)-1
+ >\frac1{1000}.
+\]
+Proposition~\ref{prop:param-cover} proves
+\eqref{eq:tail-cover} after increasing an absolute constant.
+\end{proof}
+
+\begin{corollary}\label{cor:extremal-comparison}
+With \(C,R_0\) as in Theorem~\ref{thm:tail}, for every integer
+\(R\ge R_0\) and every \(N\in\N\),
+\[
+ 0\le f_R(N)-f(N)\le CN(\log R)^{-1/1000}.
+\]
+\end{corollary}
+
+\begin{proof}
+Let \(A\subseteq[N]\) be a maximum independent set in the
+truncated hypergraph. Then \(A\setminus\mathcal T_R(N)\) contains
+neither a truncated edge nor a tail edge. Therefore
+\[
+ f(N)\ge |A\setminus\mathcal T_R(N)|
+ \ge f_R(N)-|\mathcal T_R(N)|.
+\]
+The reverse comparison \(f(N)\le f_R(N)\) follows directly from
+the definitions.
+\end{proof}
+
+\begin{remark}
+The set \(\mathcal T_R(N)\) is a cover for the entire tail
+hypergraph, not merely for the tail edges in a selected
+independent set. The proof gives an upper bound for
+\(f_R(N)-f(N)\); it does not assert equality with the minimum
+size of a tail cover.
+\end{remark}
+
+\section{Finite-prime decomposition}
+
+Fix an integer \(R\ge2\), and define
+\begin{equation}\label{eq:Q}
+ Q_R=\prod_{p\le2R}p,\qquad
+ \rho_R=\frac{\varphi(Q_R)}{Q_R},\qquad
+ D_R=2^{\pi(2R)}.
+\end{equation}
+Call a positive integer \(Q_R\)-smooth if all its prime factors
+divide \(Q_R\), with \(1\) included. List these integers as
+\[
+ 1=s_{R,1}<s_{R,2}<\cdots,
+\]
+and, for every real \(y\ge0\), put
+\[
+ \Psi_R(y)=\#\{j:s_{R,j}\le y\},\qquad
+ C_R(y)=\#\{r\in\N:r\le y,\ (r,Q_R)=1\}.
+\]
+
+\begin{definition}\label{def:finite-variational}
+For each integer \(j\ge1\), let \(\mathcal G_{R,j}\) be the
+hypergraph on
+\(\{s_{R,1},\ldots,s_{R,j}\}\) whose edges are the solutions
+\eqref{eq:param-intro} with \(v\le R\) and with all three vertices
+in the displayed set. Let \(h_{R,j}\) be its
+independence number, and put \(h_{R,0}=0\). Equivalently,
+\begin{equation}\label{eq:finite-max}
+ h_{R,j}=
+ \max\left\{
+ \sum_{i=1}^j\xi_i:
+ \begin{array}{l}
+ \xi_i\in\{0,1\}\quad(1\le i\le j),\\
+ \xi_{i_1}+\xi_{i_2}+\xi_{i_3}\le2
+ \text{ for every edge }
+ \{s_{R,i_1},s_{R,i_2},s_{R,i_3}\}
+ \end{array}
+ \right\}.
+\end{equation}
+Define
+\[
+ d_{R,j}=h_{R,j}-h_{R,j-1}\qquad(j\ge1).
+\]
+\end{definition}
+
+Because \(\mathcal G_{R,j-1}\) is an induced subhypergraph of
+\(\mathcal G_{R,j}\), an independent set in the former remains
+independent in the latter. Conversely, removing the new vertex
+from any independent set loses at most one vertex. Hence
+\begin{equation}\label{eq:increments}
+ d_{R,j}\in\{0,1\},\qquad
+ h_{R,m}=\sum_{j=1}^m d_{R,j}\quad(m\ge0).
+\end{equation}
+No choice of nested maximizing independent sets is involved.
+
+\begin{proposition}[Edge-separated blocks and exact decomposition]
+\label{prop:blocks}
+For every integer \(R\ge2\) and every \(N\in\N\),
+\begin{align}
+ f_R(N)
+ &=\sum_{\substack{r\le N\\(r,Q_R)=1}}
+       h_{R,\Psi_R(N/r)}
+ \label{eq:block-sum}\\
+ &=\sum_{j\ge1}d_{R,j}\,C_R(N/s_{R,j}).
+ \label{eq:exact-count}
+\end{align}
+The series in \eqref{eq:exact-count} has only finitely many
+nonzero terms.
+\end{proposition}
+
+\begin{proof}
+Every integer \(n\in\N\) has a unique factorization
+\[
+ n=rs,\qquad (r,Q_R)=1,\qquad s\text{ is }Q_R\text{-smooth}.
+\]
+For each \(r\le N\) with \((r,Q_R)=1\), define the fiber
+\[
+ V_r(N)=\{rs\le N:s\text{ is }Q_R\text{-smooth}\}.
+\]
+These fibers partition \([N]\).
+
+In a truncated edge, \(u<v\le R\), and every prime dividing
+\(uv(u+v)\) is at most \(2R\). Write the scaling parameter as
+\(k=rt\), where \((r,Q_R)=1\) and \(t\) is \(Q_R\)-smooth.
+All three vertices then have the same factor \(r\) supported on
+primes outside \(Q_R\). Thus no truncated edge crosses between
+different fibers.
+
+Division by \(r\) identifies the induced hypergraph on \(V_r(N)\)
+with \(\mathcal G_{R,\Psi_R(N/r)}\). This identification holds in
+both directions: multiplication by \(r\) changes \(k\) to \(rk\)
+without changing \(u,v\), while division of an edge in the fiber
+changes \(k=rt\) to \(t\). Independence numbers therefore add
+over these edge-separated blocks, proving \eqref{eq:block-sum}.
+
+Now use \eqref{eq:increments} and rearrange a finite sum:
+\begin{align*}
+ f_R(N)
+ &=\sum_{\substack{r\le N\\(r,Q_R)=1}}
+       \sum_{s_{R,j}\le N/r}d_{R,j}\\
+ &=\sum_{s_{R,j}\le N}
+       d_{R,j}\,\#\{r\le N/s_{R,j}:(r,Q_R)=1\}.
+\end{align*}
+Terms with \(s_{R,j}>N\) vanish, giving \eqref{eq:exact-count}.
+\end{proof}
+
+\begin{remark}\label{rem:not-components}
+The fibers \(V_r(N)\) are edge-separated blocks, not necessarily
+connected components. For example, when \(R=2\) and \(N=6\),
+one has \(Q_R=6\) and
+\[
+ V_1(6)=\{1,2,3,4,6\}.
+\]
+Its only edge is \(\{2,3,6\}\); the vertices \(1\) and \(4\) are
+isolated. Independence-number additivity requires only that no
+edge cross between fibers.
+\end{remark}
+
+\begin{proposition}[Truncated limits and their error bounds]
+\label{prop:truncated-limit}
+For every integer \(R\ge2\), the limit \(\alpha_R\) exists and is
+given by the absolutely convergent series
+\begin{equation}\label{eq:alphaR-series}
+ \alpha_R=\rho_R\sum_{j\ge1}\frac{d_{R,j}}{s_{R,j}}.
+\end{equation}
+Define
+\begin{equation}\label{eq:B}
+ B_R=\prod_{p\le2R}(1-p^{-1/2})^{-1}.
+\end{equation}
+Then for every \(N\in\N\) and every real \(X\ge1\),
+\begin{equation}\label{eq:truncated-error}
+ \left|\frac{f_R(N)}N-\alpha_R\right|
+ \le\frac{D_R\Psi_R(X)}N+2B_RX^{-1/2}.
+\end{equation}
+In addition, if
+\begin{equation}\label{eq:L}
+ L_{R,X}=\rho_R
+          \sum_{s_{R,j}\le X}\frac{d_{R,j}}{s_{R,j}},
+\end{equation}
+then
+\begin{equation}\label{eq:finite-alphaR}
+ L_{R,X}\le\alpha_R
+ \le L_{R,X}+\rho_RB_RX^{-1/2}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Inclusion--exclusion gives, for every real \(y\ge0\),
+\begin{equation}\label{eq:coprime-count}
+ C_R(y)=\sum_{d\mid Q_R}\mu(d)\left\lfloor\frac yd\right\rfloor
+       =\rho_Ry+E_R(y),\qquad |E_R(y)|\le D_R.
+\end{equation}
+Also,
+\begin{equation}\label{eq:smooth-Euler}
+ \sum_{j\ge1}\frac1{s_{R,j}}
+ =\prod_{p\le2R}(1-p^{-1})^{-1}
+ =\rho_R^{-1}<\infty.
+\end{equation}
+For every \(j\) and \(N\),
+\[
+ 0\le\frac{d_{R,j}C_R(N/s_{R,j})}{N}
+ \le\frac1{s_{R,j}}.
+\]
+For fixed \(j\), \eqref{eq:coprime-count} implies convergence of
+this summand to \(\rho_Rd_{R,j}/s_{R,j}\) as \(N\to\infty\).
+Dominated convergence applied to \eqref{eq:exact-count}, using
+\eqref{eq:smooth-Euler}, proves \eqref{eq:alphaR-series}.
+Here the finite sum in \eqref{eq:exact-count} is viewed as an infinite
+series by setting \(C_R(N/s)=0\) whenever \(s>N\).
+In particular, we do not sum the error in
+\eqref{eq:coprime-count} over infinitely many indices.
+
+For \(X\ge1\), the elementary bound
+\begin{equation}\label{eq:rankin}
+ \sum_{s_{R,j}>X}\frac1{s_{R,j}}
+ \le X^{-1/2}\sum_{j\ge1}s_{R,j}^{-1/2}
+ =B_RX^{-1/2}
+\end{equation}
+follows by summing the finite-prime Euler product at exponent
+\(1/2\). Split both \eqref{eq:exact-count} and
+\eqref{eq:alphaR-series} at \(X\). By
+\eqref{eq:coprime-count}, the difference of their heads, after
+normalization by \(N\), is at most \(D_R\Psi_R(X)/N\).
+Their two tails together are at most
+\[
+ (1+\rho_R)\sum_{s_{R,j}>X}\frac1{s_{R,j}}
+ \le2B_RX^{-1/2}.
+\]
+This proves \eqref{eq:truncated-error}, with no restriction
+\(X\le N\). Finally, the summands of
+\eqref{eq:alphaR-series} are nonnegative and \(d_{R,j}\le1\),
+so \eqref{eq:rankin} also proves \eqref{eq:finite-alphaR}.
+\end{proof}
+
+\section{The limiting density and the variational formula}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}, parts (1)--(3)]
+Part (1) is Proposition~\ref{prop:truncated-limit}, and part (2)
+is Corollary~\ref{cor:extremal-comparison}.
+Since \(f_{R+1}(N)\le f_R(N)\), the numbers \(\alpha_R\) form a
+nonincreasing sequence bounded below by \(0\). Put
+\[
+ a_*=\inf_{\substack{R\ge2\\R\in\N}}\alpha_R.
+\]
+For every fixed integer \(R\ge R_0\),
+Corollary~\ref{cor:extremal-comparison} and the truncated limit
+give
+\[
+ \alpha_R-C(\log R)^{-1/1000}
+ \le\liminf_{N\to\infty}\frac{f(N)}N
+ \le\limsup_{N\to\infty}\frac{f(N)}N
+ \le\alpha_R.
+\]
+Letting \(R\to\infty\) shows that both middle quantities equal
+\(a_*\). This proves existence of \(\alpha\) and the infimum
+formula. Taking \(N\to\infty\) in the uniform comparison then
+gives \eqref{eq:alpha-inf-main}.
+\end{proof}
+
+\begin{theorem}[Variational characterization and truncation bounds]
+\label{thm:effective}
+Use the definitions
+\eqref{eq:Q}, \eqref{eq:finite-max}, \eqref{eq:B}, and
+\eqref{eq:L}, and let \(C,R_0\) be as in
+Theorem~\ref{thm:tail}. Then
+\begin{equation}\label{eq:variational}
+ \boxed{\displaystyle
+ \alpha=
+ \inf_{\substack{R\ge2\\R\in\N}}
+ \left[
+ \frac{\varphi(Q_R)}{Q_R}
+ \sum_{j\ge1}
+ \frac{h_{R,j}-h_{R,j-1}}{s_{R,j}}
+ \right].}
+\end{equation}
+For every integer \(R\ge R_0\) and every real \(X\ge1\),
+\begin{equation}\label{eq:certified-interval}
+ \boxed{\displaystyle
+ L_{R,X}-C(\log R)^{-1/1000}
+ \le\alpha
+ \le L_{R,X}+\rho_RB_RX^{-1/2}.}
+\end{equation}
+Furthermore, for every such \(R,X\) and every \(N\in\N\),
+\begin{equation}\label{eq:full-effective}
+ \boxed{\displaystyle
+ \left|\frac{f(N)}N-\alpha\right|
+ \le C(\log R)^{-1/1000}
+       +\frac{D_R\Psi_R(X)}N
+       +2B_RX^{-1/2}.}
+\end{equation}
+All finite optimization problems occurring in \(L_{R,X}\) are finite
+and can be evaluated exactly. The constants \(C\) and \(R_0\) in
+these bounds are not numerically extracted here.
+\end{theorem}
+
+\begin{proof}
+Equation \eqref{eq:variational} is the combination of
+\eqref{eq:alpha-inf-main} and \eqref{eq:alphaR-series}.
+Put
+\[
+ \epsilon_R=C(\log R)^{-1/1000}\qquad(R\ge R_0).
+\]
+We have \(0\le\alpha_R-\alpha\le\epsilon_R\), while
+\eqref{eq:finite-alphaR} gives
+\[
+ L_{R,X}\le\alpha_R
+ \le L_{R,X}+\rho_RB_RX^{-1/2}.
+\]
+These inequalities imply \eqref{eq:certified-interval}.
+
+For \eqref{eq:full-effective}, define
+\[
+ e_N=\frac{f_R(N)-f(N)}N,\qquad
+ e_\infty=\alpha_R-\alpha.
+\]
+Both lie in \([0,\epsilon_R]\), and hence
+\(|e_N-e_\infty|\le\epsilon_R\). Since
+\[
+ \frac{f(N)}N-\alpha
+ =
+ \left(\frac{f_R(N)}N-\alpha_R\right)
+ -(e_N-e_\infty),
+\]
+Proposition~\ref{prop:truncated-limit} proves
+\eqref{eq:full-effective}. The one-sided comparisons are why
+only one copy of \(\epsilon_R\) is required.
+\end{proof}
+
+Theorem~\ref{thm:effective} proves part (4) of
+Theorem~\ref{thm:main}.
+
+\section{Scope of the conclusion}
+
+The proof separates two issues. For a fixed cutoff \(R\),
+finite-prime factorization gives an exact decomposition and a
+convergent series for the truncated extremum. This fact alone
+does not justify passage to the full problem. The uniform tail
+cover supplies that missing comparison.
+
+Its analytic mechanism is the strict inequality \(\beta>1\).
+After integers with excessive small-prime-factor counts are
+removed, the weighted count of tail edges is summable over
+dyadic scales. The range where the scaling parameter is too
+small for this simultaneous sieve application is covered
+instead by Ford's divisor-interval estimate. All deletions
+are uniform in the ambient endpoint \(N\).
+
+The variational characterization is not computationally efficient:
+its truncations may require extremely large cutoffs and finite
+independence computations. No identification of \(\alpha\) as a
+particular rational or other familiar constant is obtained here, and
+no numerical improvement is claimed. Thus the existence of the
+limiting density is established, but the present argument does not
+completely solve Problem 302.
+
+\begin{thebibliography}{9}
+\sloppy
+
+\bibitem{EG1980}
+Paul Erd\H{o}s and Ronald L. Graham,
+\emph{Old and New Problems and Results in Combinatorial Number Theory},
+Monographies de L'Enseignement Math\'ematique, vol.~28,
+Universit\'e de Gen\`eve, Geneva, 1980, Chapter~III.
+
+\bibitem{EP302}
+Thomas F. Bloom,
+Erd\H{o}s Problem 302,
+\emph{Erd\H{o}s Problems}, accessed 17 September 2026,
+\url{https://www.erdosproblems.com/302}.
+
+\bibitem{Khanukov2026}
+Dmitry Khanukov,
+Two-sided partial progress on Erd\H{o}s Problem 302,
+corrected preprint, version 0.2.0, 2026.
+Zenodo, DOI:
+\href{https://doi.org/10.5281/zenodo.22737316}
+{10.5281/zenodo.22737316}.
+
+\bibitem{Ford2008}
+Kevin Ford,
+The distribution of integers with a divisor in a given interval,
+\emph{Annals of Mathematics} (2) \textbf{168} (2008), no.~2,
+367--433.
+Theorem~1.
+DOI:
+\href{https://doi.org/10.4007/annals.2008.168.367}
+{10.4007/annals.2008.168.367}.
+
+\bibitem{HR}
+Heini Halberstam and Hans-Egon Richert,
+\emph{Sieve Methods},
+London Mathematical Society Monographs, vol.~4,
+Academic Press, London, 1974.
+
+\end{thebibliography}
+
+\end{document}
