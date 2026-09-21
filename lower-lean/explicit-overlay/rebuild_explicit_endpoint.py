@@ -39,33 +39,42 @@ def imports(path: Path) -> list[str]:
     return re.findall(r"^import\s+([A-Za-z0-9_.]+)", path.read_text(), re.M)
 
 
-seen: set[Path] = set()
-order: list[Path] = []
+def discover_order(start: Path = START) -> list[Path]:
+    """Return the complete overlay import closure in dependency-first order."""
+    seen: set[Path] = set()
+    order: list[Path] = []
+
+    def visit(path: Path) -> None:
+        path = path.resolve()
+        if path in seen:
+            return
+        seen.add(path)
+        for module in imports(path):
+            dep = resolve(module)
+            if dep is not None and dep.is_relative_to(HERE):
+                visit(dep)
+        order.append(path)
+
+    visit(start)
+    return order
 
 
-def visit(path: Path) -> None:
-    path = path.resolve()
-    if path in seen:
-        return
-    seen.add(path)
-    for module in imports(path):
-        dep = resolve(module)
-        if dep is not None and dep.is_relative_to(HERE):
-            visit(dep)
-    order.append(path)
+def main() -> None:
+    order = discover_order()
+    BUILD.mkdir(parents=True, exist_ok=True)
+    env = os.environ.copy()
+    env["LEAN_PATH"] = os.pathsep.join([str(BUILD), *(str(root) for root in ROOTS)])
+    for index, source in enumerate(order, 1):
+        output = BUILD / f"{source.stem}.olean"
+        print(f"BUILD {index}/{len(order)} {source.relative_to(LOWER)}", flush=True)
+        subprocess.run(
+            ["lake", "env", "lean", "-R", str(source.parent), "-o", str(output), str(source)],
+            cwd=LOWER,
+            env=env,
+            check=True,
+        )
+    print(f"REBUILD_OK modules={len(order)}", flush=True)
 
 
-visit(START)
-BUILD.mkdir(parents=True, exist_ok=True)
-env = os.environ.copy()
-env["LEAN_PATH"] = os.pathsep.join([str(BUILD), *(str(root) for root in ROOTS)])
-for index, source in enumerate(order, 1):
-    output = BUILD / f"{source.stem}.olean"
-    print(f"BUILD {index}/{len(order)} {source.relative_to(LOWER)}", flush=True)
-    subprocess.run(
-        ["lake", "env", "lean", "-R", str(source.parent), "-o", str(output), str(source)],
-        cwd=LOWER,
-        env=env,
-        check=True,
-    )
-print(f"REBUILD_OK modules={len(order)}", flush=True)
+if __name__ == "__main__":
+    main()

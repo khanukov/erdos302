@@ -41,6 +41,7 @@ From `lower-lean`:
 lake update
 git diff --exit-code -- lake-manifest.json
 lake exe cache get
+lake build Erdos302Lower
 python3 explicit-overlay/rebuild_explicit_endpoint.py
 python3 explicit-overlay/verify_explicit_endpoint.py
 python3 -O explicit-overlay/verify_explicit_endpoint.py
@@ -49,10 +50,10 @@ python3 -O explicit-overlay/verify_explicit_endpoint.py --self-test
 ```
 
 `rebuild_explicit_endpoint.py` discovers the complete overlay dependency graph and
-rebuilds all 59 overlay modules in dependency order after the three baseline
-`Erdos302Lower` modules have been built by Lake. The verifier checks all 62
-local source hashes, pinned revisions, forbidden proof escapes, fresh `.olean`
-files,
+rebuilds all 59 overlay modules in dependency order after the command above builds
+the three baseline `Erdos302Lower` modules. The verifier requires the manifest to
+equal the discovered graph plus those three baseline sources, and checks all 62
+local source hashes, pinned revisions, forbidden proof escapes, fresh `.olean` files,
 and final theorem anchors. The self-test deliberately mutates an expected hash
 and requires the verifier to reach `SOURCE_HASH_MISMATCH_REACHED`.
 

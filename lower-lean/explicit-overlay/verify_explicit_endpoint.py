@@ -3,6 +3,7 @@
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import re
 import sys
@@ -12,6 +13,18 @@ HERE = Path(__file__).resolve().parent
 LOWER = HERE.parent
 BUILD = LOWER / ".lake" / "build" / "explicit-overlay"
 MANIFEST = HERE / "source_manifest.json"
+REBUILD = HERE / "rebuild_explicit_endpoint.py"
+_rebuild_spec = importlib.util.spec_from_file_location("explicit_endpoint_rebuild", REBUILD)
+if _rebuild_spec is None or _rebuild_spec.loader is None:
+    raise RuntimeError(f"cannot load dependency discovery helper: {REBUILD}")
+_rebuild = importlib.util.module_from_spec(_rebuild_spec)
+_rebuild_spec.loader.exec_module(_rebuild)
+discover_order = _rebuild.discover_order
+BASELINE_SOURCES = {
+    "Erdos302Lower/Defs.lean",
+    "Erdos302Lower/FromErdos301.lean",
+    "Erdos302Lower/Maximum.lean",
+}
 
 
 def sha256(path: Path) -> str:
@@ -69,9 +82,30 @@ def main() -> int:
     if manifest.get("endpoint") != "5/8 + 1/(86400*commonL)":
         failures.append("bad endpoint declaration")
 
+    manifest_files = set(manifest.get("files", {}))
+    discovered_overlay = {
+        str(path.relative_to(LOWER)) for path in discover_order()
+    }
+    actual_overlay = {
+        str(path.relative_to(LOWER)) for path in HERE.rglob("*.lean")
+    }
+    if discovered_overlay != actual_overlay:
+        failures.append(
+            "overlay graph/source mismatch: "
+            f"missing_from_graph={sorted(actual_overlay - discovered_overlay)} "
+            f"unexpected_in_graph={sorted(discovered_overlay - actual_overlay)}"
+        )
+    expected_files = discovered_overlay | BASELINE_SOURCES
+    if manifest_files != expected_files:
+        failures.append(
+            "manifest coverage mismatch: "
+            f"missing={sorted(expected_files - manifest_files)} "
+            f"unexpected={sorted(manifest_files - expected_files)}"
+        )
+
     mutation_reached = False
     checked = 0
-    for rel, expected_raw in manifest["files"].items():
+    for rel, expected_raw in manifest.get("files", {}).items():
         path = LOWER / rel
         expected = expected_raw
         if args.self_test and not mutation_reached:
