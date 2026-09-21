@@ -1,0 +1,1 @@
+{'verified': True, 'report_bound': True, 'symbolic_residuals': 286, 'cover_subsets_per_program': 8192, 'cover_subsets_total': 16384, 'tau_truncated': 3, 'tau_full': 3, 'gap': 0, 'arithmetic_t_through': 4000, 'fail_closed_modes': 2}

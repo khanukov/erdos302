@@ -1,0 +1,1 @@
+{'verified': True, 'family': 't>=8', 'vertices': 13, 'residuals': 286, 'induced_truncated_edges': 3, 'induced_full_edges': 6, 'alpha_truncated': 10, 'alpha_full': 10, 'gap': 0}
