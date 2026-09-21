@@ -152,6 +152,24 @@ and axiom comparison.
 )
 ```
 
+The separately reviewed explicit-endpoint overlay is rebuilt and checked after
+the baseline lower project:
+
+```bash
+(
+  cd lower-lean
+  python3 explicit-overlay/rebuild_explicit_endpoint.py
+  python3 explicit-overlay/verify_explicit_endpoint.py
+  python3 -O explicit-overlay/verify_explicit_endpoint.py
+  python3 explicit-overlay/verify_explicit_endpoint.py --self-test
+  python3 -O explicit-overlay/verify_explicit_endpoint.py --self-test
+)
+```
+
+It proves the eventual pointwise and normalized liminf lower endpoint
+`5/8 + 1/(86400*commonL)`. The increment is explicit and strictly positive,
+but `commonL` is enormous; this is not a practically visible decimal gain.
+
 The committed manifest pins the complete dependency graph and source
 revisions. `lake exe cache get` deliberately downloads precompiled upstream
 `.olean` files, so the following `lake build` is **not** a cache-free source

@@ -61,8 +61,11 @@ additionally run `leanchecker --fresh Erdos302Lower` over the complete
 imported-and-local `.olean` closure. This kernel-checks the stored proof terms
 in a fresh environment while structurally trusting `.olean` serialization.
 Its transitive axiom report contains only `propext`, `Classical.choice`, and
-`Quot.sound`. The constant \(\delta\) is qualitative and non-explicit, and the
-external developments and this manuscript are unrefereed.
+`Quot.sound`. The headline manuscript uses a qualitative \(\delta\); the
+companion overlay in `lower-lean/explicit-overlay` additionally proves the
+weaker explicit choice \(1/(86400\,\mathrm{commonL})\). The constant is
+astronomically small, and the external developments and this manuscript are
+unrefereed.
 
 This is partial progress, **not a solution of Problem 302**.
 
@@ -158,6 +161,20 @@ is claimed. The exact pre-absorption ledger is
 |A_N|\ge
 \left(\frac58+\frac{\operatorname{roughDensity}(L)}{24}\right)N-1.
 \]
+
+The separately reviewed explicit overlay effectivizes every threshold and
+defines a closed natural number `commonL`. It proves, for all sufficiently
+large \(N\),
+
+\[
+f_{302}(N)\ge
+\left(\frac58+\frac1{86400\,\mathrm{commonL}}\right)N,
+\]
+
+and the corresponding normalized liminf inequality. This is a strict formal
+improvement over \(5/8\), but `commonL` is so large that it is not a practical
+decimal improvement. See
+[`lower-lean/explicit-overlay/README.md`](lower-lean/explicit-overlay/README.md).
 
 ## Verify the upper bound
 

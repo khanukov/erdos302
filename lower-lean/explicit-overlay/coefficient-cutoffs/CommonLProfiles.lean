@@ -1,0 +1,14 @@
+import BulkProfileCommonL
+import TransitionScheduleCommonL
+import TransitionProfileCommonL
+import TransitionBaseCommonL
+
+namespace Erdos302CoefficientCutoffs
+
+#print axioms profileStart_le_mixedBulkMovingStart_commonL
+#print axioms bulkProfile_commonL
+#print axioms transitionSchedule_from_movingStart
+#print axioms transitionProfile_from_movingStart
+#print axioms commonL_ge_transition_base
+
+end Erdos302CoefficientCutoffs
