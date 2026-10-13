@@ -1,0 +1,94 @@
+name: Upper 0.844292904514 components
+
+on:
+  pull_request:
+    paths:
+      - 'Erdos302/Refinements/**'
+      - 'certificates/upper0844292904514/**'
+      - 'scripts/*upper0844292904514*'
+      - '.github/workflows/upper-refinement.yml'
+  workflow_dispatch:
+    inputs:
+      full_payload:
+        description: 'Require and replay the imported full payload (fails if absent)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upper-refinement-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record-arithmetic-and-templates:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Compare normal and optimized checks
+        run: |
+          python3 -I -S -B scripts/check_upper0844292904514.py > /tmp/refinement-normal.json
+          python3 -I -S -B -O scripts/check_upper0844292904514.py > /tmp/refinement-optimized.json
+          cmp /tmp/refinement-normal.json /tmp/refinement-optimized.json
+          cat /tmp/refinement-normal.json
+      - name: Reject an explicitly requested replay without its data
+        run: |
+          if python3 -I -S -B -O scripts/check_upper0844292904514.py --payload /tmp/nonexistent-erdos302-payload; then
+            echo 'Missing payload was incorrectly accepted' >&2
+            exit 1
+          fi
+      - name: State verification scope
+        run: |
+          echo 'Checks arithmetic and twenty abstract templates only; does NOT establish the global Erdős bound.' >> "$GITHUB_STEP_SUMMARY"
+
+  lean-components-not-end-to-end:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-mathlib-cache: true
+          use-github-cache: false
+      - name: Generate templates deterministically from the pinned record
+        run: |
+          python3 -I -S -B -O scripts/check_upper0844292904514.py --emit-lean "$RUNNER_TEMP/SmallStateTemplates.lean"
+      - name: Kernel-check the twenty templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean --root="$RUNNER_TEMP" "$RUNNER_TEMP/SmallStateTemplates.lean" | tee "$RUNNER_TEMP/template-axioms.log"
+      - name: Check weighted covering, arithmetic, and the explicitly conditional bridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake env lean Erdos302/Refinements/Upper0844292904514.lean | tee "$RUNNER_TEMP/component-axioms.log"
+      - name: Require all twenty-eight expected axiom reports
+        run: |
+          python3 -I -S -B -O scripts/check_upper0844292904514.py --axiom-logs "$RUNNER_TEMP/template-axioms.log" "$RUNNER_TEMP/component-axioms.log"
+          echo 'The final bridge still has the explicit hfinite hypothesis. Green component CI is NOT end-to-end Lean verification.' >> "$GITHUB_STEP_SUMMARY"
+
+  full-external-certificate-replay:
+    if: github.event_name == 'workflow_dispatch' && inputs.full_payload
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Require the exact imported full package and replay it
+        run: |
+          python3 -I -S -B -O scripts/check_upper0844292904514.py --payload certificates/upper0844292904514/payload --full
+      - name: State external checker scope
+        run: |
+          echo 'This job checks the external computer-assisted certificate; it is not the full Lean theorem.' >> "$GITHUB_STEP_SUMMARY"
