@@ -28,8 +28,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$TARGET"
           mkdir -p "$RUNNER_TEMP/audit-evidence"
           { git rev-parse HEAD; python3 --version; c++ --version; free -h; df -h .; } | tee "$RUNNER_TEMP/audit-evidence/environment.log"
-          sha256sum -c SHA256SUMS
           xz -dk certificate/shortlist.bin.xz
+          sha256sum -c SHA256SUMS
           PYTHONOPTIMIZE=1 python3 -Bu certificate/verify.py | tee "$RUNNER_TEMP/audit-evidence/exact.log"
       - name: Replay ${{ matrix.gate }} certificate
         timeout-minutes: 330
