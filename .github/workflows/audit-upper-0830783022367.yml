@@ -1,0 +1,59 @@
+name: Audit upper 0.830783022367
+on:
+  push:
+    branches: [audit/erdos302-0830783022367]
+    paths: ['.github/workflows/audit-upper-0830783022367.yml']
+permissions:
+  contents: read
+env:
+  TARGET: 4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae
+jobs:
+  replay:
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [exterior, cold]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.TARGET }}
+          persist-credentials: false
+          sparse-checkout: upper-0830783022367
+      - name: Verify immutable inputs
+        working-directory: upper-0830783022367
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET"
+          mkdir -p "$RUNNER_TEMP/audit-evidence"
+          { git rev-parse HEAD; python3 --version; c++ --version; free -h; df -h .; } | tee "$RUNNER_TEMP/audit-evidence/environment.log"
+          sha256sum -c SHA256SUMS
+          xz -dk certificate/shortlist.bin.xz
+          PYTHONOPTIMIZE=1 python3 -Bu certificate/verify.py | tee "$RUNNER_TEMP/audit-evidence/exact.log"
+      - name: Replay ${{ matrix.gate }} certificate
+        timeout-minutes: 330
+        working-directory: upper-0830783022367
+        env:
+          GATE: ${{ matrix.gate }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/audit-evidence"
+          export PYTHONOPTIMIZE=1
+          if [[ "$GATE" == exterior ]]; then
+            /usr/bin/time -v python3 -Bu certificate/verify.py --exterior 2>&1 | tee "$out/exterior.log"
+          elif [[ "$GATE" == cold ]]; then
+            /usr/bin/time -v python3 -Bu certificate/verify.py --full "$RUNNER_TEMP/rebuild" 2>&1 | tee "$out/cold.log"
+            printf '%s  %s\n' 3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5 "$RUNNER_TEMP/rebuild/interior/mass.cells" | sha256sum -c | tee "$out/cell-hash.log"
+          else
+            exit 2
+          fi
+          git diff --exit-code HEAD -- .
+      - name: Retain logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: upper-audit-${{ matrix.gate }}
+          path: ${{ runner.temp }}/audit-evidence
+          if-no-files-found: error
+          retention-days: 30
