@@ -18,6 +18,12 @@ a new immutable version DOI after GitHub release ingestion. Historical releases
 remain unchanged.
 <!-- release-state:end -->
 
+**Upper bound of 0.830783022367.** The [preprint and certificate](upper-0830783022367/README.md) give a
+computer-assisted proof that the upper limiting density is strictly below
+$0.830783022367$. The evidence includes the C++ and Python replay and
+a Lean development for the counting argument and exact ledgers. The Lean
+endpoint is proved under explicit conditions on the finite witnesses.
+
 The repository and manuscript report complete proofs of two partial bounds;
 they do not claim to solve Erdős Problem 302, to be peer reviewed, or to have
 received independent human verification.

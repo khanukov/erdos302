@@ -1,0 +1,454 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,booktabs,microtype}
+\usepackage[letterpaper,textwidth=6.25in,textheight=8.52in,top=1.08in,
+  headheight=15pt,headsep=18pt,footskip=30pt]{geometry}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={An upper density bound for sets avoiding reciprocal triples},
+  pdfauthor={Dmitry Khanukov},pdfsubject={Erdos problem 302}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape Sets avoiding reciprocal triples}
+\fancyhead[R]{\small D. Khanukov}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{certificate}[theorem]{Finite certificate}
+\newcommand{\N}{\mathbb N}
+\newcommand{\cin}{C_{\rm in}}
+\newcommand{\cshort}{C_{\rm short}}
+\newcommand{\cfull}{C_{\rm full}}
+\newcommand{\floor}[1]{\left\lfloor #1\right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1\right\rceil}
+\setlength{\parindent}{1.2em}
+\setlength{\emergencystretch}{1.2em}
+\raggedbottom
+\title{\bfseries An upper density bound for sets\\avoiding reciprocal triples}
+\author{Dmitry Khanukov}
+\date{Preprint draft with verification supplement \enspace$\cdot$\enspace 20 November 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+Let $f(N)$ be the largest size of a subset of $\{1,\ldots,N\}$ containing
+no distinct $a,b,c$ with $1/a=1/b+1/c$. We give a computer-assisted proof of
+$\limsup f(N)/N<0.830783022367$. A finite profile bounds the omissions
+inside blocks of smooth integers. A packing of disjoint triples on
+vertices isolated within these blocks gives further omissions. The
+companion Lean development formalizes the counting argument, the
+separation of the packings, the checks on the additional dilations,
+and the exact arithmetic from the stored ledgers to the stated bound.
+The C++ and Python verifiers validate the finite witnesses that
+produce the ledgers. A shorter exterior certificate also gives
+$\limsup f(N)/N<0.8309$.
+\end{abstract}
+
+\section{The extremal problem}
+Write $[N]=\{1,\ldots,N\}$. A \emph{reciprocal triple} consists of
+three distinct integers $a<b<c$ satisfying $bc=a(b+c)$. Its dilate by
+any positive integer is again a reciprocal triple. Erd\H{o}s and
+Graham ask how large a set $A\subseteq[N]$ avoiding such triples can
+be \cite{EG,Bloom}. Let $f(N)$ denote the maximum.
+
+\begin{theorem}\label{thm:main}
+For the extremal function $f$,
+\[
+  \limsup_{N\to\infty}\frac{f(N)}N
+    \ \le\ \cfull\ <\ \frac{830783022367}{10^{12}},\qquad
+  \cfull=0.8307830223661779524\ldots .
+\]
+A shorter finite certificate gives
+$\limsup_{N\to\infty}f(N)/N\le\cshort<8309/10000$, with
+$\cshort=0.8308999874985765021\ldots$.
+\end{theorem}
+
+Cambie's construction gives lower density $5/8$, and van Doorn obtained
+the upper bound $9/10$ \cite{Bloom}. The author's earlier two-sided
+preprint gives the upper bound $140803024/163562355$ and a lower
+bound strictly above $5/8$ for all sufficiently large $N$
+\cite{Khanukov}. Kitamura's smooth-block recurrence gives the upper
+bound $0.8461739827964010$ \cite{Kitamura}. We use that recurrence
+with a new finite profile and count additional triples between blocks.
+The proof below uses the version of the finite data that reconstructs
+its own initial cover bounds. Determining the extremal density remains open.
+
+\section{Omissions inside smooth blocks}
+For a finite $T\subset\N$, a \emph{cover} is a subset of $T$ meeting
+every reciprocal triple contained in $T$. Let $\tau(T)$ be the smallest
+size of a cover. The complement of a triple-free subset of $T$ is a
+cover, so $f(N)=N-\tau([N])$. Deleting all vertices of $T$ that belong
+to no triple preserves $\tau(T)$. This observation will allow us to add
+the contributions from two families of triples.
+
+\begin{lemma}[Weighted covers]\label{lem:covers}
+Let $B_i$ be finite sets with nonnegative integer weights $w_i$. Suppose
+$D\ge1$ and $\sum_{i:v\in B_i}w_i\le D$ for every vertex $v\in T$.
+Then
+\[
+  \tau(T)\ \ge\
+  \ceil{\frac{1}{D}\sum_i w_i\,\tau(B_i\cap T)}.
+\]
+\end{lemma}
+\begin{proof}
+If $H$ covers $T$, then $H\cap B_i$ covers $B_i\cap T$.
+After multiplication by $w_i$ and summation, each member of $H$
+has contributed at most $D$. Take the minimum over $H$ and use
+integrality.
+\end{proof}
+
+List the primes through $5003$ in the order $p_1=3$, $p_2=2$,
+$p_3=5$, followed by the remaining primes in increasing order.
+Put $P_j=\{p_1,\ldots,p_j\}$ and $Q_j=\prod_{i\le j}p_i$, with
+$Q_0=1$. Write $S_j(n)$ for the $P_j$-smooth members of $[n]$.
+Every $v\in[N]$ factors uniquely as $m s$ with $(m,Q_j)=1$ and $s$
+$P_j$-smooth. Thus the sets $mS_j(\floor{N/m})$ partition $[N]$.
+At each level there is also a disjoint union
+\begin{equation}
+ S_j(n)=S_{j-1}(n)\ \sqcup\ p_j S_j(\floor{n/p_j}).
+ \label{eq:split}
+\end{equation}
+Every cover meets the internal triples in both parts. Consequently,
+the two corresponding cover lower bounds may be added.
+
+A profile is an integer array $U_j(n)\le\tau(S_j(n))$. Start with
+$U_0(n)=U_j(0)=0$. Up to $X=63{,}000{,}000$ take the greatest of
+the value at $(j,n-1)$, the inherited certified value, any new finite
+cover bound there, and the sum
+\[
+ U_{j-1}(n)+U_j(\floor{n/p_j}).
+\]
+Above $X$ use only this last expression. Induction on the level and
+then the threshold proves soundness. Define the correction
+\begin{equation}
+ d_j(n)=U_j(n)-U_{j-1}(n)-U_j(\floor{n/p_j}).
+ \label{eq:correction}
+\end{equation}
+It is nonnegative and vanishes for $n>X$. Store each maximal interval
+$[a,b)$ on which $d_j=h>0$ as a cell $(j,a,b,h)$. The corrections
+in \eqref{eq:correction} are computed after combining the lower bounds.
+
+\begin{lemma}[Counting a correction]\label{lem:telescoping}
+Let $F_j(N)=\sum_{m\le N,\,(m,Q_j)=1} U_j(\floor{N/m})$. Then
+\[
+ F_j(N)-F_{j-1}(N)
+    =\sum_{m\le N,\,(m,Q_{j-1})=1} d_j(\floor{N/m}).
+\]
+A cell $(j,a,b,h)$ contributes
+$h\,\varphi(Q_{j-1})Q_{j-1}^{-1}(1/a-1/b)$ to the limiting
+density of these omissions.
+\end{lemma}
+\begin{proof}
+Iterate \eqref{eq:correction} down the powers of $p_j$. Every integer
+coprime to $Q_{j-1}$ occurs exactly once as $m p_j^e$ with
+$(m,Q_j)=1$. Reindexing the finite sums gives the identity. The cell
+counts those $m$ in $(N/b,N/a]$ that are coprime to $Q_{j-1}$.
+Each full period of length $Q_{j-1}$ contains $\varphi(Q_{j-1})$
+such integers. The contribution divided by $N$ tends to the stated value.
+\end{proof}
+
+\begin{certificate}[Internal profile]\label{cert:in}
+The full profile gives the density upper bound
+\[
+ \cin=0.83096432903342704323078172850532877513478108 .
+\]
+\end{certificate}
+The finite computation verifies $89{,}864{,}656$ weighted rows in
+four groups, projects them onto $225$ selected prime levels, and
+integrates over all $670$ levels. The full profile has $3{,}094{,}631$
+positive cells. For $K=10^{22}$, each cell adds
+$\floor{K h(b-a)/(ab)}$ to the mass $M_j$ at its level. With $r_0=K$
+and $r_j=\floor{r_{j-1}(p_j-1)/p_j}$ the certified value is
+\begin{equation}
+ \cin=1-K^{-2}\sum_j r_{j-1}M_j. \label{eq:inside}
+\end{equation}
+Each floor lowers a nonnegative omission count. By
+Lemma~\ref{lem:telescoping}, the unrounded cell counts telescope from $F_0=0$ to $F_{670}$.
+On each terminal block, the omitted incident vertices alone cover its
+internal triples. Summing these disjoint counts gives at least $F_{670}(N)$
+omissions, all on incident vertices. Their lower density is therefore at least $1-\cin$. Section~\ref{sec:verification} specifies the local
+checks behind the cell table.
+
+\section{An explicit family on isolated vertices}
+For $s\ge 2$ let $I(s)$ be the least possible largest entry of a
+reciprocal triple containing $s$, and put $I(1)=\infty$. Indeed, two distinct reciprocals with denominators greater than one have sum at most $1/2+1/3$.
+For $s\le64$ the values follow by testing $b<c\le64\cdot65$ and
+checking whether $bc/(b+c)$ is integral. The triple
+$(s,s+1,s(s+1))$ supplies the cutoff for $s\ge2$.
+
+\begin{lemma}[First incidence]\label{lem:incidence}
+For every odd prime $\ell$ and $s\ge1$,
+\[
+ I(\ell s)\ \ge\ \ell\min\{I(s),(\ell+1)/2\}.
+\]
+\end{lemma}
+\begin{proof}
+Write a reciprocal triple as a multiple of
+$(uv,u(u+v),v(u+v))$, where $u<v$ and $(u,v)=1$.
+Indeed, writing $b:c=u:v$ forces $u+v$ to divide the common factor
+of $b$ and $c$. If every entry is divisible by $\ell$, division gives
+a triple containing $s$. Otherwise $\ell$ divides one of $u,v,u+v$.
+In the first two cases $v\ge\ell$, and in the last case $u+v\ge\ell$
+and $v\ge(\ell+1)/2$. In all three cases the greatest entry is at
+least $\ell(\ell+1)/2$.
+\end{proof}
+
+A row consists of three different primes $p,q,r>257$ and three
+labels $1\le s_i\le64$. Its vertices have the form $z_i=s_i d_i$, where
+$(d_0,d_1,d_2)=(pq,qr,pr)$. Each row is tested for the reciprocal
+identity and distinctness. Across rows the pairs $(d_i,s_i)$ are
+distinct. Put $P=5003$ and $\lambda=\max_i z_i$. For each $i$, list
+the factors of $d_i$ at most $P$ as $\ell_1<\cdots<\ell_m$. Define
+\[
+ H_i=d_i\min\left(\{I(s_i)\}\cup
+     \left\{\frac{\ell_j+1}{2\ell_1\cdots\ell_{j-1}}:
+          1\le j\le m\right\}\right),
+ \qquad H=\min_i H_i .
+\]
+The empty product is one. Rows used below have $\lambda<H<\infty$.
+Take $B\ge\max(P,p,q,r)$ and let $R_B$ be the product of the primes
+at most $B$.
+
+\begin{lemma}[Extra omissions]\label{lem:exterior}
+For every $k$ coprime to $R_B$ with $\lambda\le N/k<H$, the triple
+$\{kz_i\}$ forces an omission in addition to those counted in
+\eqref{eq:inside}. Different admissible row--multiplier pairs use
+disjoint vertices.
+\end{lemma}
+\begin{proof}
+Write $d_i=u_i v_i$ with $u_i$ the product of its prime factors at
+most $P$. The part of $kz_i$ supported on primes larger than $P$ is
+$kv_i$. Iterating Lemma~\ref{lem:incidence}, first removing the largest
+prime factor of $u_i$, gives $v_i I(u_i s_i)\ge H_i$. The block of
+$kz_i$ therefore has height $\floor{N/(kv_i)}<I(u_i s_i)$, and this
+vertex belongs to no internal triple. All three vertices lie in $[N]$,
+so at least one isolated vertex must be omitted. From a vertex, its two
+least prime factors above $257$, with multiplicity, recover $d_i$. Its
+part supported on primes at most $257$ recovers $s_i$. These identify
+the row and position, and division recovers $k$.
+\end{proof}
+
+For instance, the first stored row uses $(p,q,r)=(4999,5023,5011)$
+and $(s_0,s_1,s_2)=(1,2,2)$. Here $2r=p+q$, which gives the
+reciprocal identity directly. The largest vertex is $50{,}340{,}506$.
+Since $I(2)=6$, the smallest isolation cutoff is $150{,}299{,}934$.
+Thus every eligible $k$ in
+$(N/150{,}299{,}934,N/50{,}340{,}506]$ contributes one omission.
+
+The density contributed by a row is at least
+$\rho(B)(1/\lambda-1/H)$, where
+$\rho(B)=\prod_{p'\le B}(1-1/p')$ over primes. For the explicit list,
+$B$ is the exact maximum of $P,p,q,r$. The checker rounds $1/\lambda$
+down, $1/H$ up and $\rho(B)$ down. For the first $1{,}001{,}000$ rows
+the certified gain is exactly
+\[
+ g_1=\frac{3217076742527054784820507558149578346746501}
+                    {5\cdot10^{46}} .
+\]
+Subtracting $g_1$ from \eqref{eq:inside} gives
+$\cshort=0.83089998749857650213508531835416578356784614998$.
+The full explicit list has $1{,}400{,}000$ rows and gives the third
+bound in Table~\ref{tab:results}.
+
+\section{Additional dilations and the stronger bound}
+The larger construction uses $124{,}652{,}035$ base rows with primes
+in $(257,160000]$. All prime factors of a label $s_i$ are at most $31$.
+Retain $t=1$ for every base row. Additional multipliers $t\le3{,}000{,}000$
+have all prime factors in $(31,257]$. Each vertex is now $k t s_i d_i$.
+Unique factorization recovers $s_i$, $t$, $d_i$ and $k$ from the
+vertex by the same argument as in Lemma~\ref{lem:exterior}. For
+counting $k$, the checker may round $B$ up to the end of a group,
+which only restricts the permitted multipliers.
+
+For a proposed cap $b$, verify
+\begin{equation}
+ I(t s)\ge t\min\{I(s),b\} \qquad\text{for every allowed label }s.
+ \label{eq:scale}
+\end{equation}
+This requires only divisors of $(ts)^2$. Indeed, for $x$ on the left
+of a reciprocal identity one has $(b'-x)(c'-x)=x^2$ with $b'<c'$.
+For $x$ on the right, the other entries are $x-d$ and $x^2/d-x$,
+with $d\mid x^2$, $d<x$, and $2d\ne x$. Taking the least height
+over these candidates gives $I(x)$. For the left-hand candidate
+$x+d,x+x^2/d$ with $d<x$, the right-hand candidate from the same
+$d$ has no greater height, except when $d=x/2$. In that case the
+left-hand candidate has height $3x$. These observations give the
+integer calculation in the supplement.
+
+When all three row primes exceed $P$, use
+\[
+  \lambda\le N/(kt)<\min\{H,b\min_i d_i\}.
+\]
+Equation~\eqref{eq:scale} gives isolation. When exactly one row prime
+$\ell$ is at most $P$, also impose $2tb\le\ell+1$. If $\ell\mid d_i$,
+Lemma~\ref{lem:incidence} gives
+$I(\ell t s_i)\ge\ell\min\{I(ts_i),(\ell+1)/2\}$, so the same window
+suffices. The calculation uses the lower endpoint of the group containing
+$\ell$ in this last test, which is conservative. With two or more row
+primes at most $P$, only $t=1$ is used. Each eligible row and scale
+contributes the coprime density times the window width in reciprocals,
+divided by $t$. All gains use lower rounding.
+
+Write $g_0$ for the gain from all unit dilates and the scaled rows
+whose primes all exceed $P$, and $g_m$ for the further gain from
+scaling rows with exactly one internal prime. The latter calculation
+uses $9{,}581{,}720$ base rows. The exact computation gives
+\[
+ g_0=0.0001743788090915927106\ldots,\qquad
+ g_m=0.0000069278581574980589\ldots.
+\]
+The resulting coefficient $\cfull=\cin-g_0-g_m$ is exactly
+\[
+ \cfull=\frac{A\,10^{36}+B_0}{5\cdot10^{72}},\qquad
+ \begin{aligned}
+ A   &=4153915111830889762306115146791644878,\\
+ B_0 &=453404679592858308347342773184262971 .
+ \end{aligned}
+\]
+
+\begin{table}[ht]
+\centering\small
+\caption{Upper bounds for $\limsup f(N)/N$, rounded upwards. Each row
+starts from the full internal profile.}\label{tab:results}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Certificate & Upper bound \\
+\midrule
+Internal profile alone & $0.830964329034$\\
+First $1{,}001{,}000$ explicit rows & $0.830899987499$\\
+All $1{,}400{,}000$ explicit rows & $0.830892297401$\\
+Full generated packing with additional scales & $0.830783022367$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{One period suffices.}
+All the cells, rows and scales used for either conclusion are finite.
+For an interval $(N/v,N/u]$ counted with modulus $R$, choose $L$
+divisible by $Ru$ and $Rv$. For a scaled exterior row the endpoints
+in this rule are $t\lambda$ and $tH'$ with $H'$ its truncated upper
+endpoint. A positive $L$ common to all intervals exists. At $N=Lj$
+every interval is a union of complete periods and its count is exact.
+Consequently $f(Lj)\le C Lj$ with $C=\cshort$ or $C=\cfull$.
+As $f$ is nondecreasing, every positive $N$ satisfies
+\[
+ f(N)\le f\bigl(L\ceil{N/L}\bigr)
+       \le C L\ceil{N/L}\le C(N+L).
+\]
+Division by $N$ proves Theorem~\ref{thm:main}. This argument uses
+only finiteness of the period.
+
+\section{Scope of the Lean verification}\label{sec:lean}
+The Lean declaration \verb|Formal302.upper_0830783022367_of_certificate|
+gives the conclusion of Theorem~\ref{thm:main} for the extremal function
+in the formulation of Formal Conjectures. Its finite certificate inputs
+are the internal correction cells and the exterior windows with their
+assigned triples. The hypotheses specify the ranks up to $X$, the
+validity and separation of the exterior rows, and the equality of
+both computed totals to their recorded numerators. The declaration
+has a kernel-checked proof under these hypotheses.
+
+\paragraph{Internal ranks and the limit.}
+Lean reconstructs the rank functions recursively from the positive
+cells and proves that the rank bounds up to $X$ suffice at every
+height. It proves the telescoping identity, the accounting of only
+incident vertices, the exact counts on multiples of a common period,
+and the passage to the real $\limsup$. The seed replay lemma reduces
+local rank bounds to weighted or otherwise certified finite witnesses
+and checks of the rank recurrence. The executable \verb|Replay302Cells|
+uses the proved rectangle checker to reproduce the masses for all
+$3{,}094{,}631$ positive rectangles from the companion data.
+
+\paragraph{Exterior triples.}
+Lean proves injectivity of the prime-pair, label and scale encoding
+even when the cutoff for the coprime multiplier differs across rows.
+It also proves the divisibility criterion for isolation and checks
+isolation for the $57$ admissible labels at all $582$ selected
+additional scales. Thus the application of the isolated-vertex
+argument and the division by each scale have formal proofs.
+
+\paragraph{Exact accounting.}
+The kernel checks the arithmetic of the internal mass table, the
+$114$ exterior sieve intervals, and the $149$ groups in the mixed
+contribution. It also checks the stated exact rational value of
+$\cfull$ and its strict comparison with $830783022367/10^{12}$.
+The present Lean project leaves the connection from the generated
+finite witnesses to the hypotheses of the final declaration open.
+In particular, verification of the local cover ranks and of the
+complete exterior row stream is performed by the supplied external
+verifiers. Section~\ref{sec:verification} describes their checks.
+
+\section{Checking the finite certificates}\label{sec:verification}
+The companion archive supplies the tables, the explicit binary list,
+the earlier certificate bank, and the C++17 and Python sources needed
+to regenerate the witnesses. The following steps explain which
+mathematical property is tested at each stage.
+
+\paragraph{Local ranks.}
+Each finite support is tested against $bc=a(b+c)$. For a vertex mask
+$M$ containing a triple $e$,
+$\tau(M)=1+\min_{v\in e}\tau(M\setminus\{v\})$. An edgeless mask has
+rank zero. Weighted packings verify the load at every vertex before
+applying Lemma~\ref{lem:covers}. Scaling a template preserves its
+edges. Intersecting it with each earlier smooth prefix and recomputing
+its rank gives a valid bound at that prefix. Branching on inclusion
+of a vertex uses the lower of the two conditional demands. Projecting
+onto a smaller prefix extends any cover by all deleted vertices and
+charges only vertices in the prefix.
+
+\paragraph{Inherited demands.}
+The main verifier uses the self-contained bank variant. Four initially
+external requests on $71$-smooth prefixes, at thresholds $420,644,806,814$,
+have local lower bounds $71,102,125,126$, respectively. Local witnesses
+discharge these requests in the reconstruction of the $4{,}106$-node
+bank. The full profile also checks $888$ finite cover exclusions by
+branching and $23$ finite minima by variable elimination. For the
+latter computation, minimize the number of chosen vertices plus the
+number of uncovered edges. Any uncovered edge can be met at cost one,
+so this minimum equals the cover number. Eliminating a vertex minimizes
+over its two possible choices for each assignment of its remaining
+neighbours.
+
+\paragraph{Reproduction.}
+From the archive root, \texttt{python3 certificate/verify.py} checks the
+frozen tables, the directed rounding and the resulting rational numbers.
+To verify the actual explicit rows used in the first assertion, run
+\verb|python3 certificate/verify.py --shortlist 1001000|.
+For full regeneration, run \verb|python3 certificate/verify.py --full work|
+on a 64-bit system with Python 3.10 or later and a C++17 compiler
+supporting 128-bit integers. This checks the finite witnesses, the
+recurrence, both exterior constructions and the final arithmetic.
+An independent arithmetic audit and a record of the checks performed
+for this draft accompany the supplement. The formalization notes
+describe the remaining Lean obligations for these numerical bounds.
+
+\paragraph{Acknowledgment.}
+OpenAI tools assisted with the computational investigation, verification
+code and preparation of this draft.
+
+\begin{thebibliography}{9}
+\bibitem{EG}
+P. Erd\H{o}s and R. L. Graham,
+\emph{Old and New Problems and Results in Combinatorial Number Theory},
+Monographies de L'Enseignement Math\'ematique 28, Universit\'e de
+Genève, 1980.
+
+\bibitem{Bloom}
+T. F. Bloom, \emph{Erd\H{o}s Problem \#302}, with observations by
+S. Cambie and W. van Doorn. \url{https://www.erdosproblems.com/302}.
+
+\bibitem{Khanukov}
+D. Khanukov, \emph{Two-sided computer-assisted progress on Erd\H{o}s
+Problem 302}, preprint and computational materials, 2026.
+\url{https://doi.org/10.5281/zenodo.21966591}.
+
+\bibitem{OEIS}
+The OEIS Foundation Inc., \emph{The On-Line Encyclopedia of Integer
+Sequences}, entry A390395. \url{https://oeis.org/A390395}.
+
+\bibitem{Kitamura}
+K. Kitamura, \emph{A Lean proof of an improved upper bound for Erd\H{o}s
+Problem 302}, 2026. \url{https://github.com/KitaKen1/erdos-302-upper-bound}.
+\end{thebibliography}
+\end{document}

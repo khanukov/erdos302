@@ -2,3 +2,8 @@
 # the exact verifier rather than a textual diff.
 certificates/q139708800/certificate.json linguist-generated=true -diff
 Erdos302/Generated/** linguist-generated=true -diff
+
+# Review generated tables through the exact checks in the proof supplement.
+upper-0830783022367/certificate/mixed.tsv linguist-generated=true -diff
+upper-0830783022367/lean/Formal302/FrozenScales.lean linguist-generated=true -diff
+upper-0830783022367/lean/Formal302/Ledger/*.lean linguist-generated=true -diff
