@@ -1,7 +1,7 @@
 # Post-release and corrected-archive checklist
 
-Use this checklist for the v0.2.0 corrected preprint after the immutable
-v0.1.0 and v0.1.1 snapshots. The GitHub release is validated automatically;
+Use this checklist for the v0.3.0 corrected preprint after the immutable
+v0.1.0, v0.1.1, and v0.2.0 snapshots. The GitHub release is validated automatically;
 the enabled Zenodo GitHub integration archives its tagged source as the next immutable
 version without rewriting the historical record.
 
@@ -17,9 +17,12 @@ The following preprint identifiers are already public and must remain unchanged:
 - Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>.
 - v0.1.1 tag: `v0.1.1-corrected-preprint`;
 - v0.1.1 tagged commit: `98e61f9fda1b05d0d7733960a9004d7a48e69553`;
-- v0.1.1 version DOI: <https://doi.org/10.5281/zenodo.21989077>.
+- v0.1.1 version DOI: <https://doi.org/10.5281/zenodo.21989077>;
+- v0.2.0 tag: `v0.2.0-corrected-preprint`;
+- v0.2.0 tagged commit: `3e400a3807d22f711c7998f9537f49991925231a`;
+- v0.2.0 version DOI: <https://doi.org/10.5281/zenodo.22737316>.
 
-Never force-push, delete, or retarget that tag. Never replace its release
+Never force-push, delete, or retarget these tags. Never replace their release
 assets in place. Corrections belong in a new tag, GitHub Release, Zenodo
 version, and (after submission) arXiv replacement.
 
@@ -31,7 +34,7 @@ that those GitHub assets were absent or unchecked.
 The same concept lineage also contains automatically ingested technical
 staging releases with DOIs `10.5281/zenodo.22373181` and
 `10.5281/zenodo.22651029`. They are build archives, not preprint versions.
-Confirm that the new v0.2.0 record becomes the latest scholarly version; do not
+Confirm that the new v0.3.0 record becomes the latest scholarly version; do not
 cite the staging records as papers or conceal their presence in the version
 history.
 
@@ -39,8 +42,8 @@ history.
 
 1. Keep `khanukov/erdos302` enabled in the Zenodo GitHub integration. Do not
    create a manual **New version** draft for the same tag.
-2. Candidate controls are `0.2.0-preprint`,
-   `v0.2.0-corrected-preprint`, `PREPRINT_DOI=ZENODO_AUTO`, unchanged
+2. Candidate controls are `0.3.0-preprint`,
+   `v0.3.0-corrected-preprint`, `PREPRINT_DOI=ZENODO_AUTO`, unchanged
    `CONCEPT_DOI=10.5281/zenodo.21966590`, and `PUBLISH_READY=false`. Change the
    gate to `true` only in a separate reviewed commit after the merged candidate
    has a green exact push-to-`main` Verify run and the author has approved its PDF.
@@ -49,12 +52,15 @@ history.
    CFF, README, and release notes use the stable concept DOI and exact GitHub
    Release URL meanwhile.
 4. The shared validator rejects `UNRESERVED`, `-dev`, stale development
-   wording, a historical DOI reused for v0.2.0, or disagreement among controls,
+   wording, a historical DOI reused for v0.3.0, or disagreement among controls,
    CFF, README, and manuscript version/date.
 5. Automatic ingestion preserves the tagged source ZIP as a Zenodo software
    record. The full PDF/bundle/manifest inventory remains on the validated
    GitHub Release and must not be described as individually mirrored by
-   Zenodo.
+   Zenodo. The cold and exterior replay in [run 44830958575](https://github.com/khanukov/erdos302/actions/runs/44830958575)
+   checked proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`,
+   including regeneration of all 3,094,631 positive correction cells and a
+   matching SHA-256 digest. It is not release-commit approval.
 
 ## 3. Protect and optionally sign the next tag
 
@@ -128,7 +134,9 @@ grep -Fqx \
   COMMIT_SHA.txt
 ```
 
-The manifest must cover every ordinary GitHub Release asset except the
+Confirm the manifest includes the standalone `erdos302-v0.3.0-preprint-upper-certificate.zip`
+and the standalone v0.3.0 manuscript PDF. The manifest must cover every
+ordinary GitHub Release asset except the
 manifest itself (and an explicitly designed detached signature, if signing
 was added before release). Verify that the tag is annotated, resolves to
 `$VERIFIED_SHA`, the release is a non-draft prerelease, and the recorded
@@ -136,13 +144,13 @@ Verify run was a successful `push` run for `main` at that SHA.
 
 ## 5. Confirm automatic Zenodo ingestion
 
-Wait for Zenodo to process `v0.2.0-corrected-preprint`, then confirm:
+Wait for Zenodo to process `v0.3.0-corrected-preprint`, then confirm:
 
 - the new record is the next version under concept DOI
   `10.5281/zenodo.21966590`;
-- the old version DOI `10.5281/zenodo.21966591` still resolves to v0.1.0;
+- the prior version DOIs still resolve to their unchanged releases;
 - the new record has its own immutable version DOI;
-- its single source ZIP names the v0.2.0 tag and corresponds to the tagged
+- its single source ZIP names the v0.3.0 tag and corresponds to the tagged
   GitHub source archive; and
 - title, author, version, keywords, and preliminary/unrefereed description were
   taken from the release metadata.
@@ -156,7 +164,7 @@ GitHub and are authenticated there by `GITHUB_RELEASE_SHA256SUMS.txt`.
 
 Confirm every field in the automatically published record:
 
-- title: `Two-sided computer-assisted progress on Erdős Problem 302`;
+- title: `An upper density bound for sets avoiding reciprocal triples`;
 - creator: `Dmitry Khanukov`;
 - version: the exact tagged release version;
 - publication date: the date in `release/PREPRINT_DATE`;
@@ -174,14 +182,14 @@ Confirm every field in the automatically published record:
 
 The description must contain, in substance, all of the following statements:
 
-> Preliminary and unrefereed. This is partial progress, not a solution of
-> Erdős Problem 302. The upper finite certificate is cross-checked by exact
-> software. The finite semantics, exact packing certificates, omission
-> argument, and upper asymptotic endpoint are checked end to end in Lean 4.
-> The lower theorem is Lean-checked through pinned external formal
-> developments. AI systems assisted with search, code, formalization, and
-> audits; the named author remains responsible for all claims. No independent
-> mathematical verification or peer review is claimed.
+> Preliminary and unrefereed. The computer-assisted proof gives an upper
+> limiting density strictly below `0.830783022367`. C++17 and Python verify
+> the finite witnesses. Lean checks the counting and exact arithmetic, but
+> its endpoint retains explicit finite-witness hypotheses. This is partial
+> progress and does not determine the density or solve Erdős Problem 302.
+> AI systems assisted with search, code, formalization, and audits; the named
+> author remains responsible. No independent human verification or peer review
+> is claimed.
 
 Do not describe an AI audit, green CI run, DOI, download, or unanswered review
 request as independent verification.
@@ -196,7 +204,7 @@ request as independent verification.
    license, and no-independent-verification disclosures remain visible across
    the repository, manuscript, and release notes.
 4. Have the author personally approve the final PDF and metadata.
-5. Record the automatically assigned version DOI without rewriting either
+5. Record the automatically assigned version DOI without rewriting any
    published version. Any later correction requires another tag and version.
 
 ## 8. Repository discovery metadata
@@ -205,12 +213,11 @@ Repository description, homepage, topics, immutable-release settings, and tag
 rulesets live in GitHub settings and cannot be applied by a source-only pull
 request. After merging the audit corrections, set and record:
 
-- description: `Preliminary, unrefereed two-sided partial progress on Erdős
-  Problem 302, with an exact upper finite certificate, an end-to-end
-  Lean-checked upper bound, and a Lean-checked lower bound through pinned
-  external formal developments.`;
-- homepage: `https://doi.org/10.5281/zenodo.21989077` until the v0.2.0
-  version DOI or arXiv record replaces it;
+- description: `Preliminary, unrefereed computer-assisted upper bound of
+  0.830783022367 for Erdős Problem 302. Finite witnesses are checked by C++17
+  and Python; the Lean endpoint has explicit finite-witness hypotheses.`;
+- homepage: `https://doi.org/10.5281/zenodo.22737316` until the v0.3.0 version DOI or
+  an arXiv record replaces it;
 - topics: `erdos-problems`, `unit-fractions`, `lean4`,
   `computer-assisted-proof`, and `extremal-number-theory`;
 - a tag ruleset blocking updates and deletion of released preprint tags; and

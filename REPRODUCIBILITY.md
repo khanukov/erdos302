@@ -1,11 +1,34 @@
 # Reproducing the Erdős 302 verification layers
 
-The established upper and lower proof routes intentionally use separate
-toolchains and trust boundaries. Run every command from a clean
-checkout. CI uses Ubuntu 24.04 and pins each third-party GitHub Action by full
-commit SHA.
+## v0.3.0: stronger computer-assisted upper bound
 
-## Upper finite certificate
+The [verification supplement](upper-0830783022367/README.md) documents
+how to reproduce `limsup f302(N)/N < 0.830783022367`. Use its exact manifest,
+C++17/Python commands, pinned Lean environment, and
+[verification record](upper-0830783022367/checks/VERIFICATION.md). The v0.3.0
+release asset for that supplement is `erdos302-v0.3.0-preprint-upper-certificate.zip`.
+
+The [cold and exterior replay](https://github.com/khanukov/erdos302/actions/runs/44830958575) checked
+proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`. The cold run
+regenerated all 3,094,631 positive correction cells, and the expanded cell
+file matched the recorded SHA-256 digest. The C++17 and Python checks verify
+the finite witnesses; Lean checks the counting and exact arithmetic, with
+explicit finite-witness hypotheses at the endpoint. This is not an
+end-to-end Lean proof of the stronger bound.
+
+The cold job reran the search rather than just checking the saved candidates.
+The exterior replay checked 124,652,035 base rows. This run did not establish
+release readiness for later commits. Follow the supplement for the pinned Lean
+build and executable cell replay; those are separate from the cold/exterior CI
+run and from the historical project below.
+
+## v0.2.0: earlier two-sided verification layers
+
+The earlier upper and lower proof routes intentionally use separate
+toolchains and trust boundaries. Run every command from a clean checkout.
+CI uses Ubuntu 24.04 and pins each third-party GitHub Action by full commit SHA.
+
+### Historical upper finite certificate
 
 No third-party Python package is required.
 
@@ -75,7 +98,7 @@ edge set from \((b-a)(c-a)=a^2\). The Wang comparison verifier regenerates the
 computes its exact prefix covers, and checks the density arithmetic yielding
 \(2125/2418\). The multiplier disjointness and asymptotic prefix transfer are
 the human comparison argument in the manuscript; neither is a dependency of
-the headline certificate proved here.
+the historical certificate checked here.
 The SciPy/HiGHS script is a regression cross-check only.
 
 To run that optional cross-check, install the pinned requirements and use:

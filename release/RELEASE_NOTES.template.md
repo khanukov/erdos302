@@ -1,60 +1,40 @@
-# Two-sided progress on Erdős Problem 302 — preliminary preprint
+# An upper density bound for sets avoiding reciprocal triples
 
-This is version **@VERSION@**, released under tag **@TAG@** to establish a
-public timestamp for two partial bounds on Erdős Problem 302.
+Version **@VERSION@**, tag **@TAG@**.
 
-**Preliminary and unrefereed.** Independent mathematical review is being
-solicited. This is partial progress, not a solution of Erdős Problem 302, and
-the release is not described as independently verified or peer reviewed.
-
-The preprint proves that, for some absolute qualitative constant
-\(\delta>0\),
+The computer-assisted proof gives
 
 \[
-f_{302}(N)\geq(5/8+\delta)N
+\limsup_{N\to\infty}\frac{f_{302}(N)}N < 0.830783022367.
 \]
 
-for all sufficiently large \(N\), and that
+Here $f_{302}(N)$ is the largest size of a subset of $\{1,\ldots,N\}$
+containing no three distinct integers $a,b,c$ with $1/a=1/b+1/c$. The proof
+combines omissions inside smooth blocks with disjoint exterior triples.
 
-\[
-\limsup_{N\to\infty}\frac{f_{302}(N)}N
-\leq\frac{140803024}{163562355}
-\approx0.860852266403232.
-\]
+The [cold and exterior replay](https://github.com/khanukov/erdos302/actions/runs/44830958575) checked
+proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`. The cold run
+regenerated all 3,094,631 positive correction cells, and the expanded cell
+file matched the recorded SHA-256 digest. The C++17 and Python checks verify
+the finite witnesses; Lean checks the counting and exact arithmetic, with
+explicit finite-witness hypotheses at the endpoint. This is not an
+end-to-end Lean proof of the stronger bound.
 
-The lower result is derived using Della Pietra's structured Problem 301
-construction. The contribution developed in this work is the odd-quarter padding
-lemma that converts that witness into a Problem 302 construction of density
-strictly greater than \(5/8\). The required external Lean development is pinned
-and kernel-checked but unrefereed; its proof terms enter the dependency closure,
-not the theorem statement as hypotheses. The upper bound does not depend on the
-Della Pietra developments.
+This is partial progress, not a determination of the density or a solution of
+Erdős Problem 302. The manuscript is preliminary and unrefereed; no independent
+human verification or peer review is claimed. AI systems assisted with search, code, formalization, and audits;
+the author remains responsible for the claims.
 
-The upper bound is supported by an exact rational certificate, a
-dependency-free verification path, and an end-to-end Lean proof with no
-external certificate hypothesis. For the publication candidate, the
-cache-free workflow rebuilt all 80,181 committed project-local Lean modules
-from source, verified the exact 160,362 `.olean`/`.ilean` output inventory,
-replayed the final declarations, reproduced the axiom allowlist, and
-independently read back the aggregate artifact. The Lean kernel/toolchain,
-operating system and hardware, and Mathlib remain disclosed trusted boundaries.
-Compared with v0.1.1, this release adds the complete kernel-checked
-semantic-to-asymptotic upper chain, hardened exact-inventory proof artifacts,
-and deterministic source/provenance gates. The derived qualitative lower
-improvement is Lean-checked through immutable pinned external formal developments; the
-required push-to-`main` release-gating Verify run fresh-replays the stored
-dependency closure through Lean's kernel and separately reproduces its axiom
-report. The replay structurally trusts
-`.olean` serialization. Full trust-boundary and AI-assistance disclosures are
-included in the manuscript and repository. Neither formalization constitutes
-independent human review or a solution of Problem 302.
+The earlier two-sided v0.2.0 preprint gives the upper bound
+`140803024/163562355` (checked end to end in Lean) and an eventual lower bound
+strictly above `5/8`. Its [GitHub Release](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint) and
+[Zenodo version DOI](https://doi.org/10.5281/zenodo.22737316) are unchanged.
 
-This corrected version also cites Wang's May 2026 Problem 301 preprint and
-distinguishes its theorem from the \(2125/2418\) two-tail comparison used here.
-The accompanying script independently checks its finite tile edges, prefix
-covers, and rational arithmetic. The present \(140803024/163562355\) upper
-bound, including multiplier-block disjointness and asymptotic transfer, is
-formalized end to end in Lean.
+The new manuscript's verification supplement is attached as
+`erdos302-v@VERSION@-upper-certificate.zip`. It is separate from the historical
+exact-verification files and from the release-gating run below. The proof-source
+replay is evidence for the audited commit above, not publication approval for
+`@COMMIT_SHA@`.
 
 Release evidence:
 
@@ -71,6 +51,8 @@ Release evidence:
 Preceding immutable preprint snapshots (historical provenance, not identifiers
 for the `@VERSION@` candidate):
 
+- v0.2.0 GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint>
+- v0.2.0 Zenodo version DOI: <https://doi.org/10.5281/zenodo.22737316>
 - v0.1.1 GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint>
 - v0.1.1 Zenodo version DOI: <https://doi.org/10.5281/zenodo.21989077>
 - v0.1.0 GitHub Release: <https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint>
@@ -83,7 +65,7 @@ artifacts, not mathematical preprint versions.
 
 Zenodo's enabled GitHub integration automatically creates the next archived
 source snapshot after this release. It assigns that snapshot's immutable
-version DOI under the existing concept DOI. The standalone PDF, verification
+version DOI under the existing concept DOI. The standalone PDF, upper-certificate archive, verification
 transcript, release bundle, and release-asset manifest are preserved as the
 checked GitHub Release assets; automatic Zenodo ingestion is not described as
 copying those individual binary assets.
@@ -95,9 +77,10 @@ mode, the concept DOI, exact release URLs, and CFF metadata before any GitHub
 mutation.
 
 The attached `GITHUB_RELEASE_SHA256SUMS.txt` authenticates every release
-asset. `VERIFICATION.txt` records the exact local acceptance outputs produced
-while assembling the bundle; the GitHub Actions run above is the authoritative
-clean-run evidence for all proof-boundary jobs.
+asset. `VERIFICATION.txt` records the checks run during packaging. The required
+GitHub Actions run in the release evidence identifies the release candidate;
+the earlier cold and exterior replay verifies the stronger bound’s finite
+inputs at the audited proof-source commit.
 
 Licensing is path-specific: original software and verification material are
 MIT-licensed, while original manuscript material is CC BY 4.0. External pinned

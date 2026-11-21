@@ -1,53 +1,39 @@
-# Release-time announcement for v0.2.0
+# Release-time announcement for v0.3.0
 
-Use this announcement only after the `v0.2.0-corrected-preprint` GitHub
-prerelease is public and its assets have passed read-back verification. Zenodo
-assigns the exact v0.2.0 version DOI after automatic GitHub ingestion. There is
-no arXiv identifier yet; do not add or imply one until an arXiv submission has
-been announced.
+Draft for use only after `v0.3.0-corrected-preprint` is public and its
+assets pass read-back verification. No arXiv identifier is listed. This draft
+is not approval for an Erdős Problems forum post.
 
-We have posted a preliminary, unrefereed preprint giving two-sided partial
-progress on Erdős Problem 302:
+We have posted *An upper density bound for sets avoiding reciprocal triples*.
 
-\[
-f_{302}(N)\geq\left(\frac58+\delta\right)N
-\]
-
-eventually for some absolute \(\delta>0\), and
+The computer-assisted proof gives
 
 \[
-\limsup_{N\to\infty}\frac{f_{302}(N)}N
-\leq\frac{140803024}{163562355}
-\approx0.8608522664.
+\limsup_{N\to\infty}\frac{f_{302}(N)}N < 0.830783022367.
 \]
 
-The lower result is derived using Della Pietra's structured Problem 301
-construction. The contribution developed in this work is the odd-quarter padding
-lemma that converts that witness into a Problem 302 construction of density
-strictly greater than \(5/8\). The required external Lean development is pinned
-and kernel-checked but unrefereed. The upper bound does not depend on the Della
-Pietra developments.
+Here $f_{302}(N)$ is the largest size of a subset of $\{1,\ldots,N\}$
+containing no three distinct integers $a,b,c$ with $1/a=1/b+1/c$. The proof
+combines omissions inside smooth blocks with disjoint exterior triples.
 
-The upper bound is supported by an exact rational certificate, reproducible
-verifier, and an end-to-end Lean proof with no external certificate hypothesis.
-For the publication candidate, the cache-free workflow rebuilt all 80,181
-committed project-local Lean modules from source, verified the exact 160,362
-`.olean`/`.ilean` output inventory, replayed the final declarations, reproduced
-the axiom allowlist, and independently read back the aggregate artifact. The
-Lean kernel/toolchain, operating system and hardware, and Mathlib remain
-disclosed trusted boundaries. The derived qualitative lower bound is
-Lean-checked through immutable pinned formal developments. Independent
-mathematical review is now being solicited. This announcement is not approval
-for an Erdős Problems forum post.
+The [cold and exterior replay](https://github.com/khanukov/erdos302/actions/runs/44830958575) checked
+proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`. The cold run
+regenerated all 3,094,631 positive correction cells, and the expanded cell
+file matched the recorded SHA-256 digest. The C++17 and Python checks verify
+the finite witnesses; Lean checks the counting and exact arithmetic, with
+explicit finite-witness hypotheses at the endpoint. This is not an
+end-to-end Lean proof of the stronger bound.
 
-This is partial progress, not a solution of Problem 302. The manuscript and
-external formal developments are unrefereed; no independent human verification
-or peer review is claimed.
+This is partial progress, not a determination of the density or a solution of
+Erdős Problem 302. The manuscript is preliminary and unrefereed; no independent
+human verification or peer review is claimed.
 
-- Manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf>
-- v0.2.0 version DOI: assigned by Zenodo after automatic GitHub ingestion
+The earlier two-sided v0.2.0 preprint gives the upper bound
+`140803024/163562355` (checked end to end in Lean) and an eventual lower bound
+strictly above `5/8`. Its [GitHub Release](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint) and
+[Zenodo version DOI](https://doi.org/10.5281/zenodo.22737316) are unchanged.
+
+- Manuscript PDF: <https://github.com/khanukov/erdos302/releases/download/v0.3.0-corrected-preprint/erdos302-v0.3.0-preprint.pdf>
+- Verification assets: <https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint>
+- Version DOI: assigned by Zenodo after automatic GitHub ingestion
 - Zenodo concept DOI: <https://doi.org/10.5281/zenodo.21966590>
-- Verification release: <https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint>
-- Historical v0.1.1 DOI: <https://doi.org/10.5281/zenodo.21989077>
-- Historical v0.1.0 DOI: <https://doi.org/10.5281/zenodo.21966591>
-- arXiv: not yet available

@@ -4,16 +4,16 @@ Use ASCII/TeX input in arXiv metadata fields. The submitter must personally
 confirm every field and accept the arXiv submission agreement.
 
 Title:
-Two-sided computer-assisted progress on Erd\H{o}s Problem 302
+An upper density bound for sets avoiding reciprocal triples
 
 Authors:
 Dmitry Khanukov
 
 Abstract:
-Let f(N) be the largest size of a subset of {1,...,N} containing no distinct a,b,c with 1/a=1/b+1/c. We prove two partial results. First, using the structured Problem 301 construction of Della Pietra, we show via an odd-quarter padding lemma that there is an absolute constant delta>0 such that f(N)>=(5/8+delta)N for all sufficiently large N. The required Problem 301 input comes from a pinned, kernel-checked but unrefereed external Lean development; its proof terms enter the dependency closure rather than the theorem statement as hypotheses. Second, a hierarchical exact rational certificate gives limsup f(N)/N <= 140803024/163562355, approximately 0.860852266403232. This upper bound does not depend on the Della Pietra developments. The upper finite certificate is independently cross-checked by a dependency-free exact verifier. The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4. The external formal developments and this manuscript are unrefereed. This is partial progress and does not solve Problem 302.
+Let f(N) be the largest size of a subset of {1,...,N} containing no distinct a,b,c with 1/a=1/b+1/c. We give a computer-assisted proof of limsup f(N)/N < 0.830783022367. A finite profile bounds omissions inside smooth blocks, and disjoint triples on vertices isolated in these blocks force additional omissions. C++17 and Python verifiers check the finite witnesses. Lean checks the counting argument and exact arithmetic; its endpoint retains explicit finite-witness hypotheses. The result does not determine the density or solve Erdos Problem 302.
 
 Comments:
-@PDF_PAGES@ pages. Preliminary unrefereed version. We prove two partial bounds for Erdos Problem 302. The upper result is computer-assisted with an exact rational certificate and does not depend on the Della Pietra developments. The lower improvement is derived from Della Pietra's pinned, kernel-checked but unrefereed structured Problem 301 construction using the odd-quarter padding lemma developed in this work. AI systems assisted with search, code, formalization, and audits; the author remains responsible for all claims. Trust boundaries are disclosed in the manuscript, and no independent verification or peer review is claimed. Code and verification bundle: @RELEASE_URL@ . Zenodo archive: @PREPRINT_DOI_REFERENCE@ . Zenodo concept DOI: @CONCEPT_DOI@ .
+@PDF_PAGES@ pages. Preliminary and unrefereed. No independent human verification or peer review is claimed. AI systems assisted with search, code, formalization, and audits; the author remains responsible for all claims. The cold and exterior replay at proof-source commit 4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae passed in GitHub Actions run 44830958575; the cold replay regenerated 3,094,631 positive correction cells and matched the recorded SHA-256 digest. Code and verification supplement: @RELEASE_URL@ . Zenodo tagged-source archive: @PREPRINT_DOI_REFERENCE@ . Zenodo concept DOI: @CONCEPT_DOI@ .
 
 Primary category:
 math.NT (Number Theory)

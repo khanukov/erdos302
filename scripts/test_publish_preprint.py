@@ -243,9 +243,28 @@ class WorkflowGateTests(unittest.TestCase):
 
 
 
+class V030CertificateGateTests(unittest.TestCase):
+    def test_requires_both_successful_jobs_exactly_once(self) -> None:
+        cold = {"name": "upper-0830783022367-cold", "status": "completed", "conclusion": "success"}
+        bundle = {"name": "preprint-bundle", "status": "completed", "conclusion": "success"}
+        publisher.validate_v030_verify_jobs({"jobs": [cold, bundle]}, "123")
+        for jobs in ([bundle], [cold], [cold, cold, bundle], [cold, {**bundle, "conclusion": "skipped"}],
+                     [{**cold, "status": "in_progress"}, bundle], [None, bundle]):
+            with self.subTest(jobs=jobs), self.assertRaises(publisher.PublicationError):
+                publisher.validate_v030_verify_jobs({"jobs": jobs}, "123")
+
+
 class ProvenanceMessagingTests(unittest.TestCase):
     def test_open_gate_surface_uses_the_actual_publication_day(self) -> None:
         root = Path(__file__).resolve().parents[1]
+        if (root / "release" / "PREPRINT_VERSION").read_text(encoding="utf-8") == "0.3.0-preprint\n":
+            ready = (root / "release" / "PUBLISH_READY").read_text(encoding="utf-8")
+            self.assertIn(ready, {"false\n", "true\n"})
+            self.assertEqual(
+                (root / "release" / "PREPRINT_TAG").read_text(encoding="utf-8"),
+                "v0.3.0-corrected-preprint\n",
+            )
+            return  # The release builder cross-checks the current controls and metadata.
         self.assertEqual(
             (root / "release" / "PUBLISH_READY").read_text(encoding="utf-8"),
             "true\n",
@@ -310,7 +329,10 @@ class ProvenanceMessagingTests(unittest.TestCase):
             root / "release" / "ARXIV_METADATA.template.md",
         ]
         texts = {path: path.read_text(encoding="utf-8") for path in paths}
-        for path, text in texts.items():
+        v030 = (root / "release" / "PREPRINT_VERSION").read_text(encoding="utf-8") == "0.3.0-preprint\n"
+        lower_paths = paths[:1] + paths[2:3] if v030 else paths
+        for path in lower_paths:
+            text = texts[path]
             normalized = " ".join(text.split())
             with self.subTest(path=path.name):
                 self.assertIn("Della Pietra", text)
@@ -369,21 +391,23 @@ class ProvenanceMessagingTests(unittest.TestCase):
         self.assertNotIn("Assume", theorem)
 
         arxiv_metadata = texts[root / "release" / "ARXIV_METADATA.template.md"]
-        self.assertIn(
-            "The upper finite certificate is independently cross-checked by a dependency-free exact verifier.",
-            arxiv_metadata,
-        )
-        self.assertIn(
-            "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
-            arxiv_metadata,
-        )
+        if not v030:
+            self.assertIn(
+                "The upper finite certificate is independently cross-checked by a dependency-free exact verifier.",
+                arxiv_metadata,
+            )
+            self.assertIn(
+                "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
+                arxiv_metadata,
+            )
         self.assertNotIn("new odd-quarter padding lemma", arxiv_metadata)
 
         cff = texts[root / "CITATION.cff"]
-        self.assertIn(
-            "The upper finite certificate is independently cross-checked by exact dependency-free software.",
-            " ".join(cff.split()),
-        )
+        if not v030:
+            self.assertIn(
+                "The upper finite certificate is independently cross-checked by exact dependency-free software.",
+                " ".join(cff.split()),
+            )
         lower_provenance = (root / "docs" / "LOWER_BOUND_PROVENANCE.md").read_text(
             encoding="utf-8"
         )
@@ -397,15 +421,24 @@ class ProvenanceMessagingTests(unittest.TestCase):
         normalized_post_release = " ".join(
             post_release.replace("\n> ", " ").split()
         )
-        self.assertIn(
-            "The upper finite certificate is cross-checked by exact software.",
-            normalized_post_release,
-        )
-        self.assertIn(
-            "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
-            normalized_post_release,
-        )
+        if not v030:
+            self.assertIn(
+                "The upper finite certificate is cross-checked by exact software.",
+                normalized_post_release,
+            )
+            self.assertIn(
+                "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
+                normalized_post_release,
+            )
         self.assertNotIn("end-to-end Lean-checked upper and lower bounds", post_release)
+
+        if v030:
+            for name in ("CITATION.cff", "README.md", "release/ANNOUNCEMENT.md", "release/RELEASE_NOTES.template.md", "release/ARXIV_METADATA.template.md"):
+                with self.subTest(v030_surface=name):
+                    text = " ".join((root / name).read_text(encoding="utf-8").lower().split())
+                    self.assertIn("0.830783022367", text)
+                    self.assertIn("unrefereed", text)
+                    self.assertNotIn("endpoint are checked end to end in lean 4", text)
 
         ownership_surface = {
             **texts,

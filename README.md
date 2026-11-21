@@ -1,32 +1,43 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.2.0-preprint` is the corrected preprint candidate.
-Preliminary and unrefereed; it is not independently verified.** Its publication
-gate is open, but publication still requires exact-SHA successful `Verify`,
-`Integration critical CI`, and `Cache-free full-project Lean rebuild` runs,
-including successful `aggregate` and `read-back` jobs, plus final author
-approval. The reserved tag and release URL are
-[`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint).
-Zenodo will archive the tagged source automatically under concept DOI
-[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590) and assign
-a new immutable version DOI after GitHub release ingestion. Historical releases
-[`v0.1.1-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.1-corrected-preprint)
-(DOI [`10.5281/zenodo.21989077`](https://doi.org/10.5281/zenodo.21989077)) and
-[`v0.1.0-priority-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.1.0-priority-preprint)
-(DOI [`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591))
-remain unchanged.
+**Version `0.3.0-preprint` is a preliminary, unrefereed candidate and is not
+independently verified by human reviewers.** The publication gate is closed
+(`PUBLISH_READY=false`).
+The reserved release tag and URL are [`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint);
+the URL becomes live only after publication. Zenodo assigns a new immutable
+version DOI after GitHub ingestion under concept DOI
+[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590).
+
+The earlier two-sided [`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint)
+is archived as [`10.5281/zenodo.22737316`](https://doi.org/10.5281/zenodo.22737316). Historical v0.1.1
+([`10.5281/zenodo.21989077`](https://doi.org/10.5281/zenodo.21989077)) and v0.1.0
+([`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591)) remain unchanged.
 <!-- release-state:end -->
 
-**Upper bound of 0.830783022367.** The [preprint and certificate](upper-0830783022367/README.md) give a
-computer-assisted proof that the upper limiting density is strictly below
-$0.830783022367$. The evidence includes the C++ and Python replay and
-a Lean development for the counting argument and exact ledgers. The Lean
-endpoint is proved under explicit conditions on the finite witnesses.
+## Upper bound in the v0.3.0 candidate
 
-The repository and manuscript report complete proofs of two partial bounds;
-they do not claim to solve Erdős Problem 302, to be peer reviewed, or to have
-received independent human verification.
+The [manuscript](upper-0830783022367/paper/Erdos302_0830783022367.pdf) and
+[verification supplement](upper-0830783022367/README.md) give a
+computer-assisted proof that
+
+$$
+\limsup_{N\to\infty}\frac{f_{302}(N)}{N} < 0.830783022367.
+$$
+
+The [cold and exterior replay](https://github.com/khanukov/erdos302/actions/runs/44830958575) checked
+proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`. The cold run
+regenerated all 3,094,631 positive correction cells, and the expanded cell
+file matched the recorded SHA-256 digest. The C++17 and Python checks verify
+the finite witnesses; Lean checks the counting and exact arithmetic, with
+explicit finite-witness hypotheses at the endpoint. This is not an
+end-to-end Lean proof of the stronger bound.
+
+The bound is partial progress. It does not determine the density or solve
+Erdős Problem 302, and no independent human verification or peer review is
+claimed.
+
+## Earlier two-sided results (v0.2.0)
 
 Let \(f_{302}(N)\) be the largest size of a subset of
 \(\{1,\ldots,N\}\) containing no **three distinct** integers \(a,b,c\)
@@ -36,7 +47,7 @@ with
 \frac1a=\frac1b+\frac1c.
 \]
 
-This repository contains verification materials for the partial bounds
+The v0.2.0 preprint gives the partial bounds
 
 \[
 \exists\delta>0\ \exists N_0\ \forall N\ge N_0:\qquad
@@ -67,7 +78,7 @@ additionally run `leanchecker --fresh Erdos302Lower` over the complete
 imported-and-local `.olean` closure. This kernel-checks the stored proof terms
 in a fresh environment while structurally trusting `.olean` serialization.
 Its transitive axiom report contains only `propext`, `Classical.choice`, and
-`Quot.sound`. The headline manuscript uses a qualitative \(\delta\); the
+`Quot.sound`. The v0.2.0 manuscript uses a qualitative \(\delta\); the
 companion overlay in `lower-lean/explicit-overlay` additionally proves the
 weaker explicit choice \(1/(86400\,\mathrm{commonL})\). The constant is
 astronomically small, and the external developments and this manuscript are
@@ -126,7 +137,7 @@ proof](https://pastebin.com/p7EfqMYQ) posted in July 2026 subsequently obtained
 <\frac{373}{420}<\frac{25}{28}<\frac9{10}.
 \]
 
-## Verification status
+## Verification status of the v0.2.0 bounds
 
 | Layer | Status |
 |---|---|
@@ -182,7 +193,7 @@ improvement over \(5/8\), but `commonL` is so large that it is not a practical
 decimal improvement. See
 [`lower-lean/explicit-overlay/README.md`](lower-lean/explicit-overlay/README.md).
 
-## Verify the upper bound
+## Verify the v0.2.0 upper bound
 
 The published `verify` path uses only the Python standard library, exact
 integers, and `fractions.Fraction`. It regenerates 719 divisor vertices, 12,675
@@ -399,11 +410,10 @@ changes no Lean file; see [trust boundary](docs/TRUST_BOUNDARY.md).
 
 ## Licensing
 
-Original repository software, verification artifacts, certificates, and
-documentation outside `paper/` are licensed under the
-[MIT License](LICENSE). Original manuscript material under `paper/` is
-licensed under [CC BY 4.0](paper/LICENSE). The exact scope and third-party
-exclusions are recorded in [LICENSE_SCOPE.md](LICENSE_SCOPE.md).
+Original software, verification artifacts, certificates, and non-manuscript
+documentation are [MIT-licensed](LICENSE). Original manuscript material is
+licensed under [CC BY 4.0](paper/LICENSE). See [LICENSE_SCOPE.md](LICENSE_SCOPE.md)
+for the path-specific rules and third-party exclusions.
 
 These licenses do not cover the externally fetched #301, #327, or
 `teorth/mathlib4` sources, cited works, or other third-party material. They
@@ -423,7 +433,9 @@ The SciPy/HiGHS regression cross-check is outside the proof boundary. Run it
 as an additional layer with `RUN_MILP_CROSSCHECK=1 scripts/verify_all.sh`
 after installing `requirements-crosscheck.txt`.
 
-The manuscript source is `paper/erdos302_two_sided.tex`. Pull-request CI may
+The v0.3.0 manuscript source is
+[`Erdos302_0830783022367.tex`](upper-0830783022367/paper/Erdos302_0830783022367.tex).
+The v0.2.0 manuscript source remains `paper/erdos302_two_sided.tex`. Pull-request CI may
 produce development PDF and bundle artifacts after the PR-scoped checks pass;
 those artifacts do not include fresh-replay evidence and are not authoritative
 release candidates. The automated publisher accepts a release PDF and bundle
@@ -467,7 +479,7 @@ replacement; earlier public versions remain part of the scientific record.
 
 ## Scope and disclosure
 
-The finite upper packing was discovered with AI-assisted search. Its finite
+The v0.2.0 finite upper packing was discovered with AI-assisted search. Its finite
 acceptance depends only on the committed exact certificate and verifier, not
 on the floating-point solver used during discovery. The finite semantics,
 packing certificates, omission argument, and asymptotic endpoint are connected
@@ -477,7 +489,6 @@ workflow rebuilt all 80,181 committed project-local Lean modules from source,
 required the exact 160,362 `.olean`/`.ilean` output inventory, replayed the
 final declarations, and reproduced the axiom allowlist; see
 [run 34676374033](https://github.com/khanukov/erdos302/actions/runs/34676374033).
-This revision does not alter any project-local Lean source.
 The Lean kernel/toolchain, operating system and hardware, and Mathlib remain
 disclosed trusted boundaries. AI systems assisted with code generation, proof
 audits, and Lean formalization. The external #301/#327 work and the present

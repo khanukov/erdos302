@@ -395,6 +395,35 @@ jobs:
         run: cd paper/limit-density && sha256sum -c MANIFEST.sha256
       - run: test -z "$(git status --porcelain)"
 
+  upper-0830783022367-cold:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 345
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: upper-0830783022367
+      - name: Regenerate and check the upper certificate
+        working-directory: upper-0830783022367
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/upper-0830783022367-logs"
+          mkdir -p "$evidence"
+          git rev-parse HEAD | tee "$evidence/checkout.txt"
+          xz -dk certificate/shortlist.bin.xz
+          sha256sum -c SHA256SUMS | tee "$evidence/inputs.log"
+          /usr/bin/time -v python3 -BuO certificate/verify.py --full "$RUNNER_TEMP/upper-rebuild" \
+            2>&1 | tee "$evidence/cold.log"
+          printf '%s  %s\n' 3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5 \
+            "$RUNNER_TEMP/upper-rebuild/interior/mass.cells" | sha256sum -c | tee "$evidence/cells.log"
+          git diff --exit-code HEAD -- .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: upper-0830783022367-cold-logs
+          path: ${{ runner.temp }}/upper-0830783022367-logs/
+          if-no-files-found: error
+
   preprint-bundle:
     # PR bundles are development evidence; non-PR bundles include fresh replay.
     needs:
@@ -407,6 +436,7 @@ jobs:
       - milp-crosscheck
       - lower-lean
       - paper
+      - upper-0830783022367-cold
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -422,11 +452,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             latexmk poppler-utils unzip texlive-latex-base \
-            texlive-latex-recommended texlive-fonts-recommended
-      - name: Build exact priority-preprint candidate
+            texlive-latex-recommended texlive-fonts-recommended lmodern xz-utils
+      - name: Build exact preprint candidate
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 -I -S scripts/build_preprint_release.py --output dist/preprint
+      - name: Check release assembly in optimized mode
+        run: python3 -I -S -B -O scripts/test_preprint_v030_bundle.py
       - name: Test packaged standalone and arXiv sources
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -446,11 +478,26 @@ jobs:
           tar -xzf \
             "${GITHUB_WORKSPACE}/dist/preprint/erdos302-v${PREPRINT_VERSION}-arxiv.tar.gz" \
             -C "${arxiv_dir}"
+          arxiv_root=erdos302_two_sided
+          if [[ "$PREPRINT_VERSION" == 0.3.0-preprint ]]; then
+            arxiv_root=erdos302_upper
+            cmp "${arxiv_root}.tex" "${arxiv_dir}/${arxiv_root}.tex"
+            unzip -q "erdos302-v${PREPRINT_VERSION}-upper-certificate.zip" -d "$package_dir/certificate"
+            (
+              cd "$package_dir/certificate/upper-0830783022367"
+              xz -dk certificate/shortlist.bin.xz
+              sha256sum -c SHA256SUMS
+              python3 -BuO certificate/verify.py
+            )
+            pdftotext "erdos302-v${PREPRINT_VERSION}.pdf" "$package_dir/candidate.txt"
+            grep -Fq '0.830783022367' "$package_dir/candidate.txt"
+            grep -Fq 'Preliminary and unrefereed' "$package_dir/candidate.txt"
+          fi
           latexmk -cd -pdf -interaction=nonstopmode -halt-on-error \
-            -file-line-error "${arxiv_dir}/erdos302_two_sided.tex"
+            -file-line-error "${arxiv_dir}/${arxiv_root}.tex"
           ! grep -Eq \
             'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)|Overfull \\hbox' \
-            "${arxiv_dir}/erdos302_two_sided.log"
+            "${arxiv_dir}/${arxiv_root}.log"
       - name: Verify release asset hashes
         run: |
           cd dist/preprint

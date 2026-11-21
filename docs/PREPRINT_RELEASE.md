@@ -4,20 +4,25 @@ This procedure prepares and publishes a preliminary, unrefereed version to
 establish a standard scientific timestamp. It does not authorize an Erdős
 Problems forum post or the phrase “independently verified.”
 
-Current v0.2.0 release-candidate controls:
+Current v0.3.0 release-candidate controls:
 
 ```text
-version:       0.2.0-preprint
-tag:           v0.2.0-corrected-preprint
-release date:  2026-09-13
+version:       0.3.0-preprint
+tag:           v0.3.0-corrected-preprint
+release date:  2026-11-20
 version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
-PUBLISH_READY: true
+PUBLISH_READY: false
 ```
 
 Published immutable preprint identifiers:
 
 ```text
+v0.2.0 version: 0.2.0-preprint
+v0.2.0 tag:     v0.2.0-corrected-preprint
+v0.2.0 commit:  3e400a3807d22f711c7998f9537f49991925231a
+v0.2.0 DOI:     10.5281/zenodo.22737316
+
 v0.1.1 version: 0.1.1-preprint
 v0.1.1 tag:     v0.1.1-corrected-preprint
 v0.1.1 commit:  98e61f9fda1b05d0d7733960a9004d7a48e69553
@@ -34,9 +39,8 @@ The concept lineage also contains two automatically ingested technical staging
 records (`packing-aggregate-staging-20260905`, DOI
 `10.5281/zenodo.22373181`, and `integration-overlay-20260907`, DOI
 `10.5281/zenodo.22651029`). They are build archives, not mathematical preprint
-versions. Do not cite them as papers. Publishing v0.2.0 restores the scholarly
-preprint as the latest version, but does not erase those immutable technical
-records. Do not create future build-staging GitHub Releases in this repository
+versions. Do not cite them as papers. Publishing v0.3.0 adds a scholarly version without changing those immutable
+technical records. Do not create future build-staging GitHub Releases in this repository
 while automatic Zenodo ingestion is enabled; use Actions artifacts or a
 separate non-archived repository instead.
 
@@ -65,7 +69,7 @@ not authors and cannot perform this approval.
 ## 2. Use the enabled automatic Zenodo ingestion
 
 The earlier preprints used Zenodo's GitHub integration, and the same enabled
-repository integration is the publication path for v0.2.0. A public
+repository integration is the publication path for v0.3.0. A public
 GitHub release triggers Zenodo to archive the tagged source, create the next
 version in the existing lineage, and assign its version DOI. Do not create a
 second manual **New version** draft for the same tag, because that could race
@@ -97,20 +101,40 @@ the external-dependency and third-party exclusions in `LICENSE_SCOPE.md`.
 
 ## 3. Produce the exact release candidate
 
+The primary manuscript, `upper-0830783022367/paper/Erdos302_0830783022367.tex`, proves the
+computer-assisted upper bound `limsup f302(N)/N < 0.830783022367`. The builder adds the
+version/date banner and preliminary status in a build-only copy; do not edit
+the hash-bound original. The standalone stronger-bound archive
+`erdos302-v0.3.0-preprint-upper-certificate.zip` is distinct from the historical v0.2.0
+verifiers in the candidate bundle.
+
+The [cold and exterior replay](https://github.com/khanukov/erdos302/actions/runs/44830958575) checked
+proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`. The cold run
+regenerated all 3,094,631 positive correction cells, and the expanded cell
+file matched the recorded SHA-256 digest. The C++17 and Python checks verify
+the finite witnesses; Lean checks the counting and exact arithmetic, with
+explicit finite-witness hypotheses at the endpoint. This is not an
+end-to-end Lean proof of the stronger bound.
+
+That run is proof-source evidence, not approval to publish a later commit.
+The existing exact-commit release gates below must still pass. The root
+integration and cache-free checks apply to the earlier Lean proof chain;
+they do not discharge the stronger endpoint's finite-witness hypotheses.
+
 Merge the preprint-preparation change with a merge commit (not squash or
 rebase), preserving the immutable verifier commit in `main` history. Then
 require green `Verify` and `Integration critical CI` GitHub Actions runs on the
 exact `main` commit. The Verify workflow builds an artifact named from
 `release/PREPRINT_VERSION` only after all proof, mutation, MILP-regression,
 lower-Lean, manuscript, and bundle jobs succeed. Pull-request and closed-gate
-builds may create a `0.2.0-preprint` candidate artifact, but
+builds may create a `0.3.0-preprint` candidate artifact, but
 `PUBLISH_READY=false` prevents it from becoming a tag or GitHub Release. The
 integration run must include a successful `verify-artifact` job and bounded
 Lean4Checker replay of declarations in the rebuilt integration and asymptotic
 modules against the imported environment. In addition, the manually dispatched
 `cache-free-full-rebuild.yml` workflow must succeed for the exact publication
-commit: it rebuilds all 80,181 project-local Lean modules from source, requires
-the exact 160,362 `.olean`/`.ilean` output inventory, replays the final
+commit: it rebuilds the gated root Lean project from source, checks its
+exact `.olean`/`.ilean` output inventory, replays the final
 declarations, reproduces the axiom allowlist, and independently reads the
 aggregate artifact back. The Lean kernel/toolchain, operating system and
 hardware, and Mathlib remain disclosed trusted boundaries.
@@ -125,7 +149,8 @@ The command refuses a tracked dirty worktree and emits:
 
 - a standalone manuscript PDF;
 - manuscript TeX, bibliography, and CC BY license;
-- the exact certificate and all acceptance/cross-check programs;
+- the stronger-bound verification supplement as a standalone archive;
+- the historical exact certificate and acceptance/cross-check programs;
 - reproducibility, axiom, license, commit, and verification records;
 - a deterministic ZIP bundle;
 - an arXiv source tarball containing TeX source, bibliography, and license,
@@ -134,11 +159,11 @@ The command refuses a tracked dirty worktree and emits:
 
 ## 4. Create the GitHub prerelease
 
-The preparation commit kept `PUBLISH_READY=false`, so merging it could not
+The preparation commit keeps `PUBLISH_READY=false`, so merging it cannot
 create a tag or release. After its exact-main evidence and candidate artifacts
-were inspected, a separately reviewed gate-opening change set
-`release/PUBLISH_READY` to `true` and synchronized the release-facing date and
-state. Its exact-SHA push-to-`main` Verify and Integration critical CI runs must
+are inspected and the author approves the PDF, a separate reviewed change
+may set `release/PUBLISH_READY` to `true` and synchronize the release-facing
+date and state. Its exact-SHA push-to-`main` Verify and Integration critical CI runs must
 pass, and the cache-free full-project rebuild must be manually dispatched and
 pass for that same commit. If the first
 Integration run finishes before the cache-free rebuild, rerun that exact
@@ -181,6 +206,7 @@ minimum:
 
 - `erdos302-v<VERSION>.pdf`;
 - `erdos302-v<VERSION>-release.zip`;
+- `erdos302-v<VERSION>-upper-certificate.zip`;
 - `erdos302-v<VERSION>-arxiv.tar.gz`;
 - `VERIFICATION.txt`;
 - `COMMIT_SHA.txt`; and
@@ -217,10 +243,10 @@ version; do not claim that the v0.1.0 Zenodo record contains them.
 Record both the version DOI and the concept DOI. Use the version DOI when
 citing this exact priority snapshot.
 
-For v0.2.0, do not edit or overwrite v0.1.0 or v0.1.1. Confirm that the
+For v0.3.0, do not edit or overwrite v0.2.0, v0.1.1, or v0.1.0. Confirm that the
 automatic record appears as the next version under concept DOI
 `10.5281/zenodo.21966590`, record the new version DOI, and verify that its
-source ZIP corresponds to `v0.2.0-corrected-preprint`. The exact PDF and full
+source ZIP corresponds to `v0.3.0-corrected-preprint`. The exact PDF and full
 verified asset inventory are authenticated on the GitHub Release by
 `GITHUB_RELEASE_SHA256SUMS.txt`; automatic Zenodo ingestion is not claimed to
 mirror those individual assets.
@@ -254,9 +280,9 @@ of the scientific record; later corrections belong in a replacement version.
 ## 7. Solicit review and announce carefully
 
 The GitHub Release and concept-DOI links in `release/REVIEW_REQUEST.md` and
-`release/ANNOUNCEMENT.md` identify v0.2.0 while preserving the historical
-v0.1.0 and v0.1.1 DOIs. They explicitly state that no arXiv identifier is yet
-available and that the exact v0.2.0 DOI is assigned after automatic ingestion.
+`release/ANNOUNCEMENT.md` identify v0.3.0 while preserving the historical
+v0.2.0, v0.1.1, and v0.1.0 DOIs. They explicitly state that no arXiv identifier is yet
+available and that the exact v0.3.0 DOI is assigned after automatic ingestion.
 Before sending a review request, personalize the salutation and relevance sentence.
 Do not imply that a recipient has reviewed or endorsed the paper without
 explicit permission.
