@@ -1064,6 +1064,7 @@ class EvidencePublisher(publisher.Publisher):
             "isDraft": self.draft,
             "isPrerelease": True,
             "tagName": self.controls.tag,
+            "name": self.expected_release_title(),
         }
 
     def gh(self, arguments: list[str]) -> str:
@@ -1274,6 +1275,20 @@ class OrchestrationTests(unittest.TestCase):
                 instance.publish()
             self.assertIn(V030_ASSETS[0], str(error.exception))
             self.assertNotIn("download-recorded-artifact", events)
+
+    def test_v030_existing_draft_with_wrong_or_missing_title_is_not_promoted(self) -> None:
+        for title in (None, "Erdos 302 corrected preprint 0.3.0-preprint"):
+            with self.subTest(title=title), tempfile.TemporaryDirectory() as raw:
+                instance, events = self.evidence_instance(Path(raw), draft=True)
+                instance.controls = V030_CONTROLS
+                instance.utc_day_provider = lambda: publisher.release_builder.RELEASE_DATE
+                instance.validate_integration_run = lambda run_id, sha: None
+                instance.validate_cache_free_run = lambda run_id, sha: None
+                state = instance.release_state
+                instance.release_state = lambda: {**state(), "name": title}
+                with self.assertRaisesRegex(publisher.PublicationError, "title"):
+                    instance.publish()
+                self.assertNotIn("download-published", events)
 
     def test_stale_draft_is_rejected_before_recorded_run_or_publish(self) -> None:
         with tempfile.TemporaryDirectory() as raw:

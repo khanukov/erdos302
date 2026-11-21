@@ -510,13 +510,18 @@ class Publisher:
                 "--repo",
                 self.context.repository,
                 "--json",
-                "isDraft,isPrerelease,tagName",
+                "isDraft,isPrerelease,tagName,name",
             ],
             f"release {self.controls.tag}",
         )
         if not isinstance(state, dict):
             raise PublicationError("release view response is not an object")
         return state
+
+    def expected_release_title(self) -> str:
+        if self.controls.version == "0.3.0-preprint":
+            return "An upper density bound for sets avoiding reciprocal triples"
+        return f"Erdos 302 corrected preprint {self.controls.version}"
 
     def require_commit_tree(self, commit: str, expected_tree: str, evidence: str) -> None:
         commit_data = self.gh_json(
@@ -542,6 +547,9 @@ class Publisher:
                 f"release {self.controls.tag} does not have expected "
                 f"draft={str(expected_draft).lower()}, prerelease=true state"
             )
+
+        if self.controls.version == "0.3.0-preprint" and state.get("name") != self.expected_release_title():
+            raise PublicationError(f"release {self.controls.tag} has an unexpected title")
 
         with tempfile.TemporaryDirectory(
             prefix="published-preprint-", dir=self.context.runner_temp
@@ -812,11 +820,7 @@ class Publisher:
             )
             if not assets:
                 raise PublicationError("refusing to create a release without assets")
-            title = (
-                "An upper density bound for sets avoiding reciprocal triples"
-                if self.controls.version == "0.3.0-preprint"
-                else f"Erdos 302 corrected preprint {self.controls.version}"
-            )
+
             self.gh(
                 [
                     "release",
@@ -829,7 +833,7 @@ class Publisher:
                     "--draft",
                     "--prerelease",
                     "--title",
-                    title,
+                    self.expected_release_title(),
                     "--notes-file",
                     str(assets_dir / "RELEASE_NOTES.md"),
                 ]
