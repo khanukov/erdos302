@@ -104,7 +104,8 @@ class UpperBundleTests(unittest.TestCase):
                 builder.render_upper_manuscript(original.replace(item, altered, 1))
 
     def test_historical_v020_doi_cannot_be_reused(self):
-        with patch.object(builder, "PREPRINT_DOI", "10.5281/zenodo.22737316"):
+        with (patch.object(builder, "TAG", "v0.3.0-corrected-preprint"),
+              patch.object(builder, "PREPRINT_DOI", "10.5281/zenodo.22737316")):
             with self.assertRaisesRegex(RuntimeError, "prior-version DOI"):
                 builder.validate_release_metadata()
 

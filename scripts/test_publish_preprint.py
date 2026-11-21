@@ -291,7 +291,7 @@ class ProvenanceMessagingTests(unittest.TestCase):
             self.assertIn(ready, {"false\n", "true\n"})
             self.assertEqual(
                 (root / "release" / "PREPRINT_TAG").read_text(encoding="utf-8"),
-                f"v{version.removesuffix('-preprint')}-corrected-preprint\n",
+                f"v{publisher.release_builder.release_version_base(version)}-corrected-preprint\n",
             )
             return  # The release builder cross-checks the current controls and metadata.
         self.assertEqual(
