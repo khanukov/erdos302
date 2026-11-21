@@ -61,6 +61,45 @@ UPPER_DRAFT_DATE = (
     rb"\date{Preprint draft with verification supplement \enspace$\cdot$"
     rb"\enspace 20 November 2026}"
 )
+UPPER_DRAFT_REPRODUCTION = rb"""\paragraph{Reproduction.}
+From the archive root, \texttt{python3 certificate/verify.py} checks the
+frozen tables, the directed rounding and the resulting rational numbers.
+To verify the actual explicit rows used in the first assertion, run
+\verb|python3 certificate/verify.py --shortlist 1001000|.
+For full regeneration, run \verb|python3 certificate/verify.py --full work|
+on a 64-bit system with Python 3.10 or later and a C++17 compiler
+supporting 128-bit integers. This checks the finite witnesses, the
+recurrence, both exterior constructions and the final arithmetic.
+An independent arithmetic audit and a record of the checks performed
+for this draft accompany the supplement. The formalization notes
+describe the remaining Lean obligations for these numerical bounds.
+"""
+UPPER_RELEASE_REPRODUCTION = rb"""\paragraph{Reproduction.}
+Extract the companion certificate ZIP and run the following commands from
+its \verb|upper-0830783022367/| directory to restore the shortlist, check
+the file hashes, and verify the arithmetic from the frozen tables:
+\begin{verbatim}
+xz -dc certificate/shortlist.bin.xz > certificate/shortlist.bin
+sha256sum -c SHA256SUMS
+python3 certificate/verify.py
+\end{verbatim}
+The shortlist command checks the first 1,001,000 stored exterior rows and
+combines their credit with the frozen interior profile. It reproduces the
+weaker bound $\limsup f(N)/N < 0.8309$, not the headline bound.
+\begin{verbatim}
+python3 certificate/verify.py --shortlist 1001000
+\end{verbatim}
+To reproduce the headline bound $\limsup f(N)/N < 0.830783022367$ from
+regenerated witnesses, run the full check on a 64-bit system with Python
+3.10 or later and a C++17 compiler supporting 128-bit integers:
+\begin{verbatim}
+python3 certificate/verify.py --full work
+\end{verbatim}
+This regenerates and checks the finite interior witnesses and recurrence,
+the exterior constructions, and the final arithmetic. The supplement
+includes an independent arithmetic audit and historical verification
+records. The formalization notes describe the remaining Lean obligations.
+"""
 MASS_CELLS_SHA256 = "3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5"
 MONTHS = (
     "January", "February", "March", "April", "May", "June", "July", "August",
@@ -78,8 +117,13 @@ def render_upper_manuscript(original: bytes) -> bytes:
     if (lines.count(UPPER_DRAFT_DATE + b"\n") != 1
             or sum(line.lstrip().startswith(rb"\date{") for line in lines) != 1):
         raise RuntimeError("expected exactly one audited upper manuscript draft date line")
+    if (original.count(UPPER_DRAFT_REPRODUCTION) != 1
+            or lines.count(rb"\paragraph{Reproduction.}" + b"\n") != 1):
+        raise RuntimeError("expected exactly one audited upper manuscript reproduction block")
     replacement = (manuscript_date_line() + "Preliminary and unrefereed}\n").encode("ascii")
-    return original.replace(UPPER_DRAFT_DATE + b"\n", replacement, 1)
+    return original.replace(UPPER_DRAFT_DATE + b"\n", replacement, 1).replace(
+        UPPER_DRAFT_REPRODUCTION, UPPER_RELEASE_REPRODUCTION, 1
+    )
 
 
 def yaml_scalar(value: str) -> str:

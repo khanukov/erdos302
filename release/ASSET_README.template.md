@@ -65,10 +65,29 @@ Rebuilding the historical Lean projects and every release-gating CI layer
 requires the full source
 archive for tag `@TAG@`; follow `REPRODUCIBILITY.md` there.
 
-Original software and verification material are MIT-licensed. The manuscript
-is CC BY 4.0. External dependencies and cited third-party works are excluded;
-see `LICENSE_SCOPE.md`. A repository- or archive-level license field does not
-override this path-specific split.
+## Licensing and provenance
+
+- `MANUSCRIPT_LICENSE.txt` (CC BY 4.0) covers the original manuscript
+  material: the primary PDF, `erdos302_upper.tex`, and the retained historical
+  `erdos302_two_sided.tex` and `references.bib` to the extent they are original.
+- `SOFTWARE_LICENSE.txt` (MIT) covers the original software and verification
+  material, including the loose verifier scripts and certificate data.
+
+See `LICENSE_SCOPE.md` for the scope of the grants. The certificate ZIP
+includes `LICENSE` and `paper/LICENSE` for the original material in their
+respective scopes. Neither an archive-level license field nor inclusion in
+the release overrides those scopes or licenses external dependencies and
+cited third-party works.
+
+The certificate's `certificate/prior.zip` preserves an earlier replay
+snapshot. It contains `parent.zip`, which in turn contains
+`base/erdos302_profile_0840983463792.zip`. The innermost archive preserves
+transcriptions of upstream Kitamura profile data (`upstream_intervals.json`
+and `upstream_thresholds.json`) pinned to commit
+`9447ceb28138949b2fb32442cec506a6f53104f9` of `KitaKen1/erdos-302-upper-bound`.
+The repository's notices apply only to original material within their stated
+scopes; inclusion for replay does not grant redistribution rights to any
+third-party material in these nested snapshots.
 
 This is a preliminary, unrefereed snapshot. It is not independently verified
 or peer reviewed, and it is not a solution of Erdős Problem 302.

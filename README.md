@@ -1,8 +1,8 @@
 # Two-sided progress on Erdős Problem 302
 
 <!-- release-state:start -->
-**Version `0.3.0-preprint` is a preliminary, unrefereed candidate and is not
-independently verified by human reviewers.** The publication gate is closed
+**Preliminary and unrefereed.** Version `0.3.0-preprint` is a candidate and is
+not independently verified by human reviewers. The publication gate is closed
 (`PUBLISH_READY=false`).
 The reserved release tag and URL are [`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint);
 the URL becomes live only after publication. Zenodo assigns a new immutable

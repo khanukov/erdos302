@@ -38,6 +38,22 @@ FINAL_CONTROLS = publisher.ReleaseControls(
 )
 
 
+V030_CONTROLS = publisher.ReleaseControls(
+    version="0.3.0-preprint",
+    tag="v0.3.0-corrected-preprint",
+    publish_ready="true",
+    preprint_doi="ZENODO_AUTO",
+    concept_doi="10.5281/zenodo.21966590",
+)
+V030_ASSETS = (
+    "erdos302-v0.3.0-preprint-upper-certificate.zip",
+    "erdos302-v0.3.0-preprint.pdf",
+    "erdos302-v0.3.0-preprint-release.zip",
+    "erdos302-v0.3.0-preprint-arxiv.tar.gz",
+    "erdos302_upper.tex",
+)
+
+
 def write_inventory(directory: Path, assets: dict[str, bytes]) -> None:
     lines: list[str] = []
     for name, payload in sorted(assets.items()):
@@ -890,14 +906,17 @@ class NewReleasePublisher(publisher.Publisher):
         context: publisher.PublicationContext,
         events: list[str],
         publication_day: str = publisher.release_builder.RELEASE_DATE,
+        *,
+        controls=FINAL_CONTROLS,
     ) -> None:
         super().__init__(
-            FINAL_CONTROLS,
+            controls,
             context,
             runner=OrchestrationRunner(events),  # type: ignore[arg-type]
             utc_day_provider=lambda: publication_day,
         )
         self.events = events
+        self.release_title: str | None = None
 
     def release_count(self) -> int:
         self.events.append("release-count:0")
@@ -934,12 +953,7 @@ class NewReleasePublisher(publisher.Publisher):
         if arguments[:2] == ["release", "create"]:
             if "--draft" not in arguments or "--prerelease" not in arguments:
                 raise AssertionError("new release was not created draft-first")
-            expected_title = f"Erdos 302 corrected preprint {FINAL_CONTROLS.version}"
-            title = arguments[arguments.index("--title") + 1]
-            if title != expected_title:
-                raise AssertionError(
-                    f"release title {title!r} does not equal {expected_title!r}"
-                )
+            self.release_title = arguments[arguments.index("--title") + 1]
             self.events.append("gh:create-draft")
             return ""
         if arguments[:2] == ["release", "edit"]:
@@ -955,6 +969,40 @@ class NewReleasePublisher(publisher.Publisher):
         if expected_manifest is None:
             raise AssertionError("new release validation lost its source manifest anchor")
         self.events.append(f"validate-release:{expected_draft}")
+
+
+class V030NewReleasePublisher(NewReleasePublisher):
+    def __init__(
+        self, context, events: list[str], *,
+        omitted_asset: str | None = None, candidate_tree: str = "c" * 40,
+    ) -> None:
+        super().__init__(context, events, controls=V030_CONTROLS)
+        self.omitted_asset = omitted_asset
+        self.candidate_tree = candidate_tree
+
+    def download_run_artifact(self, run_id: str, directory: Path) -> None:
+        self.events.append(f"download:{run_id}")
+        sha = self.context.verified_sha
+        ci = f"https://github.com/{self.context.repository}/actions/runs/{run_id}"
+        write_inventory(directory, {
+            **{name: b"fixture\n" for name in V030_ASSETS if name != self.omitted_asset},
+            "RELEASE_NOTES.md": b"notes\n",
+            "COMMIT_SHA.txt": f"commit {sha}\ntree {self.candidate_tree}\nci-run {ci}\n".encode(),
+            "VERIFICATION.txt": (
+                "version: 0.3.0-preprint\ntag: v0.3.0-corrected-preprint\n"
+                "version DOI control: ZENODO_AUTO\nconcept DOI: 10.5281/zenodo.21966590\n"
+                f"publication gate: true\ncommit: {sha}\nCI run: {ci}\n"
+            ).encode(),
+        })
+
+    def validate_candidate_evidence(self, assets_dir: Path) -> None:
+        publisher.Publisher.validate_candidate_evidence(self, assets_dir)
+
+    def gh(self, arguments: list[str]) -> str:
+        if arguments == ["api", f"/repos/owner/repository/git/commits/{self.context.verified_sha}"]:
+            self.events.append("commit-tree")
+            return json.dumps({"sha": self.context.verified_sha, "tree": {"sha": "c" * 40}})
+        return super().gh(arguments)
 
 
 class ExistingDraftPublisher(NewReleasePublisher):
@@ -1015,7 +1063,7 @@ class EvidencePublisher(publisher.Publisher):
         return {
             "isDraft": self.draft,
             "isPrerelease": True,
-            "tagName": FINAL_CONTROLS.tag,
+            "tagName": self.controls.tag,
         }
 
     def gh(self, arguments: list[str]) -> str:
@@ -1068,7 +1116,9 @@ class OrchestrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             events: list[str] = []
             context = self.context(Path(raw))
-            NewReleasePublisher(context, events).publish()
+            instance = NewReleasePublisher(context, events)
+            instance.publish()
+            self.assertEqual(instance.release_title, "Erdos 302 corrected preprint 0.2.0-preprint")
             self.assertEqual(
                 events,
                 [
@@ -1089,6 +1139,43 @@ class OrchestrationTests(unittest.TestCase):
                     "validate-release:False",
                 ],
             )
+
+    def test_v030_new_release_rejects_each_missing_asset_before_any_mutation(self) -> None:
+        for missing in V030_ASSETS:
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as raw:
+                events: list[str] = []
+                instance = V030NewReleasePublisher(self.context(Path(raw)), events, omitted_asset=missing)
+                with self.assertRaises(publisher.PublicationError) as error:
+                    instance.publish()
+                self.assertIn(missing, str(error.exception))
+                self.assert_no_tag_or_release_action(events)
+
+    def test_v030_new_release_rejects_wrong_tree_before_any_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            instance = V030NewReleasePublisher(self.context(Path(raw)), events, candidate_tree="d" * 40)
+            with self.assertRaisesRegex(publisher.PublicationError, "tree does not match"):
+                instance.publish()
+            self.assertIn("commit-tree", events)
+            self.assert_no_tag_or_release_action(events)
+
+    def assert_no_tag_or_release_action(self, events: list[str]) -> None:
+        self.assertEqual(
+            [event for event in events if event.startswith(("tag-target:", "git:", "gh:"))],
+            [],
+        )
+
+    def test_v030_new_release_uses_exact_manuscript_title(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            instance = V030NewReleasePublisher(self.context(Path(raw)), events)
+            instance.publish()
+            self.assertEqual(
+                instance.release_title,
+                "An upper density bound for sets avoiding reciprocal triples",
+            )
+            self.assertLess(events.index("commit-tree"), events.index("tag-target:missing"))
+            self.assertIn("gh:publish-draft", events)
 
     def test_new_release_rejects_a_stale_publication_date_before_evidence_or_mutation(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
@@ -1171,6 +1258,22 @@ class OrchestrationTests(unittest.TestCase):
             instance.validate_release(True)
             self.assertIn("validate-recorded-run", events)
             self.assertIn("download-recorded-artifact", events)
+
+    def test_v030_existing_draft_requires_candidate_assets_before_promotion(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            instance, events = self.evidence_instance(Path(raw), draft=True)
+            instance.controls = V030_CONTROLS
+            instance.utc_day_provider = lambda: publisher.release_builder.RELEASE_DATE
+            instance.validate_integration_run = lambda run_id, sha: None
+            instance.validate_cache_free_run = lambda run_id, sha: None
+            candidate = V030NewReleasePublisher(instance.context, [], omitted_asset=V030_ASSETS[0])
+            for directory in (instance.published_dir, instance.anchor_dir):
+                (directory / "payload.txt").unlink()
+                candidate.download_run_artifact(instance.published_run_id, directory)
+            with self.assertRaises(publisher.PublicationError) as error:
+                instance.publish()
+            self.assertIn(V030_ASSETS[0], str(error.exception))
+            self.assertNotIn("download-recorded-artifact", events)
 
     def test_stale_draft_is_rejected_before_recorded_run_or_publish(self) -> None:
         with tempfile.TemporaryDirectory() as raw:

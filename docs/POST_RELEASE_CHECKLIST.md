@@ -124,6 +124,14 @@ its recorded commit and Verify run must also equal the exact commit and run
 that triggered the current publisher invocation; a newer successful run must
 not publish an older draft.
 
+Before looking up or creating a tag for a new v0.3.0 release, the publisher
+checks the candidate's asset inventory and digests, requires the standalone
+upper-certificate ZIP, manuscript PDF, release ZIP, arXiv tarball, and
+`erdos302_upper.tex`, and compares the tree in `COMMIT_SHA.txt` with the tree
+returned by GitHub for the verified commit. Draft validation also requires
+these assets before promotion. The public GitHub Release title must be
+**An upper density bound for sets avoiding reciprocal triples**.
+
 Download all release assets into an empty directory and check:
 
 ```bash
