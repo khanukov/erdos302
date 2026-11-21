@@ -12,7 +12,7 @@ This is partial progress, not a solution to Erdős Problem 302. The preprint is 
 
 ## Sources and CI evidence
 
-- [Manuscript (PDF)](https://github.com/khanukov/erdos302/blob/4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae/upper-0830783022367/paper/Erdos302_0830783022367.pdf) and [LaTeX source](https://github.com/khanukov/erdos302/blob/4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae/upper-0830783022367/paper/Erdos302_0830783022367.tex).
+- [Manuscript (PDF)](https://github.com/khanukov/erdos302/releases/download/v0.3.0-corrected-preprint/erdos302-v0.3.0-preprint.pdf) — reserved URL, live only after publication. Until then, read the PDF and `erdos302_upper.tex` in the review bundle. The [pinned draft source](https://github.com/khanukov/erdos302/blob/4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae/upper-0830783022367/paper/Erdos302_0830783022367.tex) is historical.
 - [Pinned proof source](https://github.com/khanukov/erdos302/tree/4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae/upper-0830783022367) at commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`, subtree `93bfe9cc08a135fa504d66f434a822d7dc0e8167`. The subtree contains the [original Russian guide](https://github.com/khanukov/erdos302/blob/4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae/upper-0830783022367/README_RU.md), the [original verification record](https://github.com/khanukov/erdos302/blob/4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae/upper-0830783022367/checks/VERIFICATION.md), and the associated logs. In an extracted companion ZIP these are `README_RU.md` and `checks/VERIFICATION.md` under `upper-0830783022367/`.
 - [Proof-source cold and exterior CI](https://github.com/khanukov/erdos302/actions/runs/44830958575) ran separate cold and exterior jobs on the pinned proof source. The original verification record's **cached interior replay** rechecked saved candidates; it did not repeat the candidate search. The **cold** job did.
 - [Candidate Verify run 44843830036](https://github.com/khanukov/erdos302/actions/runs/44843830036) passed for PR head `b9534bcf9ee71efd7d8399f9c5948f92677a5a7c`. It checked out PR merge commit `784d02cf7f1f8268b74d06e745fd989cd2cf257b`, which contains the same pinned upper subtree. The [cold job](https://github.com/khanukov/erdos302/actions/runs/44843830036/job/136658655134) regenerated the witnesses and matched the expanded cell digest; the [bundle job](https://github.com/khanukov/erdos302/actions/runs/44843830036/job/136688679843) checked the extracted companion ZIP's manifest and exact arithmetic. This is evidence for that PR snapshot, not an exact-main release run or publication approval.
@@ -31,7 +31,7 @@ cd upper-0830783022367
 
 The Git check identifies the committed subtree; use a clean checkout so local edits do not change the inputs.
 
-**From the companion ZIP:** obtain `erdos302-v0.3.0-preprint-upper-certificate.zip` and `GITHUB_RELEASE_SHA256SUMS.txt` from the `erdos302-v0.3.0-preprint-candidate` artifact of the candidate run above (or the corresponding release if published). From the directory containing both files, verify the ZIP before extracting it into a fresh directory:
+**From the companion ZIP:** obtain `erdos302-v0.3.0-preprint-upper-certificate.zip` and `GITHUB_RELEASE_SHA256SUMS.txt` from the same review bundle or the corresponding release once published. From the directory containing both files, verify the ZIP before extracting it into a fresh directory:
 
 ```bash
 set -euo pipefail

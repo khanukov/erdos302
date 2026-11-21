@@ -84,7 +84,10 @@ snapshot. It contains `parent.zip`, which in turn contains
 `base/erdos302_profile_0840983463792.zip`. The innermost archive preserves
 transcriptions of upstream Kitamura profile data (`upstream_intervals.json`
 and `upstream_thresholds.json`) pinned to commit
-`9447ceb28138949b2fb32442cec506a6f53104f9` of `KitaKen1/erdos-302-upper-bound`.
+`9447ceb28138949b2fb32442cec506a6f53104f9` of [KitaKen1/erdos-302-upper-bound](https://github.com/KitaKen1/erdos-302-upper-bound/tree/9447ceb28138949b2fb32442cec506a6f53104f9).
+These are transcriptions, not verbatim copies of upstream source files. The
+certificate ZIP carries the pinned upstream Apache-2.0 license at
+`third_party/kitamura/LICENSE` for that material.
 The repository's notices apply only to original material within their stated
 scopes; inclusion for replay does not grant redistribution rights to any
 third-party material in these nested snapshots.

@@ -9,7 +9,7 @@ Current v0.3.0 release-candidate controls:
 ```text
 version:       0.3.0-preprint
 tag:           v0.3.0-corrected-preprint
-release date:  2026-11-20
+candidate date: 2026-11-21 (UTC; not a scheduled publication date)
 version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
 PUBLISH_READY: false
@@ -165,10 +165,13 @@ are inspected and the author approves the PDF, a separate reviewed change
 may set `release/PUBLISH_READY` to `true` and synchronize the release-facing
 date and state. Its exact-SHA push-to-`main` Verify and Integration critical CI runs must
 pass, and the cache-free full-project rebuild must be manually dispatched and
-pass for that same commit. If the first
-Integration run finishes before the cache-free rebuild, rerun that exact
-push-triggered Integration run after the rebuild succeeds so publication is
-re-evaluated. Main-branch integration runs are never cancelled by a later push.
+pass for that same commit. Keep `main` unchanged until the release is public.
+If Publish starts before either Verify or the cache-free build passes, wait
+for **both** on that SHA (including `aggregate` and `read-back`), then use
+**Re-run all jobs** on the original push-triggered Integration run for that
+SHA. Its success triggers Publish again. If the UTC day changes, update the
+date controls and rebuild; do not bypass the UTC-day check. Main-branch
+integration runs are never cancelled by a later push.
 
 The `Publish corrected preprint` workflow runs only after a successful
 push-triggered `Integration critical CI` workflow on `main`. It requires that

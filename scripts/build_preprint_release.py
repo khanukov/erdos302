@@ -61,6 +61,8 @@ UPPER_TREE = "93bfe9cc08a135fa504d66f434a822d7dc0e8167"  # 4abf9b466:upper-08307
 UPPER_DRAFT = f"{UPPER_ROOT}/paper/Erdos302_0830783022367.tex"
 UPPER_TEX = "erdos302_upper.tex"
 UPPER_GUIDE = "UPPER_VERIFICATION.md"
+KITAMURA_LICENSE = "third_party/kitamura/LICENSE"
+KITAMURA_LICENSE_SHA256 = "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
 UPPER_DRAFT_CITATION = rb"""\bibitem{Khanukov}
 D. Khanukov, \emph{Two-sided computer-assisted progress on Erd\H{o}s
 Problem 302}, preprint and computational materials, 2026.
@@ -87,7 +89,8 @@ for this draft accompany the supplement. The formalization notes
 describe the remaining Lean obligations for these numerical bounds.
 """
 UPPER_RELEASE_REPRODUCTION = rb"""\paragraph{Reproduction.}
-Extract the companion certificate ZIP and run the following commands from
+Extract the \href{@UPPER_CERTIFICATE_URL@}{companion certificate ZIP}
+(reserved release URL until publication) and run the following commands from
 its \verb|upper-0830783022367/| directory to restore the shortlist, check
 the file hashes, and verify the arithmetic from the frozen tables:
 \begin{verbatim}
@@ -148,7 +151,9 @@ def render_upper_manuscript(original: bytes) -> bytes:
         raise RuntimeError("expected exactly one audited Khanukov bibliography entry")
     replacement = (manuscript_date_line() + "Preliminary and unrefereed}\n").encode("ascii")
     return original.replace(UPPER_DRAFT_DATE + b"\n", replacement, 1).replace(
-        UPPER_DRAFT_REPRODUCTION, UPPER_RELEASE_REPRODUCTION, 1
+        UPPER_DRAFT_REPRODUCTION, UPPER_RELEASE_REPRODUCTION.replace(
+            b"@UPPER_CERTIFICATE_URL@", upper_certificate_url().encode("ascii")
+        ), 1
     ).replace(UPPER_DRAFT_CITATION, UPPER_RELEASE_CITATION, 1)
 
 
@@ -220,6 +225,10 @@ def manuscript_url() -> str:
         "https://github.com/khanukov/erdos302/releases/download/"
         f"{TAG}/erdos302-v{VERSION}.pdf"
     )
+
+
+def upper_certificate_url() -> str:
+    return manuscript_url().removesuffix(".pdf") + "-upper-certificate.zip"
 
 
 def validate_release_metadata() -> None:
@@ -551,6 +560,10 @@ def write_upper_certificate(commit: str, target: Path, transcript: list[str]) ->
     payloads = {f"{UPPER_ROOT}/{name}": data for name, data in payloads.items()}
     for name in ("LICENSE", "LICENSE_SCOPE.md", "paper/LICENSE"):
         payloads[name] = git_bytes("show", f"{commit}:{name}")
+    kitamura_license = git_bytes("show", f"{commit}:{KITAMURA_LICENSE}")
+    if hashlib.sha256(kitamura_license).hexdigest() != KITAMURA_LICENSE_SHA256:
+        raise RuntimeError("Kitamura upstream license digest mismatch")
+    payloads[KITAMURA_LICENSE] = kitamura_license
 
     day = date.fromisoformat(RELEASE_DATE)
     timestamp = (day.year, day.month, day.day, 0, 0, 0)
@@ -562,7 +575,7 @@ def write_upper_certificate(commit: str, target: Path, transcript: list[str]) ->
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
     transcript.append(
         f"Certificate ZIP: {len(payloads)} regular files (tracked upper subtree plus LICENSE, "
-        "LICENSE_SCOPE.md, and paper/LICENSE at their repository-relative paths from the ZIP root).\n"
+        "LICENSE_SCOPE.md, paper/LICENSE, and the pinned Kitamura Apache-2.0 license).\n"
         "Packaged checks/*.log are historical evidence. Packaging verifies source identities and\n"
         "digests; it does not rerun the upper C++/Python certificate or the Lean proof. The upper\n"
         "Lean endpoint is conditional on the finite certificate inputs.\n\n"
