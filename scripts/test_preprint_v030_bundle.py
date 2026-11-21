@@ -73,6 +73,7 @@ class UpperBundleTests(unittest.TestCase):
                              rb"\url{https://doi.org/10.5281/zenodo.22737316}.", 1))
         for literal in (
             rb"xz -dc certificate/shortlist.bin.xz > certificate/shortlist.bin",
+            b"https://github.com/khanukov/erdos302/releases/download/v0.3.0-corrected-preprint/erdos302-v0.3.0-preprint-upper-certificate.zip",
             rb"sha256sum -c SHA256SUMS",
             rb"python3 certificate/verify.py --shortlist 1001000",
             b"frozen interior profile",
@@ -138,7 +139,7 @@ class UpperBundleTests(unittest.TestCase):
         retained = {f"{UPPER}/{p.decode()}" for p in
                     git("ls-tree", "-r", "-z", "--name-only", TREE).split(b"\0") if p}
         notices = {name: name for name in
-                   ("LICENSE", "LICENSE_SCOPE.md", "paper/LICENSE")}
+                   ("LICENSE", "LICENSE_SCOPE.md", "paper/LICENSE", "third_party/kitamura/LICENSE")}
         untracked = f"{UPPER}/certificate/shortlist.bin"
         transcript = []
         destinations = [self.directory / name for name in ("one.zip", "two.zip")]
