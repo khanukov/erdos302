@@ -214,6 +214,9 @@ request as independent verification.
 4. Have the author personally approve the final PDF and metadata.
 5. Record the automatically assigned version DOI without rewriting any
    published version. Any later correction requires another tag and version.
+6. After verifying the published release PDF, update the manuscript links in
+   `README.md` and `docs/UPPER_0830783022367_VERIFICATION.md` to that versioned
+   asset. Keep the pinned draft and its proof-source history unchanged.
 
 ## 8. Repository discovery metadata
 

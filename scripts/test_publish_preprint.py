@@ -272,12 +272,14 @@ class WorkflowGateTests(unittest.TestCase):
 
 
 class UpperCertificateGateTests(unittest.TestCase):
-    def test_requires_both_successful_jobs_exactly_once(self) -> None:
+    def test_requires_all_three_successful_jobs_exactly_once(self) -> None:
         cold = {"name": "upper-0830783022367-cold", "status": "completed", "conclusion": "success"}
+        lean = {**cold, "name": "upper-0830783022367-lean"}
         bundle = {"name": "preprint-bundle", "status": "completed", "conclusion": "success"}
-        publisher.validate_upper_verify_jobs({"jobs": [cold, bundle]}, "123")
-        for jobs in ([bundle], [cold], [cold, cold, bundle], [cold, {**bundle, "conclusion": "skipped"}],
-                     [{**cold, "status": "in_progress"}, bundle], [None, bundle]):
+        publisher.validate_upper_verify_jobs({"jobs": [cold, lean, bundle]}, "123")
+        for jobs in ([lean, bundle], [cold, lean], [cold, bundle], [cold, lean, lean, bundle],
+                     [cold, {**lean, "conclusion": "skipped"}, bundle],
+                     [cold, {**lean, "status": "in_progress"}, bundle], [cold, None, bundle]):
             with self.subTest(jobs=jobs), self.assertRaises(publisher.PublicationError):
                 publisher.validate_upper_verify_jobs({"jobs": jobs}, "123")
 
@@ -747,15 +749,16 @@ class FakeRunner:
 
 
 class RunJobsPaginationTests(unittest.TestCase):
-    def test_later_upper_release_requires_cold_and_bundle_jobs(self) -> None:
+    def test_later_upper_release_requires_cold_lean_and_bundle_jobs(self) -> None:
         run = {"name": "Verify", "path": ".github/workflows/verify.yml",
                "conclusion": "success", "event": "push", "head_branch": "main",
                "head_sha": "a" * 40}
         cold = {"id": 1, "name": "upper-0830783022367-cold", "status": "completed",
                 "conclusion": "success"}
         bundle = {**cold, "id": 2, "name": "preprint-bundle"}
-        for jobs, missing in (([bundle], cold["name"]), ([cold], bundle["name"]),
-                              ([cold, bundle], None)):
+        lean = {**cold, "id": 3, "name": "upper-0830783022367-lean"}
+        for jobs, missing in (([lean, bundle], cold["name"]), ([cold, lean], bundle["name"]),
+                              ([cold, bundle], lean["name"]), ([cold, lean, bundle], None)):
             with self.subTest(missing=missing):
                 runner = FakeRunner([json.dumps(run),
                                      json.dumps({"total_count": len(jobs), "jobs": jobs})])

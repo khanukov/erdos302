@@ -437,6 +437,65 @@ jobs:
           path: ${{ runner.temp }}/upper-0830783022367-logs/
           if-no-files-found: error
 
+  upper-0830783022367-lean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: upper-0830783022367/lean
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: upper-0830783022367
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          lake-package-directory: upper-0830783022367/lean
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Build with the pinned Lean toolchain and Mathlib manifest
+        env:
+          LEAN_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          logs="$RUNNER_TEMP/upper-lean-evidence"
+          mkdir -p "$logs"
+          git rev-parse HEAD | tee "$logs/checkout.txt"
+          cat lean-toolchain | tee "$logs/toolchain.txt"
+          lake exe cache get 2>&1 | tee "$logs/cache.log"
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = 809072a6d0abd09be38833bf6d321f9837f23892
+          git diff --exit-code HEAD -- lake-manifest.json lean-toolchain
+          lake build 2>&1 | tee "$logs/build.log"
+          git diff --exit-code HEAD -- .
+      - name: Verify the endpoint's freshly printed axioms
+        run: |
+          set -euo pipefail
+          logs="$RUNNER_TEMP/upper-lean-evidence"
+          lake env lean Formal302.lean 2>&1 | tee "$logs/axioms.log"
+          actual=$(grep -oE "'Formal302\.upper_0830783022367_of_certificate' depends on axioms: .*$" "$logs/axioms.log")
+          test "$actual" = "'Formal302.upper_0830783022367_of_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      - name: Hash and replay the 3,094,631 correction cells
+        run: |
+          set -euo pipefail
+          logs="$RUNNER_TEMP/upper-lean-evidence"
+          cells="$RUNNER_TEMP/upper-lean-mass.cells"
+          xz -dc ../checks/mass.cells.xz > "$cells"
+          printf '%s  %s\n' 3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5 \
+            "$cells" | sha256sum -c | tee "$logs/cells-sha256.log"
+          lake env lean --run Replay302Cells.lean "$cells" ../certificate/mass.tsv 2>&1 | tee "$logs/replay.log"
+          grep -Fx "ACCEPTED: 3094631 positive correction rectangles in 249 nonempty layers." "$logs/replay.log"
+          grep -Fx "Lean's executable checker matched the stored exact mass table." "$logs/replay.log"
+          git diff --exit-code HEAD -- ..
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: upper-0830783022367-lean-evidence
+          path: ${{ runner.temp }}/upper-lean-evidence/
+          if-no-files-found: error
+
   preprint-bundle:
     # PR bundles are development evidence; non-PR bundles include fresh replay.
     needs:
@@ -450,6 +509,7 @@ jobs:
       - lower-lean
       - paper
       - upper-0830783022367-cold
+      - upper-0830783022367-lean
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:

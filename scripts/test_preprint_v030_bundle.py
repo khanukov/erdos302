@@ -137,7 +137,7 @@ class UpperBundleTests(unittest.TestCase):
     def test_certificate_is_deterministic_and_matches_pinned_tracked_bytes(self):
         retained = {f"{UPPER}/{p.decode()}" for p in
                     git("ls-tree", "-r", "-z", "--name-only", TREE).split(b"\0") if p}
-        notices = {f"{UPPER}/{name}": name for name in
+        notices = {name: name for name in
                    ("LICENSE", "LICENSE_SCOPE.md", "paper/LICENSE")}
         untracked = f"{UPPER}/certificate/shortlist.bin"
         transcript = []

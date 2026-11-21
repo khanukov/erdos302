@@ -548,21 +548,21 @@ def write_upper_certificate(commit: str, target: Path, transcript: list[str]) ->
         payloads[name] = git_bytes("cat-file", "blob", oid.decode("ascii"))
     transcript.append(f"Audited upper subtree: {UPPER_TREE}\n")
     verify_upper_inventory(payloads, transcript)
+    payloads = {f"{UPPER_ROOT}/{name}": data for name, data in payloads.items()}
     for name in ("LICENSE", "LICENSE_SCOPE.md", "paper/LICENSE"):
-        if name in payloads:
-            raise RuntimeError(f"audited subtree conflicts with license path: {name}")
         payloads[name] = git_bytes("show", f"{commit}:{name}")
 
     day = date.fromisoformat(RELEASE_DATE)
     timestamp = (day.year, day.month, day.day, 0, 0, 0)
     with zipfile.ZipFile(target, "x") as archive:
         for name, data in sorted(payloads.items()):
-            info = zipfile.ZipInfo(f"{UPPER_ROOT}/{name}", timestamp)
+            info = zipfile.ZipInfo(name, timestamp)
             info.create_system = 3
             info.external_attr = 0o100644 << 16
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
     transcript.append(
-        f"Nested certificate ZIP: {len(payloads)} regular files (tracked upper subtree and three license files).\n"
+        f"Certificate ZIP: {len(payloads)} regular files (tracked upper subtree plus LICENSE, "
+        "LICENSE_SCOPE.md, and paper/LICENSE at their repository-relative paths from the ZIP root).\n"
         "Packaged checks/*.log are historical evidence. Packaging verifies source identities and\n"
         "digests; it does not rerun the upper C++/Python certificate or the Lean proof. The upper\n"
         "Lean endpoint is conditional on the finite certificate inputs.\n\n"

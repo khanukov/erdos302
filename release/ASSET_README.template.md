@@ -73,9 +73,9 @@ archive for tag `@TAG@`; follow `REPRODUCIBILITY.md` there.
 - `SOFTWARE_LICENSE.txt` (MIT) covers the original software and verification
   material, including the loose verifier scripts and certificate data.
 
-See `LICENSE_SCOPE.md` for the scope of the grants. The certificate ZIP
-includes `LICENSE` and `paper/LICENSE` for the original material in their
-respective scopes. Neither an archive-level license field nor inclusion in
+See `LICENSE_SCOPE.md` for the scope of the grants. The certificate ZIP places
+`LICENSE_SCOPE.md`, `LICENSE`, and `paper/LICENSE` at the same paths relative
+to the ZIP root as in the repository. Neither an archive-level license field nor inclusion in
 the release overrides those scopes or licenses external dependencies and
 cited third-party works.
 

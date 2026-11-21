@@ -246,7 +246,7 @@ def validate_verify_run_data(data: object, run_id: str, expected_sha: str) -> No
 def validate_upper_verify_jobs(data: object, run_id: str) -> None:
     if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
         raise PublicationError(f"Verify run {run_id} jobs response is malformed")
-    for name in ("upper-0830783022367-cold", "preprint-bundle"):
+    for name in ("upper-0830783022367-cold", "upper-0830783022367-lean", "preprint-bundle"):
         matches = [job for job in data["jobs"] if isinstance(job, dict) and job.get("name") == name]
         if (len(matches) != 1 or matches[0].get("status") != "completed"
                 or matches[0].get("conclusion") != "success"):
