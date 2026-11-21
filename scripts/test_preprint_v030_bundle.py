@@ -56,7 +56,7 @@ class UpperBundleTests(unittest.TestCase):
             control.start()
             self.addCleanup(control.stop)
 
-    def test_render_changes_only_the_exact_date_and_reproduction_blocks(self):
+    def test_render_changes_only_the_exact_date_reproduction_and_citation_blocks(self):
         original = git("show", f"{TREE}:{SOURCE}")
         rendered = builder.render_upper_manuscript(original)
         banner = (rb"\date{Version 0.3.0-preprint, 20 November 2026\\[0.5ex]"
@@ -66,7 +66,11 @@ class UpperBundleTests(unittest.TestCase):
         before, remainder = rendered.split(start)
         instructions, after = remainder.split(end)
         self.assertEqual(before + DRAFT_REPRODUCTION + b"\n" + end + after,
-                         original.replace(DRAFT, banner, 1))
+                         original.replace(DRAFT, banner, 1).replace(
+                             b"Problem 302}, preprint and computational materials, 2026.\n"
+                             rb"\url{https://doi.org/10.5281/zenodo.21966591}.",
+                             b"Problem 302}, version 0.2.0-preprint, 2026.\n"
+                             rb"\url{https://doi.org/10.5281/zenodo.22737316}.", 1))
         for literal in (
             rb"xz -dc certificate/shortlist.bin.xz > certificate/shortlist.bin",
             rb"sha256sum -c SHA256SUMS",
@@ -90,6 +94,29 @@ class UpperBundleTests(unittest.TestCase):
                         DRAFT_REPRODUCTION * 2):
             with self.subTest(length=len(changed)), self.assertRaisesRegex(RuntimeError, "reproduction"):
                 builder.render_upper_manuscript(original.replace(DRAFT_REPRODUCTION, changed))
+
+    def test_render_rejects_changed_missing_or_duplicate_prior_citation(self):
+        original = git("show", f"{TREE}:{SOURCE}")
+        item = original.split(rb"\bibitem{Khanukov}", 1)[1].split(rb"\bibitem{OEIS}", 1)[0]
+        item = rb"\bibitem{Khanukov}" + item
+        for altered in (b"", item.replace(b"21966591", b"22737316"), item * 2):
+            with self.subTest(length=len(altered)), self.assertRaisesRegex(RuntimeError, "bibliography"):
+                builder.render_upper_manuscript(original.replace(item, altered, 1))
+
+    def test_historical_v020_doi_cannot_be_reused(self):
+        with patch.object(builder, "PREPRINT_DOI", "10.5281/zenodo.22737316"):
+            with self.assertRaisesRegex(RuntimeError, "prior-version DOI"):
+                builder.validate_release_metadata()
+
+    def test_upper_bundle_version_boundary(self):
+        for version, expected in (("0.2.99-preprint", False), ("0.3.0-preprint", True),
+                                  ("0.3.1-preprint", True), ("0.10.0-dev", True),
+                                  ("1.0.0-preprint", True)):
+            with self.subTest(version=version):
+                self.assertEqual(builder.uses_upper_bundle(version), expected)
+        for version in ("0.3", "0.3.1-other", "0.03.1-preprint"):
+            with self.subTest(version=version), self.assertRaisesRegex(RuntimeError, "PREPRINT_VERSION"):
+                builder.uses_upper_bundle(version)
 
     def test_release_state_contains_literal_ci_banner(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -162,6 +189,8 @@ class UpperBundleTests(unittest.TestCase):
         self.assertIn("weaker bound", text)
         self.assertIn("frozen interior profile", text)
         self.assertIn("python3 certificate/verify.py --full work", text)
+        self.assertIn("10.5281/zenodo.22737316", text)
+        self.assertNotIn("10.5281/zenodo.21966591", text)
         for manifest, excluded in (
             ("GITHUB_RELEASE_SHA256SUMS.txt", set()),
             ("BUNDLE_SHA256SUMS.txt", {f"{stem}-release.zip", f"{stem}-arxiv.tar.gz",
@@ -179,6 +208,8 @@ class UpperBundleTests(unittest.TestCase):
             for name in (source.name, pdf.name, f"{stem}-upper-certificate.zip", "README_RELEASE.md",
                          "MANUSCRIPT_LICENSE.txt", "SOFTWARE_LICENSE.txt", "LICENSE_SCOPE.md"):
                 self.assertEqual(archive.read(prefix + name), (output / name).read_bytes())
+            self.assertEqual(archive.read(prefix + "UPPER_VERIFICATION.md"),
+                             (ROOT / "docs/UPPER_0830783022367_VERIFICATION.md").read_bytes())
             for name in ("erdos302_two_sided.tex", "references.bib", "certificate.json",
                          "exact_certificate.py", "hierarchical_certificate.py",
                          "crosscheck_reciprocal_edges.py", "verify_wang_two_tail_baseline.py",

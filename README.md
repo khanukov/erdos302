@@ -1,4 +1,4 @@
-# Two-sided progress on Erdős Problem 302
+# An improved upper bound for Erdős Problem 302
 
 <!-- release-state:start -->
 **Preliminary and unrefereed.** Version `0.3.0-preprint` is a candidate and is
@@ -17,13 +17,16 @@ is archived as [`10.5281/zenodo.22737316`](https://doi.org/10.5281/zenodo.227373
 
 ## Upper bound in the v0.3.0 candidate
 
-The [manuscript](upper-0830783022367/paper/Erdos302_0830783022367.pdf) and
-[verification supplement](upper-0830783022367/README.md) give a
+The [manuscript](upper-0830783022367/paper/Erdos302_0830783022367.pdf) gives a
 computer-assisted proof that
 
 $$
 \limsup_{N\to\infty}\frac{f_{302}(N)}{N} < 0.830783022367.
 $$
+
+The [English verification guide](docs/UPPER_0830783022367_VERIFICATION.md)
+explains how to check the arithmetic, replay the finite witnesses, and build
+the Lean project from the pinned checkout or the companion certificate ZIP.
 
 The [cold and exterior replay](https://github.com/khanukov/erdos302/actions/runs/44830958575) checked
 proof-source commit `4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae`. The cold run

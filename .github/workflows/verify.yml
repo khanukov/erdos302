@@ -459,7 +459,11 @@ jobs:
           python-version: "3.13"
       - name: Read release controls
         id: release
-        run: echo "version=$(cat release/PREPRINT_VERSION)" >>"${GITHUB_OUTPUT}"
+        run: |
+          set -euo pipefail
+          version=$(cat release/PREPRINT_VERSION)
+          bundle_kind=$(python3 -B -I -S scripts/build_preprint_release.py --bundle-kind)
+          printf 'version=%s\nbundle_kind=%s\n' "$version" "$bundle_kind" >>"${GITHUB_OUTPUT}"
       - name: Install manuscript and PDF inspection tools
         run: |
           sudo apt-get update
@@ -476,6 +480,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: "1"
           PREPRINT_VERSION: ${{ steps.release.outputs.version }}
+          PREPRINT_BUNDLE_KIND: ${{ steps.release.outputs.bundle_kind }}
         run: |
           package_dir="$(mktemp -d)"
           unzip -q "dist/preprint/erdos302-v${PREPRINT_VERSION}-release.zip" \
@@ -492,7 +497,7 @@ jobs:
             "${GITHUB_WORKSPACE}/dist/preprint/erdos302-v${PREPRINT_VERSION}-arxiv.tar.gz" \
             -C "${arxiv_dir}"
           arxiv_root=erdos302_two_sided
-          if [[ "$PREPRINT_VERSION" == 0.3.0-preprint ]]; then
+          if [[ "$PREPRINT_BUNDLE_KIND" == upper ]]; then
             arxiv_root=erdos302_upper
             cmp "${arxiv_root}.tex" "${arxiv_dir}/${arxiv_root}.tex"
             unzip -q "erdos302-v${PREPRINT_VERSION}-upper-certificate.zip" -d "$package_dir/certificate"
@@ -505,6 +510,9 @@ jobs:
             pdftotext "erdos302-v${PREPRINT_VERSION}.pdf" "$package_dir/candidate.txt"
             grep -Fq '0.830783022367' "$package_dir/candidate.txt"
             grep -Fq 'Preliminary and unrefereed' "$package_dir/candidate.txt"
+          elif [[ "$PREPRINT_BUNDLE_KIND" != legacy ]]; then
+            echo "unexpected preprint bundle kind: $PREPRINT_BUNDLE_KIND" >&2
+            exit 1
           fi
           latexmk -cd -pdf -interaction=nonstopmode -halt-on-error \
             -file-line-error "${arxiv_dir}/${arxiv_root}.tex"

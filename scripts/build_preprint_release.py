@@ -52,11 +52,23 @@ PREVIOUS_VERSION = "0.1.1-preprint"
 PREVIOUS_DOI = "10.5281/zenodo.21989077"
 PREVIOUS_TAG = "v0.1.1-corrected-preprint"
 
-UPPER_VERSION = "0.3.0-preprint"
+V020_DOI = "10.5281/zenodo.22737316"
+RELEASE_VERSION_PATTERN = re.compile(
+    r"(?P<base>(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2})-(?:dev|preprint)"
+)
 UPPER_ROOT = "upper-0830783022367"
 UPPER_TREE = "93bfe9cc08a135fa504d66f434a822d7dc0e8167"  # 4abf9b466:upper-0830783022367
 UPPER_DRAFT = f"{UPPER_ROOT}/paper/Erdos302_0830783022367.tex"
 UPPER_TEX = "erdos302_upper.tex"
+UPPER_GUIDE = "UPPER_VERIFICATION.md"
+UPPER_DRAFT_CITATION = rb"""\bibitem{Khanukov}
+D. Khanukov, \emph{Two-sided computer-assisted progress on Erd\H{o}s
+Problem 302}, preprint and computational materials, 2026.
+\url{https://doi.org/10.5281/zenodo.21966591}.
+"""
+UPPER_RELEASE_CITATION = UPPER_DRAFT_CITATION.replace(
+    b"preprint and computational materials, 2026.", b"version 0.2.0-preprint, 2026."
+).replace(HISTORICAL_DOI.encode("ascii"), V020_DOI.encode("ascii"))
 UPPER_DRAFT_DATE = (
     rb"\date{Preprint draft with verification supplement \enspace$\cdot$"
     rb"\enspace 20 November 2026}"
@@ -112,6 +124,17 @@ def manuscript_date_line() -> str:
     return f"\\date{{Version {VERSION}, {day.day} {MONTHS[day.month - 1]} {day.year}\\\\[0.5ex]"
 
 
+def release_version_base(version: str) -> str:
+    match = RELEASE_VERSION_PATTERN.fullmatch(version)
+    if match is None:
+        raise RuntimeError(f"invalid release/PREPRINT_VERSION: {version}")
+    return match.group("base")
+
+
+def uses_upper_bundle(version: str) -> bool:
+    return tuple(map(int, release_version_base(version).split("."))) >= (0, 3, 0)
+
+
 def render_upper_manuscript(original: bytes) -> bytes:
     lines = original.splitlines(keepends=True)
     if (lines.count(UPPER_DRAFT_DATE + b"\n") != 1
@@ -120,10 +143,13 @@ def render_upper_manuscript(original: bytes) -> bytes:
     if (original.count(UPPER_DRAFT_REPRODUCTION) != 1
             or lines.count(rb"\paragraph{Reproduction.}" + b"\n") != 1):
         raise RuntimeError("expected exactly one audited upper manuscript reproduction block")
+    if (original.count(UPPER_DRAFT_CITATION) != 1
+            or original.count(rb"\bibitem{Khanukov}") != 1):
+        raise RuntimeError("expected exactly one audited Khanukov bibliography entry")
     replacement = (manuscript_date_line() + "Preliminary and unrefereed}\n").encode("ascii")
     return original.replace(UPPER_DRAFT_DATE + b"\n", replacement, 1).replace(
         UPPER_DRAFT_REPRODUCTION, UPPER_RELEASE_REPRODUCTION, 1
-    )
+    ).replace(UPPER_DRAFT_CITATION, UPPER_RELEASE_CITATION, 1)
 
 
 def yaml_scalar(value: str) -> str:
@@ -197,13 +223,7 @@ def manuscript_url() -> str:
 
 
 def validate_release_metadata() -> None:
-    version_match = re.fullmatch(
-        r"(?P<base>[0-9]+\.[0-9]+\.[0-9]+)-(?:dev|preprint)",
-        VERSION,
-    )
-    if version_match is None:
-        raise RuntimeError(f"invalid release/PREPRINT_VERSION: {VERSION}")
-    version_base = version_match.group("base")
+    version_base = release_version_base(VERSION)
     if TAG != f"v{version_base}-corrected-preprint":
         raise RuntimeError(
             f"release tag must be v{version_base}-corrected-preprint, got {TAG}"
@@ -232,7 +252,7 @@ def validate_release_metadata() -> None:
         )
     if PREPRINT_DOI == CONCEPT_DOI:
         raise RuntimeError("version DOI and concept DOI must be distinct")
-    if PREPRINT_DOI in {HISTORICAL_DOI, PREVIOUS_DOI}:
+    if PREPRINT_DOI in {HISTORICAL_DOI, PREVIOUS_DOI, V020_DOI}:
         raise RuntimeError("an immutable prior-version DOI cannot identify this release")
     if VERSION.endswith("-dev"):
         if PUBLISH_READY != "false" or PREPRINT_DOI != DEVELOPMENT_DOI:
@@ -261,7 +281,7 @@ def validate_release_metadata() -> None:
     readme_state_lower = readme_state.lower()
     if VERSION not in readme_state:
         raise RuntimeError("README release-state block does not name PREPRINT_VERSION")
-    if VERSION == UPPER_VERSION:
+    if uses_upper_bundle(VERSION):
         render_upper_manuscript((REPOSITORY_ROOT / UPPER_DRAFT).read_bytes())
     elif manuscript_date_line() not in (PAPER_ROOT / "erdos302_two_sided.tex").read_text(
         encoding="utf-8"
@@ -345,7 +365,7 @@ def validate_release_metadata() -> None:
     else:
         review_disclaimers = (
             ("not independently peer reviewed", "not independently verified by human reviewers")
-            if VERSION == UPPER_VERSION else ("not independently verified",)
+            if uses_upper_bundle(VERSION) else ("not independently verified",)
         )
 
         def has_disclaimers(text: str) -> bool:
@@ -741,7 +761,7 @@ def build_assets(
     output: Path, work: Path, commit: str, tree: str, commit_date: str,
     ci_run_url: str, transcript: list[str],
 ) -> None:
-    upper = VERSION == UPPER_VERSION
+    upper = uses_upper_bundle(VERSION)
     certificate = work / f"erdos302-v{VERSION}-upper-certificate.zip"
     if upper:
         source, manuscript, pages = build_upper_manuscript(commit, work, transcript)
@@ -843,6 +863,7 @@ def build_assets(
         if upper:
             assets.append(copy_asset(source, staging, UPPER_TEX))
             assets.append(copy_asset(certificate, staging, certificate.name))
+            assets.append(copy_asset(REPOSITORY_ROOT / "docs/UPPER_0830783022367_VERIFICATION.md", staging, UPPER_GUIDE))
 
         commit_file = staging / "COMMIT_SHA.txt"
         commit_file.write_text(
@@ -867,7 +888,8 @@ def build_assets(
                     f"\n## Package roles\n\n"
                     f"The primary manuscript source is `{UPPER_TEX}`; it is also the arXiv entry point. "
                     f"`{certificate.name}` contains the pinned upper-bound certificate and its "
-                    "historical verification records. The retained `erdos302_two_sided.tex`, "
+                    f"historical verification records. `{UPPER_GUIDE}` is the English guide. "
+                    "The retained `erdos302_two_sided.tex`, "
                     "`references.bib`, and flat verification scripts/data are legacy baseline "
                     "materials, not inputs to the new upper-bound proof.\n"
                 )
@@ -908,7 +930,12 @@ def build_assets(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument(
+        "--bundle-kind", action="store_true",
+        help="print the configured package kind (upper or legacy), then exit",
+    )
+    modes.add_argument(
         "--check-controls-only",
         action="store_true",
         help="validate release controls and their CITATION.cff semantics, then exit",
@@ -920,6 +947,9 @@ def main() -> None:
         help="new output directory (must not already exist)",
     )
     arguments = parser.parse_args()
+    if arguments.bundle_kind:
+        print("upper" if uses_upper_bundle(VERSION) else "legacy")
+        return
     if arguments.check_controls_only:
         validate_release_metadata()
         print(

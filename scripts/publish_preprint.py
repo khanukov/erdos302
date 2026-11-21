@@ -243,7 +243,7 @@ def validate_verify_run_data(data: object, run_id: str, expected_sha: str) -> No
         )
 
 
-def validate_v030_verify_jobs(data: object, run_id: str) -> None:
+def validate_upper_verify_jobs(data: object, run_id: str) -> None:
     if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
         raise PublicationError(f"Verify run {run_id} jobs response is malformed")
     for name in ("upper-0830783022367-cold", "preprint-bundle"):
@@ -434,8 +434,8 @@ class Publisher:
             f"Verify run {run_id}",
         )
         validate_verify_run_data(data, run_id, expected_sha)
-        if self.controls.version == "0.3.0-preprint":
-            validate_v030_verify_jobs(self.run_jobs(run_id, f"Verify run {run_id}"), run_id)
+        if release_builder.uses_upper_bundle(self.controls.version):
+            validate_upper_verify_jobs(self.run_jobs(run_id, f"Verify run {run_id}"), run_id)
 
     def validate_integration_run(self, run_id: str, expected_sha: str) -> None:
         data = self.gh_json(
@@ -519,7 +519,7 @@ class Publisher:
         return state
 
     def expected_release_title(self) -> str:
-        if self.controls.version == "0.3.0-preprint":
+        if release_builder.uses_upper_bundle(self.controls.version):
             return "An upper density bound for sets avoiding reciprocal triples"
         return f"Erdos 302 corrected preprint {self.controls.version}"
 
@@ -548,7 +548,10 @@ class Publisher:
                 f"draft={str(expected_draft).lower()}, prerelease=true state"
             )
 
-        if self.controls.version == "0.3.0-preprint" and state.get("name") != self.expected_release_title():
+        if (
+            release_builder.uses_upper_bundle(self.controls.version)
+            and state.get("name") != self.expected_release_title()
+        ):
             raise PublicationError(f"release {self.controls.tag} has an unexpected title")
 
         with tempfile.TemporaryDirectory(
@@ -685,7 +688,7 @@ class Publisher:
         return len(matches)
 
     def require_candidate_assets(self, entries: Mapping[str, str]) -> None:
-        if self.controls.version != "0.3.0-preprint":
+        if not release_builder.uses_upper_bundle(self.controls.version):
             return
         prefix = f"erdos302-v{self.controls.version}"
         required_assets = {
@@ -694,6 +697,7 @@ class Publisher:
             f"{prefix}-release.zip",
             f"{prefix}-arxiv.tar.gz",
             release_builder.UPPER_TEX,
+            release_builder.UPPER_GUIDE,
         }
         missing = sorted(required_assets - entries.keys())
         if missing:
@@ -721,7 +725,7 @@ class Publisher:
             f"CI run: {ci_url}",
         ):
             require_exact_line(verification, line)
-        if self.controls.version == "0.3.0-preprint":
+        if release_builder.uses_upper_bundle(self.controls.version):
             tree = read_unique_prefixed_line(commit_file, "tree ")
             if SHA_PATTERN.fullmatch(tree) is None:
                 raise PublicationError("candidate COMMIT_SHA.txt has malformed tree data")
