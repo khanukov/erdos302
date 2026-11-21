@@ -1,0 +1,91 @@
+warning: manifest out of date: source kind (git/path) of dependency 'mathlib' changed; use `lake update mathlib` to update it
+ℹ [975/1048] Replayed Erdos302.Exterior
+info: Erdos302/Exterior.lean:101:0: 'UnitFractions302.Exterior.lift_isolated' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Erdos302/Exterior.lean:102:0: 'UnitFractions302.Exterior.midpoint_edge' depends on axioms: [propext]
+info: Erdos302/Exterior.lean:103:0: 'UnitFractions302.Exterior.difference_edge' depends on axioms: [propext]
+⚠ [1367/1389] Replayed Formal302.Ledger.Mixed00
+warning: Formal302/Ledger/Mixed00.lean:81:131: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1368/1389] Replayed Formal302.Ledger.Mixed01
+warning: Formal302/Ledger/Mixed01.lean:89:131: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1369/1389] Replayed Formal302.Ledger.Mixed02
+warning: Formal302/Ledger/Mixed02.lean:241:137: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1370/1389] Replayed Formal302.Ledger.Mixed03
+warning: Formal302/Ledger/Mixed03.lean:588:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1371/1389] Replayed Formal302.Ledger.Mixed04
+warning: Formal302/Ledger/Mixed04.lean:808:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1372/1389] Replayed Formal302.Ledger.Mixed05
+warning: Formal302/Ledger/Mixed05.lean:908:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1373/1389] Replayed Formal302.Ledger.Mixed06
+warning: Formal302/Ledger/Mixed06.lean:1088:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1374/1389] Replayed Formal302.Ledger.Mixed07
+warning: Formal302/Ledger/Mixed07.lean:1291:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1375/1389] Replayed Formal302.Ledger.Mixed08
+warning: Formal302/Ledger/Mixed08.lean:1526:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1376/1389] Replayed Formal302.Ledger.Mixed09
+warning: Formal302/Ledger/Mixed09.lean:1662:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1377/1389] Replayed Formal302.Ledger.Mixed10
+warning: Formal302/Ledger/Mixed10.lean:1787:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1378/1389] Replayed Formal302.Ledger.Mixed11
+warning: Formal302/Ledger/Mixed11.lean:1839:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1379/1389] Replayed Formal302.Ledger.Mixed12
+warning: Formal302/Ledger/Mixed12.lean:1933:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1380/1389] Replayed Formal302.Ledger.Mixed13
+warning: Formal302/Ledger/Mixed13.lean:2141:141: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+⚠ [1381/1389] Replayed Formal302.Ledger.Mixed14
+warning: Formal302/Ledger/Mixed14.lean:1924:130: Unused tactic linter: `decide +kernel` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+✔ [1382/1389] Built Formal302.Ledger.Credits (427ms)
+ℹ [1383/1389] Built Formal302.FrozenArithmetic (981ms)
+info: Formal302/FrozenArithmetic.lean:26:0: 'Formal302.FrozenArithmetic.mixedTable_checked' depends on axioms: [propext]
+✔ [1384/1389] Built Formal302.Arithmetic (5.9s)
+✔ [1385/1389] Built Formal302.Bound (2.4s)
+✔ [1386/1389] Built Formal302.Grouping (1.9s)
+⚠ [1387/1389] Built Formal302.Ledger.Core (15s)
+warning: Formal302/Ledger/Core.lean:693:42: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+ℹ [1388/1389] Built Formal302 (1.8s)
+info: Formal302.lean:9:0: 'Formal302.upper_0830783022367_of_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:10:0: 'Formal302.ranks_via_seed_replay' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:11:0: 'Formal302.recover_vertex' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:12:0: 'Formal302.floorWindow_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:13:0: 'Formal302.FrozenExterior.scales_checked' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:14:0: 'Formal302.FrozenExterior.label_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:15:0: 'Formal302.FrozenArithmetic.interiorTable_checked' depends on axioms: [propext, Quot.sound]
+info: Formal302.lean:16:0: 'Formal302.FrozenArithmetic.densityTable_checked' depends on axioms: [propext]
+info: Formal302.lean:17:0: 'Formal302.FrozenArithmetic.pureTable_checked' depends on axioms: [propext]
+info: Formal302.lean:18:0: 'Formal302.FrozenArithmetic.mixedScales_match' does not depend on any axioms
+info: Formal302.lean:19:0: 'Formal302.readCells_sound' depends on axioms: [propext, Quot.sound]
+info: Formal302.lean:20:0: 'Formal302.full_target_arithmetic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:21:0: 'Formal302.full_exact_value' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Formal302.lean:22:0: 'Formal302.group_tiers' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (1389 jobs).

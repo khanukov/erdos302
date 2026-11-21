@@ -190,9 +190,22 @@ jobs:
           use-mathlib-cache: false
       - name: Reproduce dependency lockfile
         run: |
+          set -euo pipefail
           cd lower-lean
+          # The pinned commit is fetchable by SHA but a normal fork clone need
+          # not fetch it. Seed the exact Git object without changing the lock.
+          mathlib=.lake/packages/mathlib
+          revision=da1f94df976c7cd38117281c57d6ee3046c8d104
+          mkdir -p .lake/packages
+          test ! -e "$mathlib"
+          git init -q "$mathlib"
+          git -C "$mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$mathlib" fetch --depth=1 origin "$revision"
+          test "$(git -C "$mathlib" rev-parse FETCH_HEAD)" = "$revision"
+          git -C "$mathlib" checkout --detach "$revision"
           MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
           git diff --exit-code -- lake-manifest.json
+          test "$(git -C "$mathlib" rev-parse HEAD)" = "$revision"
       - name: Reject proof escapes
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -395,6 +408,94 @@ jobs:
         run: cd paper/limit-density && sha256sum -c MANIFEST.sha256
       - run: test -z "$(git status --porcelain)"
 
+  upper-0830783022367-cold:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 345
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: upper-0830783022367
+      - name: Regenerate and check the upper certificate
+        working-directory: upper-0830783022367
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/upper-0830783022367-logs"
+          mkdir -p "$evidence"
+          git rev-parse HEAD | tee "$evidence/checkout.txt"
+          xz -dk certificate/shortlist.bin.xz
+          sha256sum -c SHA256SUMS | tee "$evidence/inputs.log"
+          /usr/bin/time -v python3 -BuO certificate/verify.py --full "$RUNNER_TEMP/upper-rebuild" \
+            2>&1 | tee "$evidence/cold.log"
+          printf '%s  %s\n' 3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5 \
+            "$RUNNER_TEMP/upper-rebuild/interior/mass.cells" | sha256sum -c | tee "$evidence/cells.log"
+          git diff --exit-code HEAD -- .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: upper-0830783022367-cold-logs
+          path: ${{ runner.temp }}/upper-0830783022367-logs/
+          if-no-files-found: error
+
+  upper-0830783022367-lean:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: upper-0830783022367/lean
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          sparse-checkout: upper-0830783022367
+      - uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1
+        with:
+          lake-package-directory: upper-0830783022367/lean
+          build: false
+          test: false
+          lint: false
+          use-github-cache: false
+          use-mathlib-cache: false
+      - name: Build with the pinned Lean toolchain and Mathlib manifest
+        env:
+          LEAN_NUM_THREADS: '2'
+        run: |
+          set -euo pipefail
+          logs="$RUNNER_TEMP/upper-lean-evidence"
+          mkdir -p "$logs"
+          git rev-parse HEAD | tee "$logs/checkout.txt"
+          cat lean-toolchain | tee "$logs/toolchain.txt"
+          lake exe cache get 2>&1 | tee "$logs/cache.log"
+          test "$(git -C .lake/packages/mathlib rev-parse HEAD)" = 809072a6d0abd09be38833bf6d321f9837f23892
+          git diff --exit-code HEAD -- lake-manifest.json lean-toolchain
+          lake build 2>&1 | tee "$logs/build.log"
+          git diff --exit-code HEAD -- .
+      - name: Verify the endpoint's freshly printed axioms
+        run: |
+          set -euo pipefail
+          logs="$RUNNER_TEMP/upper-lean-evidence"
+          lake env lean Formal302.lean 2>&1 | tee "$logs/axioms.log"
+          actual=$(grep -oE "'Formal302\.upper_0830783022367_of_certificate' depends on axioms: .*$" "$logs/axioms.log")
+          test "$actual" = "'Formal302.upper_0830783022367_of_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]"
+      - name: Hash and replay the 3,094,631 correction cells
+        run: |
+          set -euo pipefail
+          logs="$RUNNER_TEMP/upper-lean-evidence"
+          cells="$RUNNER_TEMP/upper-lean-mass.cells"
+          xz -dc ../checks/mass.cells.xz > "$cells"
+          printf '%s  %s\n' 3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5 \
+            "$cells" | sha256sum -c | tee "$logs/cells-sha256.log"
+          lake env lean --run Replay302Cells.lean "$cells" ../certificate/mass.tsv 2>&1 | tee "$logs/replay.log"
+          grep -Fx "ACCEPTED: 3094631 positive correction rectangles in 249 nonempty layers." "$logs/replay.log"
+          grep -Fx "Lean's executable checker matched the stored exact mass table." "$logs/replay.log"
+          git diff --exit-code HEAD -- ..
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: upper-0830783022367-lean-evidence
+          path: ${{ runner.temp }}/upper-lean-evidence/
+          if-no-files-found: error
+
   preprint-bundle:
     # PR bundles are development evidence; non-PR bundles include fresh replay.
     needs:
@@ -407,6 +508,8 @@ jobs:
       - milp-crosscheck
       - lower-lean
       - paper
+      - upper-0830783022367-cold
+      - upper-0830783022367-lean
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -416,21 +519,28 @@ jobs:
           python-version: "3.13"
       - name: Read release controls
         id: release
-        run: echo "version=$(cat release/PREPRINT_VERSION)" >>"${GITHUB_OUTPUT}"
+        run: |
+          set -euo pipefail
+          version=$(cat release/PREPRINT_VERSION)
+          bundle_kind=$(python3 -B -I -S scripts/build_preprint_release.py --bundle-kind)
+          printf 'version=%s\nbundle_kind=%s\n' "$version" "$bundle_kind" >>"${GITHUB_OUTPUT}"
       - name: Install manuscript and PDF inspection tools
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             latexmk poppler-utils unzip texlive-latex-base \
-            texlive-latex-recommended texlive-fonts-recommended
-      - name: Build exact priority-preprint candidate
+            texlive-latex-recommended texlive-fonts-recommended lmodern xz-utils
+      - name: Build exact preprint candidate
         env:
           PYTHONDONTWRITEBYTECODE: "1"
         run: python3 -I -S scripts/build_preprint_release.py --output dist/preprint
+      - name: Check release assembly in optimized mode
+        run: python3 -I -S -B -O scripts/test_preprint_v030_bundle.py
       - name: Test packaged standalone and arXiv sources
         env:
           PYTHONDONTWRITEBYTECODE: "1"
           PREPRINT_VERSION: ${{ steps.release.outputs.version }}
+          PREPRINT_BUNDLE_KIND: ${{ steps.release.outputs.bundle_kind }}
         run: |
           package_dir="$(mktemp -d)"
           unzip -q "dist/preprint/erdos302-v${PREPRINT_VERSION}-release.zip" \
@@ -446,11 +556,29 @@ jobs:
           tar -xzf \
             "${GITHUB_WORKSPACE}/dist/preprint/erdos302-v${PREPRINT_VERSION}-arxiv.tar.gz" \
             -C "${arxiv_dir}"
+          arxiv_root=erdos302_two_sided
+          if [[ "$PREPRINT_BUNDLE_KIND" == upper ]]; then
+            arxiv_root=erdos302_upper
+            cmp "${arxiv_root}.tex" "${arxiv_dir}/${arxiv_root}.tex"
+            unzip -q "erdos302-v${PREPRINT_VERSION}-upper-certificate.zip" -d "$package_dir/certificate"
+            (
+              cd "$package_dir/certificate/upper-0830783022367"
+              xz -dk certificate/shortlist.bin.xz
+              sha256sum -c SHA256SUMS
+              python3 -BuO certificate/verify.py
+            )
+            pdftotext "erdos302-v${PREPRINT_VERSION}.pdf" "$package_dir/candidate.txt"
+            grep -Fq '0.830783022367' "$package_dir/candidate.txt"
+            grep -Fq 'Preliminary and unrefereed' "$package_dir/candidate.txt"
+          elif [[ "$PREPRINT_BUNDLE_KIND" != legacy ]]; then
+            echo "unexpected preprint bundle kind: $PREPRINT_BUNDLE_KIND" >&2
+            exit 1
+          fi
           latexmk -cd -pdf -interaction=nonstopmode -halt-on-error \
-            -file-line-error "${arxiv_dir}/erdos302_two_sided.tex"
+            -file-line-error "${arxiv_dir}/${arxiv_root}.tex"
           ! grep -Eq \
             'LaTeX Warning: (Citation|Reference).+undefined|There were undefined (references|citations)|Overfull \\hbox' \
-            "${arxiv_dir}/erdos302_two_sided.log"
+            "${arxiv_dir}/${arxiv_root}.log"
       - name: Verify release asset hashes
         run: |
           cd dist/preprint

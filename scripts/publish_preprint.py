@@ -243,6 +243,16 @@ def validate_verify_run_data(data: object, run_id: str, expected_sha: str) -> No
         )
 
 
+def validate_upper_verify_jobs(data: object, run_id: str) -> None:
+    if not isinstance(data, dict) or not isinstance(data.get("jobs"), list):
+        raise PublicationError(f"Verify run {run_id} jobs response is malformed")
+    for name in ("upper-0830783022367-cold", "upper-0830783022367-lean", "preprint-bundle"):
+        matches = [job for job in data["jobs"] if isinstance(job, dict) and job.get("name") == name]
+        if (len(matches) != 1 or matches[0].get("status") != "completed"
+                or matches[0].get("conclusion") != "success"):
+            raise PublicationError(f"Verify run {run_id} lacks exactly one successful {name} job")
+
+
 def validate_integration_run_data(data: object, run_id: str, expected_sha: str) -> None:
     if not isinstance(data, dict):
         raise PublicationError(
@@ -424,6 +434,8 @@ class Publisher:
             f"Verify run {run_id}",
         )
         validate_verify_run_data(data, run_id, expected_sha)
+        if release_builder.uses_upper_bundle(self.controls.version):
+            validate_upper_verify_jobs(self.run_jobs(run_id, f"Verify run {run_id}"), run_id)
 
     def validate_integration_run(self, run_id: str, expected_sha: str) -> None:
         data = self.gh_json(
@@ -498,13 +510,29 @@ class Publisher:
                 "--repo",
                 self.context.repository,
                 "--json",
-                "isDraft,isPrerelease,tagName",
+                "isDraft,isPrerelease,tagName,name",
             ],
             f"release {self.controls.tag}",
         )
         if not isinstance(state, dict):
             raise PublicationError("release view response is not an object")
         return state
+
+    def expected_release_title(self) -> str:
+        if release_builder.uses_upper_bundle(self.controls.version):
+            return "An upper density bound for sets avoiding reciprocal triples"
+        return f"Erdos 302 corrected preprint {self.controls.version}"
+
+    def require_commit_tree(self, commit: str, expected_tree: str, evidence: str) -> None:
+        commit_data = self.gh_json(
+            ["api", f"/repos/{self.context.repository}/git/commits/{commit}"],
+            f"commit {commit}",
+        )
+        if not isinstance(commit_data, dict):
+            raise PublicationError("commit API response is not an object")
+        tree_data = commit_data.get("tree")
+        if not isinstance(tree_data, dict) or tree_data.get("sha") != expected_tree:
+            raise PublicationError(f"{evidence} tree does not match its recorded commit")
 
     def validate_release(
         self, expected_draft: bool, expected_manifest: Path | None = None
@@ -519,6 +547,12 @@ class Publisher:
                 f"release {self.controls.tag} does not have expected "
                 f"draft={str(expected_draft).lower()}, prerelease=true state"
             )
+
+        if (
+            release_builder.uses_upper_bundle(self.controls.version)
+            and state.get("name") != self.expected_release_title()
+        ):
+            raise PublicationError(f"release {self.controls.tag} has an unexpected title")
 
         with tempfile.TemporaryDirectory(
             prefix="published-preprint-", dir=self.context.runner_temp
@@ -535,7 +569,9 @@ class Publisher:
                     str(published_dir),
                 ]
             )
-            validate_asset_directory(published_dir)
+            entries = validate_asset_directory(published_dir)
+            if expected_draft:
+                self.require_candidate_assets(entries)
             commit_file = published_dir / "COMMIT_SHA.txt"
             published_sha = read_unique_prefixed_line(commit_file, "commit ")
             published_tree = read_unique_prefixed_line(commit_file, "tree ")
@@ -546,18 +582,7 @@ class Publisher:
                 raise PublicationError("release COMMIT_SHA.txt has malformed commit/tree data")
             if self.tag_target() != published_sha:
                 raise PublicationError("release tag does not resolve to its recorded commit")
-            commit_data = self.gh_json(
-                [
-                    "api",
-                    f"/repos/{self.context.repository}/git/commits/{published_sha}",
-                ],
-                f"commit {published_sha}",
-            )
-            if not isinstance(commit_data, dict):
-                raise PublicationError("commit API response is not an object")
-            tree_data = commit_data.get("tree")
-            if not isinstance(tree_data, dict) or tree_data.get("sha") != published_tree:
-                raise PublicationError("release tree does not match its recorded commit")
+            self.require_commit_tree(published_sha, published_tree, "release")
 
             run_prefix = f"https://github.com/{self.context.repository}/actions/runs/"
             if not published_ci.startswith(run_prefix):
@@ -662,8 +687,24 @@ class Publisher:
         ]
         return len(matches)
 
+    def require_candidate_assets(self, entries: Mapping[str, str]) -> None:
+        if not release_builder.uses_upper_bundle(self.controls.version):
+            return
+        prefix = f"erdos302-v{self.controls.version}"
+        required_assets = {
+            f"{prefix}-upper-certificate.zip",
+            f"{prefix}.pdf",
+            f"{prefix}-release.zip",
+            f"{prefix}-arxiv.tar.gz",
+            release_builder.UPPER_TEX,
+            release_builder.UPPER_GUIDE,
+        }
+        missing = sorted(required_assets - entries.keys())
+        if missing:
+            raise PublicationError(f"candidate is missing required release assets: {missing}")
+
     def validate_candidate_evidence(self, assets_dir: Path) -> None:
-        validate_asset_directory(assets_dir)
+        self.require_candidate_assets(validate_asset_directory(assets_dir))
         ci_url = (
             f"https://github.com/{self.context.repository}/actions/runs/"
             f"{self.context.source_run_id}"
@@ -684,6 +725,11 @@ class Publisher:
             f"CI run: {ci_url}",
         ):
             require_exact_line(verification, line)
+        if release_builder.uses_upper_bundle(self.controls.version):
+            tree = read_unique_prefixed_line(commit_file, "tree ")
+            if SHA_PATTERN.fullmatch(tree) is None:
+                raise PublicationError("candidate COMMIT_SHA.txt has malformed tree data")
+            self.require_commit_tree(self.context.verified_sha, tree, "candidate")
 
     def publish(self) -> None:
         match_count = self.release_count()
@@ -778,6 +824,7 @@ class Publisher:
             )
             if not assets:
                 raise PublicationError("refusing to create a release without assets")
+
             self.gh(
                 [
                     "release",
@@ -790,7 +837,7 @@ class Publisher:
                     "--draft",
                     "--prerelease",
                     "--title",
-                    f"Erdos 302 corrected preprint {self.controls.version}",
+                    self.expected_release_title(),
                     "--notes-file",
                     str(assets_dir / "RELEASE_NOTES.md"),
                 ]

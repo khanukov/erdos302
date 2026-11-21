@@ -1,0 +1,38 @@
+{
+  "problem": 302,
+  "certificate_check": "C++17 and Python integers",
+  "prime_cutoff": 5003,
+  "prime_landmarks": 225,
+  "integration_cutoff": 63000000,
+  "last_new_witness": {
+    "maximum_denominator": 46000000,
+    "accepted_weighted_rows": 10801723
+  },
+  "weighted_groups": [
+    44830237,
+    24852863,
+    9379833,
+    10801723
+  ],
+  "interior_cells_checked_by_independent_integer_summation": {
+    "extended_final": 3094631,
+    "light_extended": 3096003
+  },
+  "explicit_shortlist": {
+    "rows": 1400000,
+    "first_reported_sub_0_8309_prefix": 1001000,
+    "max_prime": 47317,
+    "all_saved_prefix_credits_independently_matched": true
+  },
+  "exterior": {
+    "unit_rows_through_100000": 54661612,
+    "all_rows_through_160000": 124652035,
+    "with_one_internal_prime": 9581720
+  },
+  "regenerated_parent": {
+    "status": "ACCEPTED",
+    "cells_sha256": "845093792e6ff6d39907ece5a6bdc2b48ad7499b99a84aaac7daa7c887903d11"
+  },
+  "old_large_group_seed_sha256": "20f587c426e8323177d9f38363cdd718d2ee31781520b09114a66aa1817cea4c",
+  "lean_status": "No end-to-end Lean verification for these constants."
+}

@@ -1,0 +1,4 @@
+3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5  cached-inside/mass.cells
+3b39b4dd9b82894d34181dac7fec5d85725708ba7a2d7113a0a499e7541d7ad5  lean-replay-mass.cells
+c04d23b2b97269e2e5580126182ddb8924efb14e94f23cd39eb9b9e2ac22aabb  mass.cells.xz
+ACCEPTED: C++ reconstruction and the decompressed archive cell stream are byte-identical.

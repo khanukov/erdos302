@@ -8,7 +8,8 @@ The repository uses two licenses with deliberately separate scopes:
   certificates, repository documentation outside `paper/`, and other
   original repository material are licensed under the
   [MIT License](LICENSE).
-- Original manuscript material under `paper/` is licensed under
+- Original manuscript material under `paper/` and
+  `upper-0830783022367/paper/` is licensed under
   [Creative Commons Attribution 4.0 International](paper/LICENSE).
 
 The same path-specific split applies inside release ZIP files, source

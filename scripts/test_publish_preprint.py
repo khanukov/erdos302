@@ -10,6 +10,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -35,6 +36,26 @@ FINAL_CONTROLS = publisher.ReleaseControls(
     publish_ready="true",
     preprint_doi="10.5281/zenodo.99999999",
     concept_doi="10.5281/zenodo.21966590",
+)
+
+
+V030_CONTROLS = publisher.ReleaseControls(
+    version="0.3.0-preprint",
+    tag="v0.3.0-corrected-preprint",
+    publish_ready="true",
+    preprint_doi="ZENODO_AUTO",
+    concept_doi="10.5281/zenodo.21966590",
+)
+LATER_UPPER_CONTROLS = replace(
+    V030_CONTROLS, version="0.3.1-preprint", tag="v0.3.1-corrected-preprint"
+)
+V030_ASSETS = (
+    "erdos302-v0.3.0-preprint-upper-certificate.zip",
+    "erdos302-v0.3.0-preprint.pdf",
+    "erdos302-v0.3.0-preprint-release.zip",
+    "erdos302-v0.3.0-preprint-arxiv.tar.gz",
+    "erdos302_upper.tex",
+    "UPPER_VERIFICATION.md",
 )
 
 
@@ -197,6 +218,13 @@ class GateTests(unittest.TestCase):
 
 
 class WorkflowGateTests(unittest.TestCase):
+    def test_packaged_upper_smoke_uses_builder_bundle_kind(self) -> None:
+        workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/verify.yml").read_text()
+        self.assertIn("scripts/build_preprint_release.py --bundle-kind", workflow)
+        self.assertIn("PREPRINT_BUNDLE_KIND: ${{ steps.release.outputs.bundle_kind }}", workflow)
+        self.assertIn('if [[ "$PREPRINT_BUNDLE_KIND" == upper ]]; then', workflow)
+        self.assertNotIn('"$PREPRINT_VERSION" == 0.3.0-preprint', workflow)
+
     def test_publisher_is_triggered_by_exact_integration_completion(self) -> None:
         workflow = (
             Path(__file__).resolve().parents[1]
@@ -243,9 +271,31 @@ class WorkflowGateTests(unittest.TestCase):
 
 
 
+class UpperCertificateGateTests(unittest.TestCase):
+    def test_requires_all_three_successful_jobs_exactly_once(self) -> None:
+        cold = {"name": "upper-0830783022367-cold", "status": "completed", "conclusion": "success"}
+        lean = {**cold, "name": "upper-0830783022367-lean"}
+        bundle = {"name": "preprint-bundle", "status": "completed", "conclusion": "success"}
+        publisher.validate_upper_verify_jobs({"jobs": [cold, lean, bundle]}, "123")
+        for jobs in ([lean, bundle], [cold, lean], [cold, bundle], [cold, lean, lean, bundle],
+                     [cold, {**lean, "conclusion": "skipped"}, bundle],
+                     [cold, {**lean, "status": "in_progress"}, bundle], [cold, None, bundle]):
+            with self.subTest(jobs=jobs), self.assertRaises(publisher.PublicationError):
+                publisher.validate_upper_verify_jobs({"jobs": jobs}, "123")
+
+
 class ProvenanceMessagingTests(unittest.TestCase):
     def test_open_gate_surface_uses_the_actual_publication_day(self) -> None:
         root = Path(__file__).resolve().parents[1]
+        version = (root / "release" / "PREPRINT_VERSION").read_text(encoding="utf-8").rstrip("\n")
+        if publisher.release_builder.uses_upper_bundle(version):
+            ready = (root / "release" / "PUBLISH_READY").read_text(encoding="utf-8")
+            self.assertIn(ready, {"false\n", "true\n"})
+            self.assertEqual(
+                (root / "release" / "PREPRINT_TAG").read_text(encoding="utf-8"),
+                f"v{publisher.release_builder.release_version_base(version)}-corrected-preprint\n",
+            )
+            return  # The release builder cross-checks the current controls and metadata.
         self.assertEqual(
             (root / "release" / "PUBLISH_READY").read_text(encoding="utf-8"),
             "true\n",
@@ -310,7 +360,11 @@ class ProvenanceMessagingTests(unittest.TestCase):
             root / "release" / "ARXIV_METADATA.template.md",
         ]
         texts = {path: path.read_text(encoding="utf-8") for path in paths}
-        for path, text in texts.items():
+        version = (root / "release" / "PREPRINT_VERSION").read_text(encoding="utf-8").rstrip("\n")
+        upper_bundle = publisher.release_builder.uses_upper_bundle(version)
+        lower_paths = paths[:1] + paths[2:3] if upper_bundle else paths
+        for path in lower_paths:
+            text = texts[path]
             normalized = " ".join(text.split())
             with self.subTest(path=path.name):
                 self.assertIn("Della Pietra", text)
@@ -369,21 +423,23 @@ class ProvenanceMessagingTests(unittest.TestCase):
         self.assertNotIn("Assume", theorem)
 
         arxiv_metadata = texts[root / "release" / "ARXIV_METADATA.template.md"]
-        self.assertIn(
-            "The upper finite certificate is independently cross-checked by a dependency-free exact verifier.",
-            arxiv_metadata,
-        )
-        self.assertIn(
-            "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
-            arxiv_metadata,
-        )
+        if not upper_bundle:
+            self.assertIn(
+                "The upper finite certificate is independently cross-checked by a dependency-free exact verifier.",
+                arxiv_metadata,
+            )
+            self.assertIn(
+                "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
+                arxiv_metadata,
+            )
         self.assertNotIn("new odd-quarter padding lemma", arxiv_metadata)
 
         cff = texts[root / "CITATION.cff"]
-        self.assertIn(
-            "The upper finite certificate is independently cross-checked by exact dependency-free software.",
-            " ".join(cff.split()),
-        )
+        if not upper_bundle:
+            self.assertIn(
+                "The upper finite certificate is independently cross-checked by exact dependency-free software.",
+                " ".join(cff.split()),
+            )
         lower_provenance = (root / "docs" / "LOWER_BOUND_PROVENANCE.md").read_text(
             encoding="utf-8"
         )
@@ -397,15 +453,24 @@ class ProvenanceMessagingTests(unittest.TestCase):
         normalized_post_release = " ".join(
             post_release.replace("\n> ", " ").split()
         )
-        self.assertIn(
-            "The upper finite certificate is cross-checked by exact software.",
-            normalized_post_release,
-        )
-        self.assertIn(
-            "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
-            normalized_post_release,
-        )
+        if not upper_bundle:
+            self.assertIn(
+                "The upper finite certificate is cross-checked by exact software.",
+                normalized_post_release,
+            )
+            self.assertIn(
+                "The finite semantics, exact packing certificates, omission argument, and upper asymptotic endpoint are checked end to end in Lean 4.",
+                normalized_post_release,
+            )
         self.assertNotIn("end-to-end Lean-checked upper and lower bounds", post_release)
+
+        if upper_bundle:
+            for name in ("CITATION.cff", "README.md", "release/ANNOUNCEMENT.md", "release/RELEASE_NOTES.template.md", "release/ARXIV_METADATA.template.md"):
+                with self.subTest(upper_surface=name):
+                    text = " ".join((root / name).read_text(encoding="utf-8").lower().split())
+                    self.assertIn("0.830783022367", text)
+                    self.assertIn("unrefereed", text)
+                    self.assertNotIn("endpoint are checked end to end in lean 4", text)
 
         ownership_surface = {
             **texts,
@@ -684,6 +749,28 @@ class FakeRunner:
 
 
 class RunJobsPaginationTests(unittest.TestCase):
+    def test_later_upper_release_requires_cold_lean_and_bundle_jobs(self) -> None:
+        run = {"name": "Verify", "path": ".github/workflows/verify.yml",
+               "conclusion": "success", "event": "push", "head_branch": "main",
+               "head_sha": "a" * 40}
+        cold = {"id": 1, "name": "upper-0830783022367-cold", "status": "completed",
+                "conclusion": "success"}
+        bundle = {**cold, "id": 2, "name": "preprint-bundle"}
+        lean = {**cold, "id": 3, "name": "upper-0830783022367-lean"}
+        for jobs, missing in (([lean, bundle], cold["name"]), ([cold, lean], bundle["name"]),
+                              ([cold, bundle], lean["name"]), ([cold, lean, bundle], None)):
+            with self.subTest(missing=missing):
+                runner = FakeRunner([json.dumps(run),
+                                     json.dumps({"total_count": len(jobs), "jobs": jobs})])
+                instance = self.instance(runner)
+                instance.controls = LATER_UPPER_CONTROLS
+                if missing is None:
+                    instance.validate_verify_run("123", "a" * 40)
+                    self.assertEqual(len(runner.commands), 2)
+                else:
+                    with self.assertRaisesRegex(publisher.PublicationError, missing):
+                        instance.validate_verify_run("123", "a" * 40)
+
     def instance(self, runner: FakeRunner) -> publisher.Publisher:
         context = publisher.PublicationContext(
             repository="owner/repository",
@@ -857,14 +944,17 @@ class NewReleasePublisher(publisher.Publisher):
         context: publisher.PublicationContext,
         events: list[str],
         publication_day: str = publisher.release_builder.RELEASE_DATE,
+        *,
+        controls=FINAL_CONTROLS,
     ) -> None:
         super().__init__(
-            FINAL_CONTROLS,
+            controls,
             context,
             runner=OrchestrationRunner(events),  # type: ignore[arg-type]
             utc_day_provider=lambda: publication_day,
         )
         self.events = events
+        self.release_title: str | None = None
 
     def release_count(self) -> int:
         self.events.append("release-count:0")
@@ -901,12 +991,7 @@ class NewReleasePublisher(publisher.Publisher):
         if arguments[:2] == ["release", "create"]:
             if "--draft" not in arguments or "--prerelease" not in arguments:
                 raise AssertionError("new release was not created draft-first")
-            expected_title = f"Erdos 302 corrected preprint {FINAL_CONTROLS.version}"
-            title = arguments[arguments.index("--title") + 1]
-            if title != expected_title:
-                raise AssertionError(
-                    f"release title {title!r} does not equal {expected_title!r}"
-                )
+            self.release_title = arguments[arguments.index("--title") + 1]
             self.events.append("gh:create-draft")
             return ""
         if arguments[:2] == ["release", "edit"]:
@@ -922,6 +1007,43 @@ class NewReleasePublisher(publisher.Publisher):
         if expected_manifest is None:
             raise AssertionError("new release validation lost its source manifest anchor")
         self.events.append(f"validate-release:{expected_draft}")
+
+
+class V030NewReleasePublisher(NewReleasePublisher):
+    def __init__(
+        self, context, events: list[str], *,
+        omitted_asset: str | None = None, candidate_tree: str = "c" * 40,
+        controls=V030_CONTROLS,
+    ) -> None:
+        super().__init__(context, events, controls=controls)
+        self.omitted_asset = omitted_asset
+        self.candidate_tree = candidate_tree
+
+    def download_run_artifact(self, run_id: str, directory: Path) -> None:
+        self.events.append(f"download:{run_id}")
+        sha = self.context.verified_sha
+        ci = f"https://github.com/{self.context.repository}/actions/runs/{run_id}"
+        write_inventory(directory, {
+            **{name: b"fixture\n" for name in (
+                asset.replace("0.3.0-preprint", self.controls.version) for asset in V030_ASSETS
+            ) if name != self.omitted_asset},
+            "RELEASE_NOTES.md": b"notes\n",
+            "COMMIT_SHA.txt": f"commit {sha}\ntree {self.candidate_tree}\nci-run {ci}\n".encode(),
+            "VERIFICATION.txt": (
+                f"version: {self.controls.version}\ntag: {self.controls.tag}\n"
+                "version DOI control: ZENODO_AUTO\nconcept DOI: 10.5281/zenodo.21966590\n"
+                f"publication gate: true\ncommit: {sha}\nCI run: {ci}\n"
+            ).encode(),
+        })
+
+    def validate_candidate_evidence(self, assets_dir: Path) -> None:
+        publisher.Publisher.validate_candidate_evidence(self, assets_dir)
+
+    def gh(self, arguments: list[str]) -> str:
+        if arguments == ["api", f"/repos/owner/repository/git/commits/{self.context.verified_sha}"]:
+            self.events.append("commit-tree")
+            return json.dumps({"sha": self.context.verified_sha, "tree": {"sha": "c" * 40}})
+        return super().gh(arguments)
 
 
 class ExistingDraftPublisher(NewReleasePublisher):
@@ -982,7 +1104,8 @@ class EvidencePublisher(publisher.Publisher):
         return {
             "isDraft": self.draft,
             "isPrerelease": True,
-            "tagName": FINAL_CONTROLS.tag,
+            "tagName": self.controls.tag,
+            "name": self.expected_release_title(),
         }
 
     def gh(self, arguments: list[str]) -> str:
@@ -1035,7 +1158,9 @@ class OrchestrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as raw:
             events: list[str] = []
             context = self.context(Path(raw))
-            NewReleasePublisher(context, events).publish()
+            instance = NewReleasePublisher(context, events)
+            instance.publish()
+            self.assertEqual(instance.release_title, "Erdos 302 corrected preprint 0.2.0-preprint")
             self.assertEqual(
                 events,
                 [
@@ -1055,6 +1180,77 @@ class OrchestrationTests(unittest.TestCase):
                     "gh:publish-draft",
                     "validate-release:False",
                 ],
+            )
+
+    def test_v030_new_release_rejects_each_missing_asset_before_any_mutation(self) -> None:
+        for missing in V030_ASSETS:
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as raw:
+                events: list[str] = []
+                instance = V030NewReleasePublisher(self.context(Path(raw)), events, omitted_asset=missing)
+                with self.assertRaises(publisher.PublicationError) as error:
+                    instance.publish()
+                self.assertIn(missing, str(error.exception))
+                self.assert_no_tag_or_release_action(events)
+
+    def test_v030_new_release_rejects_wrong_tree_before_any_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            instance = V030NewReleasePublisher(self.context(Path(raw)), events, candidate_tree="d" * 40)
+            with self.assertRaisesRegex(publisher.PublicationError, "tree does not match"):
+                instance.publish()
+            self.assertIn("commit-tree", events)
+            self.assert_no_tag_or_release_action(events)
+
+    def test_later_upper_new_release_rejects_missing_asset_before_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            instance = V030NewReleasePublisher(
+                self.context(Path(raw)), events, controls=LATER_UPPER_CONTROLS,
+                omitted_asset="erdos302-v0.3.1-preprint-upper-certificate.zip",
+            )
+            with self.assertRaisesRegex(publisher.PublicationError, "upper-certificate.zip"):
+                instance.publish()
+            self.assert_no_tag_or_release_action(events)
+
+    def test_later_upper_new_release_rejects_wrong_tree_before_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            instance = V030NewReleasePublisher(
+                self.context(Path(raw)), events, controls=LATER_UPPER_CONTROLS,
+                candidate_tree="d" * 40,
+            )
+            with self.assertRaisesRegex(publisher.PublicationError, "tree does not match"):
+                instance.publish()
+            self.assertIn("commit-tree", events)
+            self.assert_no_tag_or_release_action(events)
+
+    def assert_no_tag_or_release_action(self, events: list[str]) -> None:
+        self.assertEqual(
+            [event for event in events if event.startswith(("tag-target:", "git:", "gh:"))],
+            [],
+        )
+
+    def test_v030_new_release_uses_exact_manuscript_title(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            events: list[str] = []
+            instance = V030NewReleasePublisher(self.context(Path(raw)), events)
+            instance.publish()
+            self.assertEqual(
+                instance.release_title,
+                "An upper density bound for sets avoiding reciprocal triples",
+            )
+            self.assertLess(events.index("commit-tree"), events.index("tag-target:missing"))
+            self.assertIn("gh:publish-draft", events)
+
+    def test_later_upper_new_release_uses_upper_manuscript_title(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            instance = V030NewReleasePublisher(
+                self.context(Path(raw)), [], controls=LATER_UPPER_CONTROLS
+            )
+            instance.publish()
+            self.assertEqual(
+                instance.release_title,
+                "An upper density bound for sets avoiding reciprocal triples",
             )
 
     def test_new_release_rejects_a_stale_publication_date_before_evidence_or_mutation(self) -> None:
@@ -1138,6 +1334,42 @@ class OrchestrationTests(unittest.TestCase):
             instance.validate_release(True)
             self.assertIn("validate-recorded-run", events)
             self.assertIn("download-recorded-artifact", events)
+
+    def test_v030_existing_draft_requires_candidate_assets_before_promotion(self) -> None:
+        for controls in (V030_CONTROLS, LATER_UPPER_CONTROLS):
+            with self.subTest(version=controls.version), tempfile.TemporaryDirectory() as raw:
+                instance, events = self.evidence_instance(Path(raw), draft=True)
+                instance.controls = controls
+                instance.utc_day_provider = lambda: publisher.release_builder.RELEASE_DATE
+                instance.validate_integration_run = lambda run_id, sha: None
+                instance.validate_cache_free_run = lambda run_id, sha: None
+                missing = f"erdos302-v{controls.version}-upper-certificate.zip"
+                candidate = V030NewReleasePublisher(
+                    instance.context, [], controls=controls, omitted_asset=missing
+                )
+                for directory in (instance.published_dir, instance.anchor_dir):
+                    (directory / "payload.txt").unlink()
+                    candidate.download_run_artifact(instance.published_run_id, directory)
+                with self.assertRaises(publisher.PublicationError) as error:
+                    instance.publish()
+                self.assertIn(missing, str(error.exception))
+                self.assertNotIn("download-recorded-artifact", events)
+
+    def test_v030_existing_draft_with_wrong_or_missing_title_is_not_promoted(self) -> None:
+        cases = [(controls, title) for controls in (V030_CONTROLS, LATER_UPPER_CONTROLS)
+                 for title in (None, f"Erdos 302 corrected preprint {controls.version}")]
+        for controls, title in cases:
+            with self.subTest(version=controls.version, title=title), tempfile.TemporaryDirectory() as raw:
+                instance, events = self.evidence_instance(Path(raw), draft=True)
+                instance.controls = controls
+                instance.utc_day_provider = lambda: publisher.release_builder.RELEASE_DATE
+                instance.validate_integration_run = lambda run_id, sha: None
+                instance.validate_cache_free_run = lambda run_id, sha: None
+                state = instance.release_state
+                instance.release_state = lambda: {**state(), "name": title}
+                with self.assertRaisesRegex(publisher.PublicationError, "title"):
+                    instance.publish()
+                self.assertNotIn("download-published", events)
 
     def test_stale_draft_is_rejected_before_recorded_run_or_publish(self) -> None:
         with tempfile.TemporaryDirectory() as raw:

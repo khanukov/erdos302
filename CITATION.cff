@@ -1,56 +1,45 @@
 cff-version: 1.2.0
 message: >-
-  Cite version 0.2.0-preprint for the next corrected preliminary, unrefereed
-  release. It is not independently verified. Zenodo assigns its immutable
-  version DOI automatically after GitHub release ingestion; stable concept DOI
-  10.5281/zenodo.21966590 identifies the complete version lineage.
-title: "Two-sided computer-assisted progress on Erdős Problem 302"
+  Cite version 0.3.0-preprint for the preliminary, unrefereed upper-bound
+  manuscript. It is not independently verified by human reviewers. Zenodo
+  assigns an immutable version DOI after GitHub ingestion; the concept DOI
+  identifies the lineage.
+title: "An upper density bound for sets avoiding reciprocal triples"
 type: software
-version: "0.2.0-preprint"
-date-released: "2026-09-13"
+version: "0.3.0-preprint"
+date-released: "2026-11-20"
 license: MIT
 authors:
   - family-names: Khanukov
     given-names: Dmitry
 repository-code: "https://github.com/khanukov/erdos302"
-repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint"
+repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint"
 url: "https://github.com/khanukov/erdos302"
 abstract: >-
-  Version 0.2.0-preprint is a preliminary, unrefereed corrected snapshot of
-  two-sided partial progress on Erdős Problem 302. Using Della Pietra's
-  structured Problem 301 construction, an odd-quarter padding lemma gives a
-  qualitative lower improvement over density 5/8. The required external Lean
-  development is pinned and kernel-checked but unrefereed. Independently, an
-  exact certificate gives the upper bound 140803024/163562355; this upper result
-  does not depend on the Della Pietra developments. The results are not
-  independently verified or peer reviewed and do not solve Problem 302. The
-  upper finite certificate is independently cross-checked by exact
-  dependency-free software. The finite semantics, exact packing certificates,
-  omission argument, and upper asymptotic endpoint are connected by an
-  end-to-end Lean 4 development with no external certificate hypothesis. For the publication
-  candidate, the cache-free workflow rebuilds all 80,181 committed
-  project-local Lean modules from source, verifies the exact 160,362
-  .olean/.ilean output inventory, replays the final declarations, reproduces
-  the axiom allowlist, and independently reads back the aggregate artifact.
-  The Lean kernel/toolchain, operating system and hardware, and Mathlib remain
-  disclosed trusted boundaries. The
-  lower theorem is Lean-checked through pinned
-  external formal developments. AI systems assisted with search, code,
-  formalization, and audits; the named author remains responsible for all
-  claims. Software and verification material are MIT-licensed; the manuscript
-  is CC BY 4.0 under the path-specific scope in LICENSE_SCOPE.md. Zenodo
-  automatically archives the tagged source after the GitHub release; the
-  complete verified release assets remain attached to the GitHub Release.
+  The computer-assisted proof bounds the upper limiting density of subsets
+  avoiding three distinct integers a, b, c with 1/a = 1/b + 1/c strictly
+  below 0.830783022367. Cold and exterior replay at proof-source commit
+  4abf9b466b3e0d920ce918a8a7d7579ed4cf34ae passed in GitHub Actions run 44830958575.
+  The cold run regenerated 3,094,631 positive correction cells and matched
+  the recorded SHA-256 digest. C++17 and Python verify the finite witnesses;
+  Lean checks the counting argument and exact arithmetic, with explicit
+  finite-witness hypotheses at the endpoint. This does not determine the
+  density or solve Erdős Problem 302. The work is preliminary, unrefereed,
+  and not independently verified or peer reviewed. AI systems assisted with
+  search, code, formalization, and audits; the author is responsible for all
+  claims. Original software and verification material are MIT-licensed and
+  original manuscript material is CC BY 4.0 under LICENSE_SCOPE.md. Zenodo
+  archives tagged source; the checked release assets remain on GitHub.
 identifiers:
   - type: doi
     value: 10.5281/zenodo.21966590
     description: "Zenodo concept DOI for all archived versions."
   - type: url
-    value: "https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint"
-    description: "Reserved v0.2.0 GitHub Release URL; live only after publication."
+    value: "https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint"
+    description: "Reserved v0.3.0 GitHub Release URL; live only after publication."
   - type: url
-    value: "https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf"
-    description: "Reserved v0.2.0 manuscript PDF URL; live only after publication."
+    value: "https://github.com/khanukov/erdos302/releases/download/v0.3.0-corrected-preprint/erdos302-v0.3.0-preprint.pdf"
+    description: "Reserved v0.3.0 manuscript PDF URL; live only after publication."
 keywords:
   - Erdős problems
   - extremal number theory
@@ -59,16 +48,16 @@ keywords:
   - computer-assisted proof
 preferred-citation:
   type: unpublished
-  title: "Two-sided computer-assisted progress on Erdős Problem 302"
-  version: "0.2.0-preprint"
+  title: "An upper density bound for sets avoiding reciprocal triples"
+  version: "0.3.0-preprint"
   authors:
     - family-names: Khanukov
       given-names: Dmitry
   year: 2026
-  date-released: "2026-09-13"
+  date-released: "2026-11-20"
   status: preprint
   license: CC-BY-4.0
-  url: "https://github.com/khanukov/erdos302/releases/download/v0.2.0-corrected-preprint/erdos302-v0.2.0-preprint.pdf"
+  url: "https://github.com/khanukov/erdos302/releases/download/v0.3.0-corrected-preprint/erdos302-v0.3.0-preprint.pdf"
   notes: >-
     Preliminary and unrefereed; not independently verified. The PDF URL becomes
     live after GitHub publication. Zenodo assigns the exact version DOI
@@ -76,6 +65,20 @@ preferred-citation:
     10.5281/zenodo.21966590 identifies the version lineage; use the automatically
     assigned version DOI for this exact release after ingestion.
 references:
+  - type: software
+    title: "Two-sided computer-assisted progress on Erdős Problem 302"
+    version: "0.2.0-preprint"
+    authors:
+      - family-names: Khanukov
+        given-names: Dmitry
+    date-released: "2026-09-13"
+    doi: 10.5281/zenodo.22737316
+    license: MIT
+    repository-code: "https://github.com/khanukov/erdos302/tree/v0.2.0-corrected-preprint"
+    repository-artifact: "https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint"
+    notes: >-
+      Earlier two-sided snapshot, with the upper bound 140803024/163562355
+      checked end to end in Lean. Preliminary and unrefereed.
   - type: software
     title: "Erdős 302 corrected preprint source and verification snapshot"
     version: "0.1.1-preprint"

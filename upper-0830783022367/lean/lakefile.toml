@@ -1,0 +1,15 @@
+name = "erdos302_full_certificate"
+version = "0.1.0"
+defaultTargets = ["Formal302"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "809072a6d0abd09be38833bf6d321f9837f23892"
+
+[[lean_lib]]
+name = "Erdos302"
+
+[[lean_lib]]
+name = "Formal302"
+globs = ["Formal302", "Formal302.FrozenArithmetic"]
