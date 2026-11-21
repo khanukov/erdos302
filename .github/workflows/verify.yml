@@ -190,9 +190,22 @@ jobs:
           use-mathlib-cache: false
       - name: Reproduce dependency lockfile
         run: |
+          set -euo pipefail
           cd lower-lean
+          # The pinned commit is fetchable by SHA but a normal fork clone need
+          # not fetch it. Seed the exact Git object without changing the lock.
+          mathlib=.lake/packages/mathlib
+          revision=da1f94df976c7cd38117281c57d6ee3046c8d104
+          mkdir -p .lake/packages
+          test ! -e "$mathlib"
+          git init -q "$mathlib"
+          git -C "$mathlib" remote add origin https://github.com/teorth/mathlib4.git
+          git -C "$mathlib" fetch --depth=1 origin "$revision"
+          test "$(git -C "$mathlib" rev-parse FETCH_HEAD)" = "$revision"
+          git -C "$mathlib" checkout --detach "$revision"
           MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
           git diff --exit-code -- lake-manifest.json
+          test "$(git -C "$mathlib" rev-parse HEAD)" = "$revision"
       - name: Reject proof escapes
         env:
           PYTHONDONTWRITEBYTECODE: "1"
