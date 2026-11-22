@@ -859,11 +859,11 @@ class RunJobsPaginationTests(unittest.TestCase):
                     "status": "completed",
                     "conclusion": "success",
                 }
-                for index in range(99)
+                for index in range(29)
             ]
             second_page_jobs = [
                 {
-                    "id": 101,
+                    "id": 31,
                     "name": "read-back",
                     "status": "completed",
                     "conclusion": "success",
@@ -872,8 +872,8 @@ class RunJobsPaginationTests(unittest.TestCase):
             runner = FakeRunner(
                 [
                     json.dumps(run),
-                    json.dumps({"total_count": 101, "jobs": first_page_jobs}),
-                    json.dumps({"total_count": 101, "jobs": second_page_jobs}),
+                    json.dumps({"total_count": 31, "jobs": first_page_jobs}),
+                    json.dumps({"total_count": 31, "jobs": second_page_jobs}),
                 ]
             )
             context = publisher.PublicationContext(
@@ -889,7 +889,10 @@ class RunJobsPaginationTests(unittest.TestCase):
             )
             instance.validate_cache_free_run("789", "a" * 40)
             self.assertFalse(any("--slurp" in command for command in runner.commands))
-            self.assertTrue(any("page=2" in command[-1] for command in runner.commands))
+            self.assertEqual(
+                [command[-1].split("?")[-1] for command in runner.commands[1:]],
+                ["filter=latest&per_page=30&page=1", "filter=latest&per_page=30&page=2"],
+            )
 
 
 class TagTests(unittest.TestCase):
