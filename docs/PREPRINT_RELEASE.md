@@ -4,15 +4,15 @@ This procedure prepares and publishes a preliminary, unrefereed version to
 establish a standard scientific timestamp. It does not authorize an Erdős
 Problems forum post or the phrase “independently verified.”
 
-Current v0.3.0 release-candidate controls:
+Current v0.3.0 release controls:
 
 ```text
 version:       0.3.0-preprint
 tag:           v0.3.0-corrected-preprint
-candidate date: 2026-11-22 (UTC; not a scheduled publication date)
+release date:  2026-11-22 (UTC; publication requires all gates)
 version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
-PUBLISH_READY: false
+PUBLISH_READY: true
 ```
 
 Published immutable preprint identifiers:
