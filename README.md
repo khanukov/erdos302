@@ -2,8 +2,9 @@
 
 <!-- release-state:start -->
 **Preliminary and unrefereed.** Version `0.3.0-preprint` is a candidate and is
-not independently verified by human reviewers. The publication gate is closed
-(`PUBLISH_READY=false`).
+not independently verified by human reviewers. Publication is enabled
+(`PUBLISH_READY=true`) and requires the exact release commit to pass all
+publication checks.
 The reserved release tag and URL are [`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint);
 the URL becomes live only after publication. Zenodo assigns a new immutable
 version DOI after GitHub ingestion under concept DOI
