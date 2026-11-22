@@ -9,7 +9,7 @@ Current v0.3.0 release controls:
 ```text
 version:       0.3.0-preprint
 tag:           v0.3.0-corrected-preprint
-release date:  2026-11-22 (UTC; publication requires all gates)
+release date:  2026-11-23 (UTC; publication requires all gates)
 version DOI:   ZENODO_AUTO
 concept DOI:   10.5281/zenodo.21966590
 PUBLISH_READY: true
