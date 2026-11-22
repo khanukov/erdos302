@@ -391,7 +391,8 @@ class Publisher:
                 [
                     "api",
                     f"/repos/{self.context.repository}/actions/runs/{run_id}/jobs"
-                    f"?filter=latest&per_page=100&page={page}",
+                    # GitHub can return 502 for 100-job pages on large matrix runs.
+                    f"?filter=latest&per_page=30&page={page}",
                 ],
                 f"{description} jobs page {page}",
             )
