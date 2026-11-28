@@ -7,12 +7,10 @@ The new certificate gives **limsup f(N)/N ≤ 0.827558217636098** for three dist
 ## Manuscript release history
 
 <!-- release-state:start -->
-**Preliminary and unrefereed.** Version `0.3.0-preprint` is a candidate and is
-not independently verified by human reviewers. The v0.3.0 manuscript has its own publication checks. Automatic preprint publication is disabled on this computational snapshot.
-The reserved release tag and URL are [`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint);
-the URL becomes live only after publication. Zenodo assigns a new immutable
-version DOI after GitHub ingestion under concept DOI
-[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590).
+**Preliminary and unrefereed.** The v0.3.0 manuscript is published as
+[`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint)
+and archived as [`10.5281/zenodo.24457000`](https://doi.org/10.5281/zenodo.24457000).
+Automatic preprint publication is disabled on this computational snapshot.
 
 The earlier two-sided [`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint)
 is archived as [`10.5281/zenodo.22737316`](https://doi.org/10.5281/zenodo.22737316). Historical v0.1.1
@@ -20,7 +18,7 @@ is archived as [`10.5281/zenodo.22737316`](https://doi.org/10.5281/zenodo.227373
 ([`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591)) remain unchanged.
 <!-- release-state:end -->
 
-## Upper bound in the v0.3.0 candidate
+## Upper bound in the published v0.3.0 preprint
 
 The [manuscript](upper-0830783022367/paper/Erdos302_0830783022367.pdf) gives a
 computer-assisted proof that

@@ -14,6 +14,28 @@ def rows(name):
   for line in f:yield tuple(map(int,line.split()))
 def digest(p):
  with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def verify_manifest():
+ manifest=D/'PROOF_SHA256SUMS'
+ expected={'CITATION.cff','PROOF.md','README.md','certificate.json','inheritance.json',
+           'verify24.py','verify_inheritance.py'}
+ for name in ('data','check'):
+  folder=D/name
+  if folder.is_symlink() or not folder.is_dir():raise ValueError(f'Invalid certificate directory: {name}')
+  for p in folder.iterdir():
+   if p.is_symlink() or not p.is_file():raise ValueError(f'Invalid certificate member: {p.name}')
+   expected.add(p.relative_to(D).as_posix())
+ if manifest.is_symlink() or not manifest.is_file():raise ValueError('Missing or invalid PROOF_SHA256SUMS')
+ seen={}
+ for line in manifest.read_text(encoding='ascii').splitlines():
+  checksum, sep, fn=line.partition('  ')
+  if not sep or fn not in expected or fn in seen or len(checksum)!=64 or any(c not in '0123456789abcdef' for c in checksum):
+   raise ValueError(f'Invalid or duplicate manifest entry: {fn!r}')
+  seen[fn]=checksum
+ if set(seen)!=expected:raise ValueError(f'Missing manifest entries: {sorted(expected-set(seen))}')
+ for fn,checksum in seen.items():
+  p=D/fn
+  if p.is_symlink() or not p.is_file() or digest(p)!=checksum:
+   raise ValueError(f'Certificate digest mismatch: {fn}')
 def short():
  cert=json.load(open(D/'certificate.json'));old=js('parent.json');H=cert['H'];paid=ints('paid23.xz');threshold=ints('previous-thr.xz');assert threshold==sorted(threshold)
  assert len(paid)==115001 and all(a<=b for a,b in zip(paid,paid[1:]))
@@ -89,9 +111,10 @@ def full(work):
  print('Two independent final-stage recurrences agree at every retained height.',flush=True)
 if __name__=='__main__':
  ap=argparse.ArgumentParser();ap.add_argument('--full',action='store_true');args=ap.parse_args()
- if (D/'PROOF_SHA256SUMS').exists():
-  for line in (D/'PROOF_SHA256SUMS').read_text().splitlines():
-   expected,fn=line.split(None,1);assert digest(D/fn)==expected,fn
- short()
+ verify_manifest()
  if args.full:
   with tempfile.TemporaryDirectory() as t:full(Path(t))
+  print('Replay scope: new witnesses checked against supplied predecessor inputs.',flush=True)
+ else:
+  print('Replay scope: arithmetic and packaged-file integrity only.',flush=True)
+ short()

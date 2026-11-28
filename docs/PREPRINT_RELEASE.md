@@ -4,7 +4,12 @@ This procedure prepares and publishes a preliminary, unrefereed version to
 establish a standard scientific timestamp. It does not authorize an Erdős
 Problems forum post or the phrase “independently verified.”
 
-Current v0.3.0 release controls:
+This guide records the controls used for the historical v0.3.0 manuscript.
+On the v0.4.0 computational branch `PUBLISH_READY` is `false`. The root
+`VERSION` labels the computational snapshot; it is not a publisher input.
+The existing manuscript publisher is not configured to package v0.4.0.
+
+Historical v0.3.0 publication controls:
 
 ```text
 version:       0.3.0-preprint
