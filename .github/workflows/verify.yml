@@ -15,6 +15,25 @@ permissions:
   contents: read
 
 jobs:
+  upper-v04-extension:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - run: python3 -m pip install --only-binary=":all:" numpy==2.5.4
+      - run: python3 -B scripts/test_verify24_manifest.py
+      - name: Replay new witnesses against supplied inherited inputs
+        run: |
+          set -o pipefail
+          python3 -Bu upper-v0.4/verify24.py --full | tee "$RUNNER_TEMP/upper-v04-replay.log"
+          grep -Fx 'Two independent final-stage recurrences agree at every retained height.' "$RUNNER_TEMP/upper-v04-replay.log"
+          grep -Fx 'Upper bound 0.827558217636098   Gain 102295768157/3906250000000000' "$RUNNER_TEMP/upper-v04-replay.log"
+
   root-lean:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

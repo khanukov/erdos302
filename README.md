@@ -1,14 +1,18 @@
 # An improved upper bound for Erdős Problem 302
 
+## Computational version 0.4.0
+
+The new certificate gives **limsup f(N)/N ≤ 0.827558217636098** for three distinct denominators. Its exact decrease from the preceding research calculation is 0.000026187716648192. The verifier checks every new finite witness and the final rational arithmetic from the supplied inherited rank tables. The v0.4.0 result has not been checked end to end in Lean. [Proof and replay instructions](upper-v0.4/README.md).
+
+## Manuscript release history
+
 <!-- release-state:start -->
-**Preliminary and unrefereed.** Version `0.3.0-preprint` is a candidate and is
-not independently verified by human reviewers. Publication is enabled
-(`PUBLISH_READY=true`) and requires the exact release commit to pass all
-publication checks.
-The reserved release tag and URL are [`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint);
-the URL becomes live only after publication. Zenodo assigns a new immutable
-version DOI after GitHub ingestion under concept DOI
-[`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590).
+**Preliminary and unrefereed.** Version `0.3.0-preprint` was not independently
+verified by human reviewers. It is published as
+[`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint)
+and archived as [`10.5281/zenodo.24457000`](https://doi.org/10.5281/zenodo.24457000).
+The Zenodo concept DOI is [`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590).
+Automatic preprint publication is disabled on this computational snapshot.
 
 The earlier two-sided [`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint)
 is archived as [`10.5281/zenodo.22737316`](https://doi.org/10.5281/zenodo.22737316). Historical v0.1.1
@@ -16,7 +20,7 @@ is archived as [`10.5281/zenodo.22737316`](https://doi.org/10.5281/zenodo.227373
 ([`10.5281/zenodo.21966591`](https://doi.org/10.5281/zenodo.21966591)) remain unchanged.
 <!-- release-state:end -->
 
-## Upper bound in the v0.3.0 candidate
+## Upper bound in the published v0.3.0 preprint
 
 The [manuscript](upper-0830783022367/paper/Erdos302_0830783022367.pdf) gives a
 computer-assisted proof that
