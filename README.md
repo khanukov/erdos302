@@ -7,9 +7,11 @@ The new certificate gives **limsup f(N)/N ≤ 0.827558217636098** for three dist
 ## Manuscript release history
 
 <!-- release-state:start -->
-**Preliminary and unrefereed.** The v0.3.0 manuscript is published as
+**Preliminary and unrefereed.** Version `0.3.0-preprint` was not independently
+verified by human reviewers. It is published as
 [`v0.3.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.3.0-corrected-preprint)
 and archived as [`10.5281/zenodo.24457000`](https://doi.org/10.5281/zenodo.24457000).
+The Zenodo concept DOI is [`10.5281/zenodo.21966590`](https://doi.org/10.5281/zenodo.21966590).
 Automatic preprint publication is disabled on this computational snapshot.
 
 The earlier two-sided [`v0.2.0-corrected-preprint`](https://github.com/khanukov/erdos302/releases/tag/v0.2.0-corrected-preprint)
