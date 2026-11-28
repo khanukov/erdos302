@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Cite this version for the v0.4.0 computational certificate."
+title: "A computational upper bound for Erdős problem 302"
+type: software
+authors:
+  - family-names: Khanukov
+    given-names: Dmitry
+version: "0.4.0"
+date-released: "2026-11-27"
+repository-code: "https://github.com/khanukov/erdos302"
